@@ -17,6 +17,14 @@ const path = require('path');
 
 const ROOT = path.resolve(__dirname, '..');
 const WORDS = JSON.parse(fs.readFileSync(path.join(ROOT, 'qualifications/fe/words.json'), 'utf8'));
+const DETAILS = require('./word_details.js');
+
+// 演習の解説専用の詳しい説明文(未収録ならmeaningにフォールバック)
+function detail(w) { return DETAILS[w.wordId] || w.meaning; }
+// 誤答の選択肢が実際は何の用語かを添えて、1問で複数の用語を学べるようにする
+function otherWordsNote(ds) { return `(他の選択肢は「${ds.map(d => d.word).join('」「')}」の説明)`; }
+// 選択肢が用語名そのものの問題タイプ用: 他の選択肢(=別の用語)が何を指すかを添える
+function otherMeaningsNote(ds) { return `(他の選択肢: ${ds.map(d => `「${d.word}」=${d.meaning}`).join(' / ')})`; }
 
 // 再現性のあるシャッフル(mulberry32)。実行のたび同じ結果になるよう固定シード。
 function mulberry32(seed) {
@@ -113,7 +121,7 @@ for (const w of words) {
         category: w.category,
         text: `${w.word} の説明として最も適切なものはどれか。`,
         choices, correctIndex,
-        explanation: `${w.word}: ${w.meaning}`,
+        explanation: `${w.word}: ${detail(w)}\n${otherWordsNote(ds)}`,
         source: `生成問題(定義 / ${w.word})`,
         relatedWordIds: [w.wordId]
       });
@@ -129,7 +137,7 @@ for (const w of words) {
         category: w.category,
         text: `次の説明に最もよく当てはまる用語はどれか。\n「${w.meaning}」`,
         choices, correctIndex,
-        explanation: `正解は「${w.word}」。${w.meaning}`,
+        explanation: `正解は「${w.word}」。${detail(w)}\n${otherMeaningsNote(ds)}`,
         source: `生成問題(用語選択 / ${w.word})`,
         relatedWordIds: [w.wordId]
       });
@@ -145,7 +153,7 @@ for (const w of words) {
         category: w.category,
         text: `次の「例え」が表す用語として最も適切なものはどれか。\n「${w.analogy}」`,
         choices, correctIndex,
-        explanation: `正解は「${w.word}」。例え: ${w.analogy}`,
+        explanation: `正解は「${w.word}」。${detail(w)}\n${otherMeaningsNote(ds)}`,
         source: `生成問題(例えから用語 / ${w.word})`,
         relatedWordIds: [w.wordId]
       });
@@ -163,7 +171,7 @@ for (const w of words) {
         category: w.category,
         text: `次の四つの用語のうち、分類される分野が他の三つと異なるものはどれか。`,
         choices, correctIndex,
-        explanation: `「${w.word}」は${w.category}分野で、他の三つは${oc}分野。`,
+        explanation: `「${w.word}」は${w.category}分野。${detail(w)}\n他の三つ(${ds.map(d => d.word).join('・')})は${oc}分野。`,
         source: `生成問題(分野判定 / ${w.word})`,
         relatedWordIds: [w.wordId]
       });
@@ -181,7 +189,7 @@ for (const w of words) {
         category: w.category,
         text: `${w.word} を身近なものに例えた説明として、最も適切なものはどれか。`,
         choices, correctIndex,
-        explanation: `${w.word} の例え: ${w.analogy}`,
+        explanation: `${w.word}: ${detail(w)}\n(他の選択肢は「${ds.map(d => d.word).join('」「')}」の例え)`,
         source: `生成問題(例え / ${w.word})`,
         relatedWordIds: [w.wordId]
       });

@@ -18,6 +18,7 @@
 const fs = require('fs');
 const path = require('path');
 const ROOT = path.resolve(__dirname, '..');
+const DETAILS = require('./word_details.js');
 
 // 再現性のあるシード付き乱数
 function mulberry32(seed) {
@@ -126,7 +127,7 @@ const GEN = {
         idKey: `radix16_${d}`, category: 'テクノロジ', relatedWordIds: [],
         text: `16進小数 0.${hexDigits[d]} を10進小数に変換したものはどれか。`,
         choices, correctIndex,
-        explanation: `0.${hexDigits[d]}(16) = ${d} ÷ 16 = ${numStr(ans)}。`,
+        explanation: `16進数の小数第1位は「16分の1の位」を表す。0.${hexDigits[d]}(16) = ${d} ÷ 16 = ${numStr(ans)}。`,
         source: '生成問題(計算 / 基数変換)'
       };
     } else {
@@ -142,7 +143,7 @@ const GEN = {
         idKey: `radix2_${bits}`, category: 'テクノロジ', relatedWordIds: [],
         text: `2進数 ${bits} を10進数で表したものはどれか。`,
         choices, correctIndex,
-        explanation: `${bits}(2) = ${bits.split('').map((b, i) => b === '1' ? Math.pow(2, len - 1 - i) : 0).filter(x => x).join(' + ')} = ${ans}。`,
+        explanation: `2進数は各桁が2の累乗(…4,2,1)を表す。1が立っている桁の値を足し合わせればよい。${bits}(2) = ${bits.split('').map((b, i) => b === '1' ? Math.pow(2, len - 1 - i) : 0).filter(x => x).join(' + ')} = ${ans}。`,
         source: '生成問題(計算 / 基数変換)'
       };
     }
@@ -216,7 +217,7 @@ const GEN = {
       idKey: `img_${res[0]}x${res[1]}_${bpp}`, category: 'テクノロジ', relatedWordIds: [],
       text: `解像度${res[0]}×${res[1]}ドット、1画素当たり${bpp}ビットで表現する画像1枚の記憶容量はおよそ何Mバイトか。ここで1Mバイト=10^6バイトとする。`,
       choices, correctIndex,
-      explanation: `容量 = ${res[0]}×${res[1]}×${bpp} ÷ 8 = ${bytes.toLocaleString()}バイト ≒ ${numStr(ansMB)}Mバイト。`,
+      explanation: `画像の記憶容量は「総画素数×1画素あたりのビット数」で求まり、それをバイト単位に直すには8で割る。容量 = ${res[0]}×${res[1]}×${bpp} ÷ 8 = ${bytes.toLocaleString()}バイト ≒ ${numStr(ansMB)}Mバイト。`,
       source: '生成問題(計算 / 記憶容量)'
     };
   },
@@ -246,7 +247,7 @@ const GEN = {
       idKey: `mips_${f}_${cpi}`, category: 'テクノロジ', relatedWordIds: [],
       text: `クロック周波数${f}GHz、1命令の実行に平均${cpi}クロックを要するCPUがある。このCPUの処理性能はおよそ何MIPSか。`,
       choices, correctIndex,
-      explanation: `MIPS = クロック周波数 ÷ (CPI × 10^6) = ${f}×10^9 ÷ (${cpi}×10^6) = ${f * 1000} ÷ ${cpi} = ${numStr(ans)}MIPS。`,
+      explanation: `MIPSは1秒間に実行できる命令数(百万単位)を表す指標。クロックが速いほど、また1命令に要するクロック数(CPI)が少ないほど大きくなる。MIPS = クロック周波数 ÷ (CPI × 10^6) = ${f}×10^9 ÷ (${cpi}×10^6) = ${f * 1000} ÷ ${cpi} = ${numStr(ans)}MIPS。`,
       source: '生成問題(計算 / 処理性能)'
     };
   },
@@ -261,7 +262,7 @@ const GEN = {
       idKey: `addr_${n}_${letter}`, category: 'テクノロジ', relatedWordIds: [],
       text: `${n}ビットのアドレスで、1番地に1バイトを割り当てて指定できる記憶容量は何${letter}バイトか。ここで1Kバイト=1024バイトとする。`,
       choices, correctIndex,
-      explanation: `${n}ビットで 2^${n} = ${Math.pow(2, n).toLocaleString()}バイト。${letter}バイト単位では ${numStr(val)}${letter}バイト。`,
+      explanation: `アドレスがnビットあれば、0から2^n−1までの2^n通りの番地を指定できる。1番地=1バイトなので、記憶容量も2^n バイト。${n}ビットで 2^${n} = ${Math.pow(2, n).toLocaleString()}バイト。${letter}バイト単位では ${numStr(val)}${letter}バイト。`,
       source: '生成問題(計算 / アドレス空間)'
     };
   },
@@ -325,7 +326,7 @@ const GEN = {
       idKey: `rot_${rpm}`, category: 'テクノロジ', relatedWordIds: [],
       text: `回転速度${rpm.toLocaleString()}回転/分の磁気ディスクの、平均回転待ち時間はおよそ何ミリ秒か。`,
       choices, correctIndex,
-      explanation: `1回転 = 60秒 ÷ ${rpm.toLocaleString()} = ${numStr(60000 / rpm)}ミリ秒。平均回転待ちはその半分で ${numStr(ans)}ミリ秒。`,
+      explanation: `読み書きしたい位置は円盤上のどこに来るか分からないため、平均すると半回転分だけ待つと考える。1回転 = 60秒 ÷ ${rpm.toLocaleString()} = ${numStr(60000 / rpm)}ミリ秒。平均回転待ちはその半分で ${numStr(ans)}ミリ秒。`,
       source: '生成問題(計算 / 回転待ち)'
     };
   },
@@ -356,7 +357,7 @@ const GEN = {
       idKey: `colors_${n}`, category: 'テクノロジ', relatedWordIds: [],
       text: `1画素を${n}ビットで表現するとき、表現できる色数は何色か。`,
       choices, correctIndex,
-      explanation: `${n}ビットで 2^${n} = ${ans.toLocaleString()}色を表現できる。`,
+      explanation: `nビットあれば、0と1の組み合わせで2^n通りの色を区別して表現できる。${n}ビットで 2^${n} = ${ans.toLocaleString()}色を表現できる。`,
       source: '生成問題(計算 / 色数)'
     };
   },
@@ -469,7 +470,7 @@ const GEN = {
       idKey: `cputime_${cpi}_${f}`, category: 'テクノロジ', relatedWordIds: [],
       text: `クロック周波数${f}GHz、1命令の実行に平均${cpi}クロックを要するCPUで、1命令の平均実行時間はおよそ何ナノ秒か。`,
       choices, correctIndex,
-      explanation: `1クロックの時間 = 1 ÷ ${f}GHz = ${numStr(1 / f)}ナノ秒。1命令 = ${cpi}クロック × ${numStr(1 / f)} = ${numStr(ans)}ナノ秒。`,
+      explanation: `クロック周波数の逆数が1クロックにかかる時間。それに1命令あたりのクロック数(CPI)を掛ければ実行時間になる。1クロックの時間 = 1 ÷ ${f}GHz = ${numStr(1 / f)}ナノ秒。1命令 = ${cpi}クロック × ${numStr(1 / f)} = ${numStr(ans)}ナノ秒。`,
       source: '生成問題(計算 / 命令実行時間)'
     };
   },
@@ -499,7 +500,7 @@ const GEN = {
       idKey: `diskcap_${trackKB}_${tracks}_${cyls}`, category: 'テクノロジ', relatedWordIds: [],
       text: `1トラックの記憶容量が${trackKB}Kバイト、1シリンダ当たり${tracks}トラック、シリンダ数が${cyls.toLocaleString()}の磁気ディスクの記憶容量は何Mバイトか。ここで1Mバイト=1,000Kバイトとする。`,
       choices, correctIndex,
-      explanation: `容量 = 1トラック容量 × トラック数 × シリンダ数 = ${trackKB} × ${tracks} × ${cyls.toLocaleString()} = ${(trackKB * tracks * cyls).toLocaleString()}Kバイト = ${numStr(ansMB)}Mバイト。`,
+      explanation: `磁気ディスクの総容量は「1トラックの容量×1シリンダ当たりのトラック数×シリンダ数」の掛け算で求まる。容量 = 1トラック容量 × トラック数 × シリンダ数 = ${trackKB} × ${tracks} × ${cyls.toLocaleString()} = ${(trackKB * tracks * cyls).toLocaleString()}Kバイト = ${numStr(ansMB)}Mバイト。`,
       source: '生成問題(計算 / ディスク容量)'
     };
   },
@@ -538,13 +539,15 @@ for (const [type, want] of Object.entries(TARGET)) {
     attempts++;
     const q = GEN[type]();
     if (!q) continue;
+    // 関連語彙のdetail(丁寧な解説)があれば、計算手順の前置きとして添える
+    const concept = q.relatedWordIds && q.relatedWordIds.length ? DETAILS[q.relatedWordIds[0]] : null;
     const question = {
       questionId: `gc_${q.idKey}`,
       category: q.category,
       text: q.text,
       choices: q.choices,
       correctIndex: q.correctIndex,
-      explanation: q.explanation,
+      explanation: concept ? `${concept}\n${q.explanation}` : q.explanation,
       source: q.source,
       relatedWordIds: q.relatedWordIds
     };

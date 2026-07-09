@@ -58,7 +58,7 @@ const GEN = {
     const ans = Math.floor(N / k);
     const program = `○整数型: f()\n  整数型: count ← 0\n  整数型: i\n  for (i を 1 から ${N} まで 1 ずつ増やす)\n    if ((i mod ${k}) が 0 と等しい)\n      count ← count + 1\n    endif\n  endfor\n  return count`;
     const { choices, correctIndex } = buildChoices(ans, [Math.floor(N / k) + 1, Math.floor(N / (k + 1)), N - ans, k]);
-    return { idKey: `cdiv_${N}_${k}`, program, choices, correctIndex, explanation: `1〜${N} のうち ${k} の倍数の個数を数える。${N} ÷ ${k} の商 = ${ans}。` };
+    return { idKey: `cdiv_${N}_${k}`, program, choices, correctIndex, explanation: `iを1から${N}まで1つずつ増やしながら、「iを${k}で割った余りが0(=${k}の倍数)」のときだけcountを増やしている。1〜${N} のうち ${k} の倍数の個数を数える処理なので、答えは ${N} ÷ ${k} の商 = ${ans}。` };
   },
   srange() {
     const a = pick([1, 2, 3, 5, 10]);
@@ -67,21 +67,21 @@ const GEN = {
     const ans = (a + b) * (b - a + 1) / 2;
     const program = `○整数型: f()\n  整数型: sum ← 0\n  整数型: i\n  for (i を ${a} から ${b} まで 1 ずつ増やす)\n    sum ← sum + i\n  endfor\n  return sum`;
     const { choices, correctIndex } = buildChoices(ans, [(1 + b) * b / 2, (a + b), b - a + 1, ans - a]);
-    return { idKey: `srange_${a}_${b}`, program, choices, correctIndex, explanation: `${a} から ${b} までの総和 = (${a}+${b})×(${b}-${a}+1)÷2 = ${ans}。` };
+    return { idKey: `srange_${a}_${b}`, program, choices, correctIndex, explanation: `iを${a}から${b}まで1つずつ増やしながら、そのたびにsumへ加算していく処理。${a} から ${b} までの総和 = (${a}+${b})×(${b}-${a}+1)÷2 = ${ans}。` };
   },
   asum() {
     const a = arr(pick([4, 5, 6]), 1, 20);
     const ans = a.reduce((s, x) => s + x, 0);
     const program = `○整数型: f()\n  整数型の配列: A ← ${renderArr(a)}\n  整数型: sum ← 0\n  整数型: i\n  for (i を 1 から A の要素数 まで 1 ずつ増やす)\n    sum ← sum + A[i]\n  endfor\n  return sum`;
     const { choices, correctIndex } = buildChoices(ans, [ans - a[0], ans + a[a.length - 1], Math.max(...a), a.length]);
-    return { idKey: `asum_${a.join('-')}`, program, choices, correctIndex, explanation: `配列 ${renderArr(a)} の全要素の和 = ${ans}。` };
+    return { idKey: `asum_${a.join('-')}`, program, choices, correctIndex, explanation: `配列の先頭から末尾まで順に見て、sumへ足し込んでいく処理。配列 ${renderArr(a)} の全要素の和 = ${ans}。` };
   },
   amax() {
     const a = arr(pick([4, 5, 6]), 1, 40);
     const ans = Math.max(...a);
     const program = `○整数型: f()\n  整数型の配列: A ← ${renderArr(a)}\n  整数型: r ← A[1]\n  整数型: i\n  for (i を 2 から A の要素数 まで 1 ずつ増やす)\n    if (A[i] > r)\n      r ← A[i]\n    endif\n  endfor\n  return r`;
     const { choices, correctIndex } = buildChoices(ans, [Math.min(...a), a[0], a[a.length - 1], ans - 1]);
-    return { idKey: `amax_${a.join('-')}`, program, choices, correctIndex, explanation: `配列 ${renderArr(a)} の最大値 = ${ans}。` };
+    return { idKey: `amax_${a.join('-')}`, program, choices, correctIndex, explanation: `rを1番目の要素で初期化し、以降の要素と比べて大きければrを更新していく処理(最大値の更新)。配列 ${renderArr(a)} の最大値 = ${ans}。` };
   },
   halve() {
     const N = pick([8, 10, 16, 20, 32, 50, 64, 100]);
@@ -89,7 +89,7 @@ const GEN = {
     while (x > 1) { x = Math.floor(x / 2); count++; }
     const program = `○整数型: f()\n  整数型: x ← ${N}\n  整数型: count ← 0\n  while (x > 1)\n    x ← x ÷ 2 の商\n    count ← count + 1\n  endwhile\n  return count`;
     const { choices, correctIndex } = buildChoices(count, [count + 1, count - 1, N / 2, count + 2]);
-    return { idKey: `halve_${N}`, program, choices, correctIndex, explanation: `x=${N} を 1 になるまで整数除算で半分にする回数を数える。答えは ${count}。` };
+    return { idKey: `halve_${N}`, program, choices, correctIndex, explanation: `while文で「xが1より大きい間」ループし、毎回xを2で割ってcountを増やす。x=${N} を 1 になるまで整数除算で半分にする回数を数える処理なので、答えは ${count}。` };
   },
   pow() {
     const b = pick([2, 3, 5]);
@@ -98,7 +98,7 @@ const GEN = {
     if (ans > 100000) return null;
     const program = `○整数型: f()\n  整数型: r ← 1\n  整数型: i\n  for (i を 1 から ${n} まで 1 ずつ増やす)\n    r ← r × ${b}\n  endfor\n  return r`;
     const { choices, correctIndex } = buildChoices(ans, [b * n, Math.pow(b, n - 1), Math.pow(b, n + 1), b + n]);
-    return { idKey: `pow_${b}_${n}`, program, choices, correctIndex, explanation: `r に ${b} を ${n} 回掛ける = ${b} の ${n} 乗 = ${ans}。` };
+    return { idKey: `pow_${b}_${n}`, program, choices, correctIndex, explanation: `rを1で初期化し、ループのたびに${b}を掛けていく処理(累乗の計算)。r に ${b} を ${n} 回掛ける = ${b} の ${n} 乗 = ${ans}。` };
   },
   gcd() {
     const A = pick([12, 18, 24, 36, 48, 60, 84, 100]);
@@ -106,7 +106,7 @@ const GEN = {
     let a = A, b = B; while (b !== 0) { const t = a % b; a = b; b = t; }
     const program = `○整数型: f()\n  整数型: a ← ${A}\n  整数型: b ← ${B}\n  while (b ≠ 0)\n    整数型: t ← a mod b\n    a ← b\n    b ← t\n  endwhile\n  return a`;
     const { choices, correctIndex } = buildChoices(a, [a * 2, Math.min(A, B), a + 1, Math.abs(A - B)]);
-    return { idKey: `gcd_${A}_${B}`, program, choices, correctIndex, explanation: `ユークリッドの互除法で ${A} と ${B} の最大公約数を求める = ${a}。` };
+    return { idKey: `gcd_${A}_${B}`, program, choices, correctIndex, explanation: `「aをbで割った余りをtとし、bをaに、tをbに置き換える」を bが0になるまで繰り返す、ユークリッドの互除法。${A} と ${B} の最大公約数を求める処理で、答えは ${a}。` };
   },
   cgt() {
     const a = arr(pick([5, 6, 7]), 1, 20);
@@ -114,7 +114,7 @@ const GEN = {
     const ans = a.filter(x => x > t).length;
     const program = `○整数型: f()\n  整数型の配列: A ← ${renderArr(a)}\n  整数型: count ← 0\n  整数型: i\n  for (i を 1 から A の要素数 まで 1 ずつ増やす)\n    if (A[i] > ${t})\n      count ← count + 1\n    endif\n  endfor\n  return count`;
     const { choices, correctIndex } = buildChoices(ans, [a.length - ans, ans + 1, a.length, a.filter(x => x >= t).length]);
-    return { idKey: `cgt_${t}_${a.join('-')}`, program, choices, correctIndex, explanation: `配列 ${renderArr(a)} で ${t} より大きい要素の個数 = ${ans}。` };
+    return { idKey: `cgt_${t}_${a.join('-')}`, program, choices, correctIndex, explanation: `配列の各要素を順に調べ、${t}より大きいものだけcountを増やしていく処理。配列 ${renderArr(a)} で ${t} より大きい要素の個数 = ${ans}。` };
   }
 };
 
