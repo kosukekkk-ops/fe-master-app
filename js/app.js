@@ -531,9 +531,16 @@
     }
     document.querySelectorAll('nav.tabbar button').forEach(b => b.onclick = () => go(b.dataset.tab));
     go('home');
-    // Service Worker(オフライン対応)
+    // Service Worker(オフライン対応)。新しいSWが有効化されたら自動でリロードして
+    // ホーム画面のアイコンを削除・再追加しなくても常に最新版が表示されるようにする。
     if ('serviceWorker' in navigator) {
-      navigator.serviceWorker.register('sw.js').catch(() => {});
+      navigator.serviceWorker.register('sw.js').then(reg => reg.update().catch(() => {})).catch(() => {});
+      let reloading = false;
+      navigator.serviceWorker.addEventListener('controllerchange', () => {
+        if (reloading) return;
+        reloading = true;
+        location.reload();
+      });
     }
     // 学習データ(localStorage)をブラウザに消されにくくする(対応ブラウザのみ)
     if (navigator.storage && navigator.storage.persist) {
