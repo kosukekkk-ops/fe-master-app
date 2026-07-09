@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover, maximum-scale=1">
+  <meta name="theme-color" content="#0f1420">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+  <meta name="apple-mobile-web-app-title" content="FE対策">
+  <link rel="manifest" href="manifest.webmanifest">
+  <link rel="apple-touch-icon" href="icons/icon-180.png">
+  <link rel="stylesheet" href="css/style.css">
+  <title>FE対策アプリ</title>
+</head>
+<body>
+  <div id="app">
+    <header class="app-head">
+      <h1>基本情報 対策</h1>
+      <div class="sub">演習 → 誤答から苦手単語を自動蓄積 → 復習</div>
+    </header>
+
+    <section id="view-home" class="view active"></section>
+    <section id="view-quiz" class="view"></section>
+    <section id="view-flash" class="view"></section>
+    <section id="view-stats" class="view"></section>
+    <section id="view-settings" class="view"></section>
+  </div>
+
+  <nav class="tabbar">
+    <button data-tab="home" class="active"><span class="ico">🏠</span>ホーム</button>
+    <button data-tab="quiz"><span class="ico">📝</span>演習</button>
+    <button data-tab="flash"><span class="ico">📇</span>単語帳</button>
+    <button data-tab="stats"><span class="ico">📊</span>ログ</button>
+    <button data-tab="settings"><span class="ico">⚙️</span>設定</button>
+  </nav>
+
+  <script src="js/storage.js"></script>
+  <script src="js/data.js"></script>
+  <script src="js/ai.js"></script>
+  <script src="js/charts.js"></script>
+  <script src="js/app.js"></script>
+</body>
+</html>

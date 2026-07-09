@@ -1,0 +1,1640 @@
+{
+ "qualification": "FE",
+ "version": 1,
+ "generatedAt": "2026-07-08",
+ "note": "科目B(アルゴリズム)のトレース問題を自動生成(tools/generate_b_questions.js)。擬似言語を生成し戻り値をコードで計算して正答を保証。",
+ "questions": [
+  {
+   "questionId": "gb_cdiv_15_5",
+   "genre": "アルゴリズム",
+   "text": "次の関数 f を実行したときの戻り値はどれか。",
+   "program": "○整数型: f()\n  整数型: count ← 0\n  整数型: i\n  for (i を 1 から 15 まで 1 ずつ増やす)\n    if ((i mod 5) が 0 と等しい)\n      count ← count + 1\n    endif\n  endfor\n  return count",
+   "choices": [
+    "2",
+    "3",
+    "12",
+    "4"
+   ],
+   "correctIndex": 1,
+   "explanation": "1〜15 のうち 5 の倍数の個数を数える。15 ÷ 5 の商 = 3。",
+   "source": "生成問題(科目B / トレース)",
+   "relatedWordIds": []
+  },
+  {
+   "questionId": "gb_cdiv_10_5",
+   "genre": "アルゴリズム",
+   "text": "次の関数 f を実行したときの戻り値はどれか。",
+   "program": "○整数型: f()\n  整数型: count ← 0\n  整数型: i\n  for (i を 1 から 10 まで 1 ずつ増やす)\n    if ((i mod 5) が 0 と等しい)\n      count ← count + 1\n    endif\n  endfor\n  return count",
+   "choices": [
+    "3",
+    "2",
+    "8",
+    "1"
+   ],
+   "correctIndex": 1,
+   "explanation": "1〜10 のうち 5 の倍数の個数を数える。10 ÷ 5 の商 = 2。",
+   "source": "生成問題(科目B / トレース)",
+   "relatedWordIds": []
+  },
+  {
+   "questionId": "gb_cdiv_10_2",
+   "genre": "アルゴリズム",
+   "text": "次の関数 f を実行したときの戻り値はどれか。",
+   "program": "○整数型: f()\n  整数型: count ← 0\n  整数型: i\n  for (i を 1 から 10 まで 1 ずつ増やす)\n    if ((i mod 2) が 0 と等しい)\n      count ← count + 1\n    endif\n  endfor\n  return count",
+   "choices": [
+    "2",
+    "3",
+    "6",
+    "5"
+   ],
+   "correctIndex": 3,
+   "explanation": "1〜10 のうち 2 の倍数の個数を数える。10 ÷ 2 の商 = 5。",
+   "source": "生成問題(科目B / トレース)",
+   "relatedWordIds": []
+  },
+  {
+   "questionId": "gb_cdiv_30_6",
+   "genre": "アルゴリズム",
+   "text": "次の関数 f を実行したときの戻り値はどれか。",
+   "program": "○整数型: f()\n  整数型: count ← 0\n  整数型: i\n  for (i を 1 から 30 まで 1 ずつ増やす)\n    if ((i mod 6) が 0 と等しい)\n      count ← count + 1\n    endif\n  endfor\n  return count",
+   "choices": [
+    "5",
+    "6",
+    "25",
+    "4"
+   ],
+   "correctIndex": 0,
+   "explanation": "1〜30 のうち 6 の倍数の個数を数える。30 ÷ 6 の商 = 5。",
+   "source": "生成問題(科目B / トレース)",
+   "relatedWordIds": []
+  },
+  {
+   "questionId": "gb_cdiv_10_4",
+   "genre": "アルゴリズム",
+   "text": "次の関数 f を実行したときの戻り値はどれか。",
+   "program": "○整数型: f()\n  整数型: count ← 0\n  整数型: i\n  for (i を 1 から 10 まで 1 ずつ増やす)\n    if ((i mod 4) が 0 と等しい)\n      count ← count + 1\n    endif\n  endfor\n  return count",
+   "choices": [
+    "8",
+    "2",
+    "3",
+    "4"
+   ],
+   "correctIndex": 1,
+   "explanation": "1〜10 のうち 4 の倍数の個数を数える。10 ÷ 4 の商 = 2。",
+   "source": "生成問題(科目B / トレース)",
+   "relatedWordIds": []
+  },
+  {
+   "questionId": "gb_cdiv_12_4",
+   "genre": "アルゴリズム",
+   "text": "次の関数 f を実行したときの戻り値はどれか。",
+   "program": "○整数型: f()\n  整数型: count ← 0\n  整数型: i\n  for (i を 1 から 12 まで 1 ずつ増やす)\n    if ((i mod 4) が 0 と等しい)\n      count ← count + 1\n    endif\n  endfor\n  return count",
+   "choices": [
+    "4",
+    "2",
+    "3",
+    "9"
+   ],
+   "correctIndex": 2,
+   "explanation": "1〜12 のうち 4 の倍数の個数を数える。12 ÷ 4 の商 = 3。",
+   "source": "生成問題(科目B / トレース)",
+   "relatedWordIds": []
+  },
+  {
+   "questionId": "gb_cdiv_15_6",
+   "genre": "アルゴリズム",
+   "text": "次の関数 f を実行したときの戻り値はどれか。",
+   "program": "○整数型: f()\n  整数型: count ← 0\n  整数型: i\n  for (i を 1 から 15 まで 1 ずつ増やす)\n    if ((i mod 6) が 0 と等しい)\n      count ← count + 1\n    endif\n  endfor\n  return count",
+   "choices": [
+    "3",
+    "6",
+    "2",
+    "13"
+   ],
+   "correctIndex": 2,
+   "explanation": "1〜15 のうち 6 の倍数の個数を数える。15 ÷ 6 の商 = 2。",
+   "source": "生成問題(科目B / トレース)",
+   "relatedWordIds": []
+  },
+  {
+   "questionId": "gb_cdiv_24_5",
+   "genre": "アルゴリズム",
+   "text": "次の関数 f を実行したときの戻り値はどれか。",
+   "program": "○整数型: f()\n  整数型: count ← 0\n  整数型: i\n  for (i を 1 から 24 まで 1 ずつ増やす)\n    if ((i mod 5) が 0 と等しい)\n      count ← count + 1\n    endif\n  endfor\n  return count",
+   "choices": [
+    "4",
+    "3",
+    "20",
+    "5"
+   ],
+   "correctIndex": 0,
+   "explanation": "1〜24 のうち 5 の倍数の個数を数える。24 ÷ 5 の商 = 4。",
+   "source": "生成問題(科目B / トレース)",
+   "relatedWordIds": []
+  },
+  {
+   "questionId": "gb_cdiv_12_3",
+   "genre": "アルゴリズム",
+   "text": "次の関数 f を実行したときの戻り値はどれか。",
+   "program": "○整数型: f()\n  整数型: count ← 0\n  整数型: i\n  for (i を 1 から 12 まで 1 ずつ増やす)\n    if ((i mod 3) が 0 と等しい)\n      count ← count + 1\n    endif\n  endfor\n  return count",
+   "choices": [
+    "4",
+    "5",
+    "8",
+    "3"
+   ],
+   "correctIndex": 0,
+   "explanation": "1〜12 のうち 3 の倍数の個数を数える。12 ÷ 3 の商 = 4。",
+   "source": "生成問題(科目B / トレース)",
+   "relatedWordIds": []
+  },
+  {
+   "questionId": "gb_cdiv_24_3",
+   "genre": "アルゴリズム",
+   "text": "次の関数 f を実行したときの戻り値はどれか。",
+   "program": "○整数型: f()\n  整数型: count ← 0\n  整数型: i\n  for (i を 1 から 24 まで 1 ずつ増やす)\n    if ((i mod 3) が 0 と等しい)\n      count ← count + 1\n    endif\n  endfor\n  return count",
+   "choices": [
+    "9",
+    "8",
+    "6",
+    "16"
+   ],
+   "correctIndex": 1,
+   "explanation": "1〜24 のうち 3 の倍数の個数を数える。24 ÷ 3 の商 = 8。",
+   "source": "生成問題(科目B / トレース)",
+   "relatedWordIds": []
+  },
+  {
+   "questionId": "gb_cdiv_100_4",
+   "genre": "アルゴリズム",
+   "text": "次の関数 f を実行したときの戻り値はどれか。",
+   "program": "○整数型: f()\n  整数型: count ← 0\n  整数型: i\n  for (i を 1 から 100 まで 1 ずつ増やす)\n    if ((i mod 4) が 0 と等しい)\n      count ← count + 1\n    endif\n  endfor\n  return count",
+   "choices": [
+    "75",
+    "25",
+    "20",
+    "26"
+   ],
+   "correctIndex": 1,
+   "explanation": "1〜100 のうち 4 の倍数の個数を数える。100 ÷ 4 の商 = 25。",
+   "source": "生成問題(科目B / トレース)",
+   "relatedWordIds": []
+  },
+  {
+   "questionId": "gb_cdiv_100_5",
+   "genre": "アルゴリズム",
+   "text": "次の関数 f を実行したときの戻り値はどれか。",
+   "program": "○整数型: f()\n  整数型: count ← 0\n  整数型: i\n  for (i を 1 から 100 まで 1 ずつ増やす)\n    if ((i mod 5) が 0 と等しい)\n      count ← count + 1\n    endif\n  endfor\n  return count",
+   "choices": [
+    "16",
+    "80",
+    "20",
+    "21"
+   ],
+   "correctIndex": 2,
+   "explanation": "1〜100 のうち 5 の倍数の個数を数える。100 ÷ 5 の商 = 20。",
+   "source": "生成問題(科目B / トレース)",
+   "relatedWordIds": []
+  },
+  {
+   "questionId": "gb_cdiv_30_4",
+   "genre": "アルゴリズム",
+   "text": "次の関数 f を実行したときの戻り値はどれか。",
+   "program": "○整数型: f()\n  整数型: count ← 0\n  整数型: i\n  for (i を 1 から 30 まで 1 ずつ増やす)\n    if ((i mod 4) が 0 と等しい)\n      count ← count + 1\n    endif\n  endfor\n  return count",
+   "choices": [
+    "8",
+    "6",
+    "23",
+    "7"
+   ],
+   "correctIndex": 3,
+   "explanation": "1〜30 のうち 4 の倍数の個数を数える。30 ÷ 4 の商 = 7。",
+   "source": "生成問題(科目B / トレース)",
+   "relatedWordIds": []
+  },
+  {
+   "questionId": "gb_cdiv_50_6",
+   "genre": "アルゴリズム",
+   "text": "次の関数 f を実行したときの戻り値はどれか。",
+   "program": "○整数型: f()\n  整数型: count ← 0\n  整数型: i\n  for (i を 1 から 50 まで 1 ずつ増やす)\n    if ((i mod 6) が 0 と等しい)\n      count ← count + 1\n    endif\n  endfor\n  return count",
+   "choices": [
+    "9",
+    "8",
+    "42",
+    "7"
+   ],
+   "correctIndex": 1,
+   "explanation": "1〜50 のうち 6 の倍数の個数を数える。50 ÷ 6 の商 = 8。",
+   "source": "生成問題(科目B / トレース)",
+   "relatedWordIds": []
+  },
+  {
+   "questionId": "gb_srange_2_10",
+   "genre": "アルゴリズム",
+   "text": "次の関数 f を実行したときの戻り値はどれか。",
+   "program": "○整数型: f()\n  整数型: sum ← 0\n  整数型: i\n  for (i を 2 から 10 まで 1 ずつ増やす)\n    sum ← sum + i\n  endfor\n  return sum",
+   "choices": [
+    "12",
+    "55",
+    "54",
+    "9"
+   ],
+   "correctIndex": 2,
+   "explanation": "2 から 10 までの総和 = (2+10)×(10-2+1)÷2 = 54。",
+   "source": "生成問題(科目B / トレース)",
+   "relatedWordIds": []
+  },
+  {
+   "questionId": "gb_srange_5_10",
+   "genre": "アルゴリズム",
+   "text": "次の関数 f を実行したときの戻り値はどれか。",
+   "program": "○整数型: f()\n  整数型: sum ← 0\n  整数型: i\n  for (i を 5 から 10 まで 1 ずつ増やす)\n    sum ← sum + i\n  endfor\n  return sum",
+   "choices": [
+    "55",
+    "6",
+    "45",
+    "15"
+   ],
+   "correctIndex": 2,
+   "explanation": "5 から 10 までの総和 = (5+10)×(10-5+1)÷2 = 45。",
+   "source": "生成問題(科目B / トレース)",
+   "relatedWordIds": []
+  },
+  {
+   "questionId": "gb_srange_1_10",
+   "genre": "アルゴリズム",
+   "text": "次の関数 f を実行したときの戻り値はどれか。",
+   "program": "○整数型: f()\n  整数型: sum ← 0\n  整数型: i\n  for (i を 1 から 10 まで 1 ずつ増やす)\n    sum ← sum + i\n  endfor\n  return sum",
+   "choices": [
+    "10",
+    "54",
+    "55",
+    "11"
+   ],
+   "correctIndex": 2,
+   "explanation": "1 から 10 までの総和 = (1+10)×(10-1+1)÷2 = 55。",
+   "source": "生成問題(科目B / トレース)",
+   "relatedWordIds": []
+  },
+  {
+   "questionId": "gb_srange_5_50",
+   "genre": "アルゴリズム",
+   "text": "次の関数 f を実行したときの戻り値はどれか。",
+   "program": "○整数型: f()\n  整数型: sum ← 0\n  整数型: i\n  for (i を 5 から 50 まで 1 ずつ増やす)\n    sum ← sum + i\n  endfor\n  return sum",
+   "choices": [
+    "55",
+    "46",
+    "1275",
+    "1265"
+   ],
+   "correctIndex": 3,
+   "explanation": "5 から 50 までの総和 = (5+50)×(50-5+1)÷2 = 1265。",
+   "source": "生成問題(科目B / トレース)",
+   "relatedWordIds": []
+  },
+  {
+   "questionId": "gb_srange_5_100",
+   "genre": "アルゴリズム",
+   "text": "次の関数 f を実行したときの戻り値はどれか。",
+   "program": "○整数型: f()\n  整数型: sum ← 0\n  整数型: i\n  for (i を 5 から 100 まで 1 ずつ増やす)\n    sum ← sum + i\n  endfor\n  return sum",
+   "choices": [
+    "96",
+    "5050",
+    "5040",
+    "105"
+   ],
+   "correctIndex": 2,
+   "explanation": "5 から 100 までの総和 = (5+100)×(100-5+1)÷2 = 5040。",
+   "source": "生成問題(科目B / トレース)",
+   "relatedWordIds": []
+  },
+  {
+   "questionId": "gb_srange_1_15",
+   "genre": "アルゴリズム",
+   "text": "次の関数 f を実行したときの戻り値はどれか。",
+   "program": "○整数型: f()\n  整数型: sum ← 0\n  整数型: i\n  for (i を 1 から 15 まで 1 ずつ増やす)\n    sum ← sum + i\n  endfor\n  return sum",
+   "choices": [
+    "120",
+    "16",
+    "15",
+    "119"
+   ],
+   "correctIndex": 0,
+   "explanation": "1 から 15 までの総和 = (1+15)×(15-1+1)÷2 = 120。",
+   "source": "生成問題(科目B / トレース)",
+   "relatedWordIds": []
+  },
+  {
+   "questionId": "gb_srange_2_100",
+   "genre": "アルゴリズム",
+   "text": "次の関数 f を実行したときの戻り値はどれか。",
+   "program": "○整数型: f()\n  整数型: sum ← 0\n  整数型: i\n  for (i を 2 から 100 まで 1 ずつ増やす)\n    sum ← sum + i\n  endfor\n  return sum",
+   "choices": [
+    "5050",
+    "5049",
+    "102",
+    "99"
+   ],
+   "correctIndex": 1,
+   "explanation": "2 から 100 までの総和 = (2+100)×(100-2+1)÷2 = 5049。",
+   "source": "生成問題(科目B / トレース)",
+   "relatedWordIds": []
+  },
+  {
+   "questionId": "gb_srange_2_15",
+   "genre": "アルゴリズム",
+   "text": "次の関数 f を実行したときの戻り値はどれか。",
+   "program": "○整数型: f()\n  整数型: sum ← 0\n  整数型: i\n  for (i を 2 から 15 まで 1 ずつ増やす)\n    sum ← sum + i\n  endfor\n  return sum",
+   "choices": [
+    "120",
+    "14",
+    "17",
+    "119"
+   ],
+   "correctIndex": 3,
+   "explanation": "2 から 15 までの総和 = (2+15)×(15-2+1)÷2 = 119。",
+   "source": "生成問題(科目B / トレース)",
+   "relatedWordIds": []
+  },
+  {
+   "questionId": "gb_srange_1_50",
+   "genre": "アルゴリズム",
+   "text": "次の関数 f を実行したときの戻り値はどれか。",
+   "program": "○整数型: f()\n  整数型: sum ← 0\n  整数型: i\n  for (i を 1 から 50 まで 1 ずつ増やす)\n    sum ← sum + i\n  endfor\n  return sum",
+   "choices": [
+    "1275",
+    "1274",
+    "50",
+    "51"
+   ],
+   "correctIndex": 0,
+   "explanation": "1 から 50 までの総和 = (1+50)×(50-1+1)÷2 = 1275。",
+   "source": "生成問題(科目B / トレース)",
+   "relatedWordIds": []
+  },
+  {
+   "questionId": "gb_srange_10_50",
+   "genre": "アルゴリズム",
+   "text": "次の関数 f を実行したときの戻り値はどれか。",
+   "program": "○整数型: f()\n  整数型: sum ← 0\n  整数型: i\n  for (i を 10 から 50 まで 1 ずつ増やす)\n    sum ← sum + i\n  endfor\n  return sum",
+   "choices": [
+    "60",
+    "41",
+    "1230",
+    "1275"
+   ],
+   "correctIndex": 2,
+   "explanation": "10 から 50 までの総和 = (10+50)×(50-10+1)÷2 = 1230。",
+   "source": "生成問題(科目B / トレース)",
+   "relatedWordIds": []
+  },
+  {
+   "questionId": "gb_srange_2_50",
+   "genre": "アルゴリズム",
+   "text": "次の関数 f を実行したときの戻り値はどれか。",
+   "program": "○整数型: f()\n  整数型: sum ← 0\n  整数型: i\n  for (i を 2 から 50 まで 1 ずつ増やす)\n    sum ← sum + i\n  endfor\n  return sum",
+   "choices": [
+    "1275",
+    "49",
+    "1274",
+    "52"
+   ],
+   "correctIndex": 2,
+   "explanation": "2 から 50 までの総和 = (2+50)×(50-2+1)÷2 = 1274。",
+   "source": "生成問題(科目B / トレース)",
+   "relatedWordIds": []
+  },
+  {
+   "questionId": "gb_srange_2_25",
+   "genre": "アルゴリズム",
+   "text": "次の関数 f を実行したときの戻り値はどれか。",
+   "program": "○整数型: f()\n  整数型: sum ← 0\n  整数型: i\n  for (i を 2 から 25 まで 1 ずつ増やす)\n    sum ← sum + i\n  endfor\n  return sum",
+   "choices": [
+    "324",
+    "27",
+    "24",
+    "325"
+   ],
+   "correctIndex": 0,
+   "explanation": "2 から 25 までの総和 = (2+25)×(25-2+1)÷2 = 324。",
+   "source": "生成問題(科目B / トレース)",
+   "relatedWordIds": []
+  },
+  {
+   "questionId": "gb_asum_16-18-2-2-16",
+   "genre": "アルゴリズム",
+   "text": "次の関数 f を実行したときの戻り値はどれか。",
+   "program": "○整数型: f()\n  整数型の配列: A ← {16, 18, 2, 2, 16}\n  整数型: sum ← 0\n  整数型: i\n  for (i を 1 から A の要素数 まで 1 ずつ増やす)\n    sum ← sum + A[i]\n  endfor\n  return sum",
+   "choices": [
+    "18",
+    "38",
+    "70",
+    "54"
+   ],
+   "correctIndex": 3,
+   "explanation": "配列 {16, 18, 2, 2, 16} の全要素の和 = 54。",
+   "source": "生成問題(科目B / トレース)",
+   "relatedWordIds": []
+  },
+  {
+   "questionId": "gb_asum_18-5-6-14-14",
+   "genre": "アルゴリズム",
+   "text": "次の関数 f を実行したときの戻り値はどれか。",
+   "program": "○整数型: f()\n  整数型の配列: A ← {18, 5, 6, 14, 14}\n  整数型: sum ← 0\n  整数型: i\n  for (i を 1 から A の要素数 まで 1 ずつ増やす)\n    sum ← sum + A[i]\n  endfor\n  return sum",
+   "choices": [
+    "57",
+    "18",
+    "39",
+    "71"
+   ],
+   "correctIndex": 0,
+   "explanation": "配列 {18, 5, 6, 14, 14} の全要素の和 = 57。",
+   "source": "生成問題(科目B / トレース)",
+   "relatedWordIds": []
+  },
+  {
+   "questionId": "gb_asum_16-8-8-7-14",
+   "genre": "アルゴリズム",
+   "text": "次の関数 f を実行したときの戻り値はどれか。",
+   "program": "○整数型: f()\n  整数型の配列: A ← {16, 8, 8, 7, 14}\n  整数型: sum ← 0\n  整数型: i\n  for (i を 1 から A の要素数 まで 1 ずつ増やす)\n    sum ← sum + A[i]\n  endfor\n  return sum",
+   "choices": [
+    "16",
+    "53",
+    "67",
+    "37"
+   ],
+   "correctIndex": 1,
+   "explanation": "配列 {16, 8, 8, 7, 14} の全要素の和 = 53。",
+   "source": "生成問題(科目B / トレース)",
+   "relatedWordIds": []
+  },
+  {
+   "questionId": "gb_asum_11-6-10-5-19",
+   "genre": "アルゴリズム",
+   "text": "次の関数 f を実行したときの戻り値はどれか。",
+   "program": "○整数型: f()\n  整数型の配列: A ← {11, 6, 10, 5, 19}\n  整数型: sum ← 0\n  整数型: i\n  for (i を 1 から A の要素数 まで 1 ずつ増やす)\n    sum ← sum + A[i]\n  endfor\n  return sum",
+   "choices": [
+    "70",
+    "40",
+    "19",
+    "51"
+   ],
+   "correctIndex": 3,
+   "explanation": "配列 {11, 6, 10, 5, 19} の全要素の和 = 51。",
+   "source": "生成問題(科目B / トレース)",
+   "relatedWordIds": []
+  },
+  {
+   "questionId": "gb_asum_7-10-9-20-6-18",
+   "genre": "アルゴリズム",
+   "text": "次の関数 f を実行したときの戻り値はどれか。",
+   "program": "○整数型: f()\n  整数型の配列: A ← {7, 10, 9, 20, 6, 18}\n  整数型: sum ← 0\n  整数型: i\n  for (i を 1 から A の要素数 まで 1 ずつ増やす)\n    sum ← sum + A[i]\n  endfor\n  return sum",
+   "choices": [
+    "88",
+    "70",
+    "20",
+    "63"
+   ],
+   "correctIndex": 1,
+   "explanation": "配列 {7, 10, 9, 20, 6, 18} の全要素の和 = 70。",
+   "source": "生成問題(科目B / トレース)",
+   "relatedWordIds": []
+  },
+  {
+   "questionId": "gb_asum_7-10-18-15",
+   "genre": "アルゴリズム",
+   "text": "次の関数 f を実行したときの戻り値はどれか。",
+   "program": "○整数型: f()\n  整数型の配列: A ← {7, 10, 18, 15}\n  整数型: sum ← 0\n  整数型: i\n  for (i を 1 から A の要素数 まで 1 ずつ増やす)\n    sum ← sum + A[i]\n  endfor\n  return sum",
+   "choices": [
+    "18",
+    "50",
+    "65",
+    "43"
+   ],
+   "correctIndex": 1,
+   "explanation": "配列 {7, 10, 18, 15} の全要素の和 = 50。",
+   "source": "生成問題(科目B / トレース)",
+   "relatedWordIds": []
+  },
+  {
+   "questionId": "gb_asum_14-18-15-6-2",
+   "genre": "アルゴリズム",
+   "text": "次の関数 f を実行したときの戻り値はどれか。",
+   "program": "○整数型: f()\n  整数型の配列: A ← {14, 18, 15, 6, 2}\n  整数型: sum ← 0\n  整数型: i\n  for (i を 1 から A の要素数 まで 1 ずつ増やす)\n    sum ← sum + A[i]\n  endfor\n  return sum",
+   "choices": [
+    "57",
+    "18",
+    "55",
+    "41"
+   ],
+   "correctIndex": 2,
+   "explanation": "配列 {14, 18, 15, 6, 2} の全要素の和 = 55。",
+   "source": "生成問題(科目B / トレース)",
+   "relatedWordIds": []
+  },
+  {
+   "questionId": "gb_asum_6-16-13-4-5-2",
+   "genre": "アルゴリズム",
+   "text": "次の関数 f を実行したときの戻り値はどれか。",
+   "program": "○整数型: f()\n  整数型の配列: A ← {6, 16, 13, 4, 5, 2}\n  整数型: sum ← 0\n  整数型: i\n  for (i を 1 から A の要素数 まで 1 ずつ増やす)\n    sum ← sum + A[i]\n  endfor\n  return sum",
+   "choices": [
+    "16",
+    "46",
+    "40",
+    "48"
+   ],
+   "correctIndex": 1,
+   "explanation": "配列 {6, 16, 13, 4, 5, 2} の全要素の和 = 46。",
+   "source": "生成問題(科目B / トレース)",
+   "relatedWordIds": []
+  },
+  {
+   "questionId": "gb_asum_16-1-16-19-18",
+   "genre": "アルゴリズム",
+   "text": "次の関数 f を実行したときの戻り値はどれか。",
+   "program": "○整数型: f()\n  整数型の配列: A ← {16, 1, 16, 19, 18}\n  整数型: sum ← 0\n  整数型: i\n  for (i を 1 から A の要素数 まで 1 ずつ増やす)\n    sum ← sum + A[i]\n  endfor\n  return sum",
+   "choices": [
+    "54",
+    "19",
+    "70",
+    "88"
+   ],
+   "correctIndex": 2,
+   "explanation": "配列 {16, 1, 16, 19, 18} の全要素の和 = 70。",
+   "source": "生成問題(科目B / トレース)",
+   "relatedWordIds": []
+  },
+  {
+   "questionId": "gb_asum_1-13-3-19-11-12",
+   "genre": "アルゴリズム",
+   "text": "次の関数 f を実行したときの戻り値はどれか。",
+   "program": "○整数型: f()\n  整数型の配列: A ← {1, 13, 3, 19, 11, 12}\n  整数型: sum ← 0\n  整数型: i\n  for (i を 1 から A の要素数 まで 1 ずつ増やす)\n    sum ← sum + A[i]\n  endfor\n  return sum",
+   "choices": [
+    "58",
+    "59",
+    "71",
+    "19"
+   ],
+   "correctIndex": 1,
+   "explanation": "配列 {1, 13, 3, 19, 11, 12} の全要素の和 = 59。",
+   "source": "生成問題(科目B / トレース)",
+   "relatedWordIds": []
+  },
+  {
+   "questionId": "gb_asum_2-4-3-4-20",
+   "genre": "アルゴリズム",
+   "text": "次の関数 f を実行したときの戻り値はどれか。",
+   "program": "○整数型: f()\n  整数型の配列: A ← {2, 4, 3, 4, 20}\n  整数型: sum ← 0\n  整数型: i\n  for (i を 1 から A の要素数 まで 1 ずつ増やす)\n    sum ← sum + A[i]\n  endfor\n  return sum",
+   "choices": [
+    "31",
+    "20",
+    "33",
+    "53"
+   ],
+   "correctIndex": 2,
+   "explanation": "配列 {2, 4, 3, 4, 20} の全要素の和 = 33。",
+   "source": "生成問題(科目B / トレース)",
+   "relatedWordIds": []
+  },
+  {
+   "questionId": "gb_asum_14-8-13-7-1-11",
+   "genre": "アルゴリズム",
+   "text": "次の関数 f を実行したときの戻り値はどれか。",
+   "program": "○整数型: f()\n  整数型の配列: A ← {14, 8, 13, 7, 1, 11}\n  整数型: sum ← 0\n  整数型: i\n  for (i を 1 から A の要素数 まで 1 ずつ増やす)\n    sum ← sum + A[i]\n  endfor\n  return sum",
+   "choices": [
+    "54",
+    "40",
+    "65",
+    "14"
+   ],
+   "correctIndex": 0,
+   "explanation": "配列 {14, 8, 13, 7, 1, 11} の全要素の和 = 54。",
+   "source": "生成問題(科目B / トレース)",
+   "relatedWordIds": []
+  },
+  {
+   "questionId": "gb_asum_8-4-2-19-7-2",
+   "genre": "アルゴリズム",
+   "text": "次の関数 f を実行したときの戻り値はどれか。",
+   "program": "○整数型: f()\n  整数型の配列: A ← {8, 4, 2, 19, 7, 2}\n  整数型: sum ← 0\n  整数型: i\n  for (i を 1 から A の要素数 まで 1 ずつ増やす)\n    sum ← sum + A[i]\n  endfor\n  return sum",
+   "choices": [
+    "19",
+    "34",
+    "42",
+    "44"
+   ],
+   "correctIndex": 2,
+   "explanation": "配列 {8, 4, 2, 19, 7, 2} の全要素の和 = 42。",
+   "source": "生成問題(科目B / トレース)",
+   "relatedWordIds": []
+  },
+  {
+   "questionId": "gb_asum_6-2-18-12-5-11",
+   "genre": "アルゴリズム",
+   "text": "次の関数 f を実行したときの戻り値はどれか。",
+   "program": "○整数型: f()\n  整数型の配列: A ← {6, 2, 18, 12, 5, 11}\n  整数型: sum ← 0\n  整数型: i\n  for (i を 1 から A の要素数 まで 1 ずつ増やす)\n    sum ← sum + A[i]\n  endfor\n  return sum",
+   "choices": [
+    "18",
+    "54",
+    "48",
+    "65"
+   ],
+   "correctIndex": 1,
+   "explanation": "配列 {6, 2, 18, 12, 5, 11} の全要素の和 = 54。",
+   "source": "生成問題(科目B / トレース)",
+   "relatedWordIds": []
+  },
+  {
+   "questionId": "gb_amax_22-9-2-40-10",
+   "genre": "アルゴリズム",
+   "text": "次の関数 f を実行したときの戻り値はどれか。",
+   "program": "○整数型: f()\n  整数型の配列: A ← {22, 9, 2, 40, 10}\n  整数型: r ← A[1]\n  整数型: i\n  for (i を 2 から A の要素数 まで 1 ずつ増やす)\n    if (A[i] > r)\n      r ← A[i]\n    endif\n  endfor\n  return r",
+   "choices": [
+    "2",
+    "40",
+    "10",
+    "22"
+   ],
+   "correctIndex": 1,
+   "explanation": "配列 {22, 9, 2, 40, 10} の最大値 = 40。",
+   "source": "生成問題(科目B / トレース)",
+   "relatedWordIds": []
+  },
+  {
+   "questionId": "gb_amax_2-27-24-13-5-1",
+   "genre": "アルゴリズム",
+   "text": "次の関数 f を実行したときの戻り値はどれか。",
+   "program": "○整数型: f()\n  整数型の配列: A ← {2, 27, 24, 13, 5, 1}\n  整数型: r ← A[1]\n  整数型: i\n  for (i を 2 から A の要素数 まで 1 ずつ増やす)\n    if (A[i] > r)\n      r ← A[i]\n    endif\n  endfor\n  return r",
+   "choices": [
+    "1",
+    "2",
+    "26",
+    "27"
+   ],
+   "correctIndex": 3,
+   "explanation": "配列 {2, 27, 24, 13, 5, 1} の最大値 = 27。",
+   "source": "生成問題(科目B / トレース)",
+   "relatedWordIds": []
+  },
+  {
+   "questionId": "gb_amax_35-26-29-2-34-27",
+   "genre": "アルゴリズム",
+   "text": "次の関数 f を実行したときの戻り値はどれか。",
+   "program": "○整数型: f()\n  整数型の配列: A ← {35, 26, 29, 2, 34, 27}\n  整数型: r ← A[1]\n  整数型: i\n  for (i を 2 から A の要素数 まで 1 ずつ増やす)\n    if (A[i] > r)\n      r ← A[i]\n    endif\n  endfor\n  return r",
+   "choices": [
+    "27",
+    "35",
+    "2",
+    "34"
+   ],
+   "correctIndex": 1,
+   "explanation": "配列 {35, 26, 29, 2, 34, 27} の最大値 = 35。",
+   "source": "生成問題(科目B / トレース)",
+   "relatedWordIds": []
+  },
+  {
+   "questionId": "gb_amax_8-12-9-40-1-29",
+   "genre": "アルゴリズム",
+   "text": "次の関数 f を実行したときの戻り値はどれか。",
+   "program": "○整数型: f()\n  整数型の配列: A ← {8, 12, 9, 40, 1, 29}\n  整数型: r ← A[1]\n  整数型: i\n  for (i を 2 から A の要素数 まで 1 ずつ増やす)\n    if (A[i] > r)\n      r ← A[i]\n    endif\n  endfor\n  return r",
+   "choices": [
+    "29",
+    "40",
+    "1",
+    "8"
+   ],
+   "correctIndex": 1,
+   "explanation": "配列 {8, 12, 9, 40, 1, 29} の最大値 = 40。",
+   "source": "生成問題(科目B / トレース)",
+   "relatedWordIds": []
+  },
+  {
+   "questionId": "gb_amax_26-22-30-21-32-5",
+   "genre": "アルゴリズム",
+   "text": "次の関数 f を実行したときの戻り値はどれか。",
+   "program": "○整数型: f()\n  整数型の配列: A ← {26, 22, 30, 21, 32, 5}\n  整数型: r ← A[1]\n  整数型: i\n  for (i を 2 から A の要素数 まで 1 ずつ増やす)\n    if (A[i] > r)\n      r ← A[i]\n    endif\n  endfor\n  return r",
+   "choices": [
+    "5",
+    "31",
+    "26",
+    "32"
+   ],
+   "correctIndex": 3,
+   "explanation": "配列 {26, 22, 30, 21, 32, 5} の最大値 = 32。",
+   "source": "生成問題(科目B / トレース)",
+   "relatedWordIds": []
+  },
+  {
+   "questionId": "gb_amax_11-4-36-30-35-21",
+   "genre": "アルゴリズム",
+   "text": "次の関数 f を実行したときの戻り値はどれか。",
+   "program": "○整数型: f()\n  整数型の配列: A ← {11, 4, 36, 30, 35, 21}\n  整数型: r ← A[1]\n  整数型: i\n  for (i を 2 から A の要素数 まで 1 ずつ増やす)\n    if (A[i] > r)\n      r ← A[i]\n    endif\n  endfor\n  return r",
+   "choices": [
+    "11",
+    "4",
+    "36",
+    "21"
+   ],
+   "correctIndex": 2,
+   "explanation": "配列 {11, 4, 36, 30, 35, 21} の最大値 = 36。",
+   "source": "生成問題(科目B / トレース)",
+   "relatedWordIds": []
+  },
+  {
+   "questionId": "gb_amax_8-1-37-24-22",
+   "genre": "アルゴリズム",
+   "text": "次の関数 f を実行したときの戻り値はどれか。",
+   "program": "○整数型: f()\n  整数型の配列: A ← {8, 1, 37, 24, 22}\n  整数型: r ← A[1]\n  整数型: i\n  for (i を 2 から A の要素数 まで 1 ずつ増やす)\n    if (A[i] > r)\n      r ← A[i]\n    endif\n  endfor\n  return r",
+   "choices": [
+    "8",
+    "37",
+    "1",
+    "22"
+   ],
+   "correctIndex": 1,
+   "explanation": "配列 {8, 1, 37, 24, 22} の最大値 = 37。",
+   "source": "生成問題(科目B / トレース)",
+   "relatedWordIds": []
+  },
+  {
+   "questionId": "gb_amax_3-5-5-4",
+   "genre": "アルゴリズム",
+   "text": "次の関数 f を実行したときの戻り値はどれか。",
+   "program": "○整数型: f()\n  整数型の配列: A ← {3, 5, 5, 4}\n  整数型: r ← A[1]\n  整数型: i\n  for (i を 2 から A の要素数 まで 1 ずつ増やす)\n    if (A[i] > r)\n      r ← A[i]\n    endif\n  endfor\n  return r",
+   "choices": [
+    "5",
+    "3",
+    "4",
+    "6"
+   ],
+   "correctIndex": 0,
+   "explanation": "配列 {3, 5, 5, 4} の最大値 = 5。",
+   "source": "生成問題(科目B / トレース)",
+   "relatedWordIds": []
+  },
+  {
+   "questionId": "gb_amax_31-11-27-21-2",
+   "genre": "アルゴリズム",
+   "text": "次の関数 f を実行したときの戻り値はどれか。",
+   "program": "○整数型: f()\n  整数型の配列: A ← {31, 11, 27, 21, 2}\n  整数型: r ← A[1]\n  整数型: i\n  for (i を 2 から A の要素数 まで 1 ずつ増やす)\n    if (A[i] > r)\n      r ← A[i]\n    endif\n  endfor\n  return r",
+   "choices": [
+    "30",
+    "31",
+    "32",
+    "2"
+   ],
+   "correctIndex": 1,
+   "explanation": "配列 {31, 11, 27, 21, 2} の最大値 = 31。",
+   "source": "生成問題(科目B / トレース)",
+   "relatedWordIds": []
+  },
+  {
+   "questionId": "gb_amax_28-8-16-29-1",
+   "genre": "アルゴリズム",
+   "text": "次の関数 f を実行したときの戻り値はどれか。",
+   "program": "○整数型: f()\n  整数型の配列: A ← {28, 8, 16, 29, 1}\n  整数型: r ← A[1]\n  整数型: i\n  for (i を 2 から A の要素数 まで 1 ずつ増やす)\n    if (A[i] > r)\n      r ← A[i]\n    endif\n  endfor\n  return r",
+   "choices": [
+    "29",
+    "28",
+    "1",
+    "30"
+   ],
+   "correctIndex": 0,
+   "explanation": "配列 {28, 8, 16, 29, 1} の最大値 = 29。",
+   "source": "生成問題(科目B / トレース)",
+   "relatedWordIds": []
+  },
+  {
+   "questionId": "gb_amax_25-10-32-34-35",
+   "genre": "アルゴリズム",
+   "text": "次の関数 f を実行したときの戻り値はどれか。",
+   "program": "○整数型: f()\n  整数型の配列: A ← {25, 10, 32, 34, 35}\n  整数型: r ← A[1]\n  整数型: i\n  for (i を 2 から A の要素数 まで 1 ずつ増やす)\n    if (A[i] > r)\n      r ← A[i]\n    endif\n  endfor\n  return r",
+   "choices": [
+    "10",
+    "34",
+    "25",
+    "35"
+   ],
+   "correctIndex": 3,
+   "explanation": "配列 {25, 10, 32, 34, 35} の最大値 = 35。",
+   "source": "生成問題(科目B / トレース)",
+   "relatedWordIds": []
+  },
+  {
+   "questionId": "gb_amax_21-27-8-22",
+   "genre": "アルゴリズム",
+   "text": "次の関数 f を実行したときの戻り値はどれか。",
+   "program": "○整数型: f()\n  整数型の配列: A ← {21, 27, 8, 22}\n  整数型: r ← A[1]\n  整数型: i\n  for (i を 2 から A の要素数 まで 1 ずつ増やす)\n    if (A[i] > r)\n      r ← A[i]\n    endif\n  endfor\n  return r",
+   "choices": [
+    "21",
+    "27",
+    "8",
+    "22"
+   ],
+   "correctIndex": 1,
+   "explanation": "配列 {21, 27, 8, 22} の最大値 = 27。",
+   "source": "生成問題(科目B / トレース)",
+   "relatedWordIds": []
+  },
+  {
+   "questionId": "gb_amax_33-6-5-2-13",
+   "genre": "アルゴリズム",
+   "text": "次の関数 f を実行したときの戻り値はどれか。",
+   "program": "○整数型: f()\n  整数型の配列: A ← {33, 6, 5, 2, 13}\n  整数型: r ← A[1]\n  整数型: i\n  for (i を 2 から A の要素数 まで 1 ずつ増やす)\n    if (A[i] > r)\n      r ← A[i]\n    endif\n  endfor\n  return r",
+   "choices": [
+    "32",
+    "13",
+    "2",
+    "33"
+   ],
+   "correctIndex": 3,
+   "explanation": "配列 {33, 6, 5, 2, 13} の最大値 = 33。",
+   "source": "生成問題(科目B / トレース)",
+   "relatedWordIds": []
+  },
+  {
+   "questionId": "gb_amax_7-14-30-3-36-31",
+   "genre": "アルゴリズム",
+   "text": "次の関数 f を実行したときの戻り値はどれか。",
+   "program": "○整数型: f()\n  整数型の配列: A ← {7, 14, 30, 3, 36, 31}\n  整数型: r ← A[1]\n  整数型: i\n  for (i を 2 から A の要素数 まで 1 ずつ増やす)\n    if (A[i] > r)\n      r ← A[i]\n    endif\n  endfor\n  return r",
+   "choices": [
+    "3",
+    "7",
+    "31",
+    "36"
+   ],
+   "correctIndex": 3,
+   "explanation": "配列 {7, 14, 30, 3, 36, 31} の最大値 = 36。",
+   "source": "生成問題(科目B / トレース)",
+   "relatedWordIds": []
+  },
+  {
+   "questionId": "gb_halve_50",
+   "genre": "アルゴリズム",
+   "text": "次の関数 f を実行したときの戻り値はどれか。",
+   "program": "○整数型: f()\n  整数型: x ← 50\n  整数型: count ← 0\n  while (x > 1)\n    x ← x ÷ 2 の商\n    count ← count + 1\n  endwhile\n  return count",
+   "choices": [
+    "4",
+    "5",
+    "6",
+    "25"
+   ],
+   "correctIndex": 1,
+   "explanation": "x=50 を 1 になるまで整数除算で半分にする回数を数える。答えは 5。",
+   "source": "生成問題(科目B / トレース)",
+   "relatedWordIds": []
+  },
+  {
+   "questionId": "gb_halve_16",
+   "genre": "アルゴリズム",
+   "text": "次の関数 f を実行したときの戻り値はどれか。",
+   "program": "○整数型: f()\n  整数型: x ← 16\n  整数型: count ← 0\n  while (x > 1)\n    x ← x ÷ 2 の商\n    count ← count + 1\n  endwhile\n  return count",
+   "choices": [
+    "3",
+    "4",
+    "8",
+    "5"
+   ],
+   "correctIndex": 1,
+   "explanation": "x=16 を 1 になるまで整数除算で半分にする回数を数える。答えは 4。",
+   "source": "生成問題(科目B / トレース)",
+   "relatedWordIds": []
+  },
+  {
+   "questionId": "gb_halve_10",
+   "genre": "アルゴリズム",
+   "text": "次の関数 f を実行したときの戻り値はどれか。",
+   "program": "○整数型: f()\n  整数型: x ← 10\n  整数型: count ← 0\n  while (x > 1)\n    x ← x ÷ 2 の商\n    count ← count + 1\n  endwhile\n  return count",
+   "choices": [
+    "4",
+    "5",
+    "3",
+    "2"
+   ],
+   "correctIndex": 2,
+   "explanation": "x=10 を 1 になるまで整数除算で半分にする回数を数える。答えは 3。",
+   "source": "生成問題(科目B / トレース)",
+   "relatedWordIds": []
+  },
+  {
+   "questionId": "gb_halve_8",
+   "genre": "アルゴリズム",
+   "text": "次の関数 f を実行したときの戻り値はどれか。",
+   "program": "○整数型: f()\n  整数型: x ← 8\n  整数型: count ← 0\n  while (x > 1)\n    x ← x ÷ 2 の商\n    count ← count + 1\n  endwhile\n  return count",
+   "choices": [
+    "4",
+    "5",
+    "3",
+    "2"
+   ],
+   "correctIndex": 2,
+   "explanation": "x=8 を 1 になるまで整数除算で半分にする回数を数える。答えは 3。",
+   "source": "生成問題(科目B / トレース)",
+   "relatedWordIds": []
+  },
+  {
+   "questionId": "gb_halve_20",
+   "genre": "アルゴリズム",
+   "text": "次の関数 f を実行したときの戻り値はどれか。",
+   "program": "○整数型: f()\n  整数型: x ← 20\n  整数型: count ← 0\n  while (x > 1)\n    x ← x ÷ 2 の商\n    count ← count + 1\n  endwhile\n  return count",
+   "choices": [
+    "10",
+    "4",
+    "3",
+    "5"
+   ],
+   "correctIndex": 1,
+   "explanation": "x=20 を 1 になるまで整数除算で半分にする回数を数える。答えは 4。",
+   "source": "生成問題(科目B / トレース)",
+   "relatedWordIds": []
+  },
+  {
+   "questionId": "gb_halve_64",
+   "genre": "アルゴリズム",
+   "text": "次の関数 f を実行したときの戻り値はどれか。",
+   "program": "○整数型: f()\n  整数型: x ← 64\n  整数型: count ← 0\n  while (x > 1)\n    x ← x ÷ 2 の商\n    count ← count + 1\n  endwhile\n  return count",
+   "choices": [
+    "5",
+    "6",
+    "32",
+    "7"
+   ],
+   "correctIndex": 1,
+   "explanation": "x=64 を 1 になるまで整数除算で半分にする回数を数える。答えは 6。",
+   "source": "生成問題(科目B / トレース)",
+   "relatedWordIds": []
+  },
+  {
+   "questionId": "gb_halve_100",
+   "genre": "アルゴリズム",
+   "text": "次の関数 f を実行したときの戻り値はどれか。",
+   "program": "○整数型: f()\n  整数型: x ← 100\n  整数型: count ← 0\n  while (x > 1)\n    x ← x ÷ 2 の商\n    count ← count + 1\n  endwhile\n  return count",
+   "choices": [
+    "7",
+    "5",
+    "50",
+    "6"
+   ],
+   "correctIndex": 3,
+   "explanation": "x=100 を 1 になるまで整数除算で半分にする回数を数える。答えは 6。",
+   "source": "生成問題(科目B / トレース)",
+   "relatedWordIds": []
+  },
+  {
+   "questionId": "gb_halve_32",
+   "genre": "アルゴリズム",
+   "text": "次の関数 f を実行したときの戻り値はどれか。",
+   "program": "○整数型: f()\n  整数型: x ← 32\n  整数型: count ← 0\n  while (x > 1)\n    x ← x ÷ 2 の商\n    count ← count + 1\n  endwhile\n  return count",
+   "choices": [
+    "4",
+    "5",
+    "6",
+    "16"
+   ],
+   "correctIndex": 1,
+   "explanation": "x=32 を 1 になるまで整数除算で半分にする回数を数える。答えは 5。",
+   "source": "生成問題(科目B / トレース)",
+   "relatedWordIds": []
+  },
+  {
+   "questionId": "gb_pow_2_3",
+   "genre": "アルゴリズム",
+   "text": "次の関数 f を実行したときの戻り値はどれか。",
+   "program": "○整数型: f()\n  整数型: r ← 1\n  整数型: i\n  for (i を 1 から 3 まで 1 ずつ増やす)\n    r ← r × 2\n  endfor\n  return r",
+   "choices": [
+    "8",
+    "16",
+    "4",
+    "6"
+   ],
+   "correctIndex": 0,
+   "explanation": "r に 2 を 3 回掛ける = 2 の 3 乗 = 8。",
+   "source": "生成問題(科目B / トレース)",
+   "relatedWordIds": []
+  },
+  {
+   "questionId": "gb_pow_3_4",
+   "genre": "アルゴリズム",
+   "text": "次の関数 f を実行したときの戻り値はどれか。",
+   "program": "○整数型: f()\n  整数型: r ← 1\n  整数型: i\n  for (i を 1 から 4 まで 1 ずつ増やす)\n    r ← r × 3\n  endfor\n  return r",
+   "choices": [
+    "81",
+    "243",
+    "27",
+    "12"
+   ],
+   "correctIndex": 0,
+   "explanation": "r に 3 を 4 回掛ける = 3 の 4 乗 = 81。",
+   "source": "生成問題(科目B / トレース)",
+   "relatedWordIds": []
+  },
+  {
+   "questionId": "gb_pow_5_2",
+   "genre": "アルゴリズム",
+   "text": "次の関数 f を実行したときの戻り値はどれか。",
+   "program": "○整数型: f()\n  整数型: r ← 1\n  整数型: i\n  for (i を 1 から 2 まで 1 ずつ増やす)\n    r ← r × 5\n  endfor\n  return r",
+   "choices": [
+    "25",
+    "5",
+    "125",
+    "10"
+   ],
+   "correctIndex": 0,
+   "explanation": "r に 5 を 2 回掛ける = 5 の 2 乗 = 25。",
+   "source": "生成問題(科目B / トレース)",
+   "relatedWordIds": []
+  },
+  {
+   "questionId": "gb_pow_3_3",
+   "genre": "アルゴリズム",
+   "text": "次の関数 f を実行したときの戻り値はどれか。",
+   "program": "○整数型: f()\n  整数型: r ← 1\n  整数型: i\n  for (i を 1 から 3 まで 1 ずつ増やす)\n    r ← r × 3\n  endfor\n  return r",
+   "choices": [
+    "81",
+    "6",
+    "9",
+    "27"
+   ],
+   "correctIndex": 3,
+   "explanation": "r に 3 を 3 回掛ける = 3 の 3 乗 = 27。",
+   "source": "生成問題(科目B / トレース)",
+   "relatedWordIds": []
+  },
+  {
+   "questionId": "gb_pow_3_5",
+   "genre": "アルゴリズム",
+   "text": "次の関数 f を実行したときの戻り値はどれか。",
+   "program": "○整数型: f()\n  整数型: r ← 1\n  整数型: i\n  for (i を 1 から 5 まで 1 ずつ増やす)\n    r ← r × 3\n  endfor\n  return r",
+   "choices": [
+    "243",
+    "15",
+    "81",
+    "729"
+   ],
+   "correctIndex": 0,
+   "explanation": "r に 3 を 5 回掛ける = 3 の 5 乗 = 243。",
+   "source": "生成問題(科目B / トレース)",
+   "relatedWordIds": []
+  },
+  {
+   "questionId": "gb_pow_5_4",
+   "genre": "アルゴリズム",
+   "text": "次の関数 f を実行したときの戻り値はどれか。",
+   "program": "○整数型: f()\n  整数型: r ← 1\n  整数型: i\n  for (i を 1 から 4 まで 1 ずつ増やす)\n    r ← r × 5\n  endfor\n  return r",
+   "choices": [
+    "625",
+    "3125",
+    "125",
+    "20"
+   ],
+   "correctIndex": 0,
+   "explanation": "r に 5 を 4 回掛ける = 5 の 4 乗 = 625。",
+   "source": "生成問題(科目B / トレース)",
+   "relatedWordIds": []
+  },
+  {
+   "questionId": "gb_pow_2_4",
+   "genre": "アルゴリズム",
+   "text": "次の関数 f を実行したときの戻り値はどれか。",
+   "program": "○整数型: f()\n  整数型: r ← 1\n  整数型: i\n  for (i を 1 から 4 まで 1 ずつ増やす)\n    r ← r × 2\n  endfor\n  return r",
+   "choices": [
+    "16",
+    "32",
+    "8",
+    "6"
+   ],
+   "correctIndex": 0,
+   "explanation": "r に 2 を 4 回掛ける = 2 の 4 乗 = 16。",
+   "source": "生成問題(科目B / トレース)",
+   "relatedWordIds": []
+  },
+  {
+   "questionId": "gb_pow_3_2",
+   "genre": "アルゴリズム",
+   "text": "次の関数 f を実行したときの戻り値はどれか。",
+   "program": "○整数型: f()\n  整数型: r ← 1\n  整数型: i\n  for (i を 1 から 2 まで 1 ずつ増やす)\n    r ← r × 3\n  endfor\n  return r",
+   "choices": [
+    "6",
+    "27",
+    "3",
+    "9"
+   ],
+   "correctIndex": 3,
+   "explanation": "r に 3 を 2 回掛ける = 3 の 2 乗 = 9。",
+   "source": "生成問題(科目B / トレース)",
+   "relatedWordIds": []
+  },
+  {
+   "questionId": "gb_pow_5_5",
+   "genre": "アルゴリズム",
+   "text": "次の関数 f を実行したときの戻り値はどれか。",
+   "program": "○整数型: f()\n  整数型: r ← 1\n  整数型: i\n  for (i を 1 から 5 まで 1 ずつ増やす)\n    r ← r × 5\n  endfor\n  return r",
+   "choices": [
+    "3125",
+    "25",
+    "15625",
+    "625"
+   ],
+   "correctIndex": 0,
+   "explanation": "r に 5 を 5 回掛ける = 5 の 5 乗 = 3125。",
+   "source": "生成問題(科目B / トレース)",
+   "relatedWordIds": []
+  },
+  {
+   "questionId": "gb_pow_2_5",
+   "genre": "アルゴリズム",
+   "text": "次の関数 f を実行したときの戻り値はどれか。",
+   "program": "○整数型: f()\n  整数型: r ← 1\n  整数型: i\n  for (i を 1 から 5 まで 1 ずつ増やす)\n    r ← r × 2\n  endfor\n  return r",
+   "choices": [
+    "10",
+    "64",
+    "32",
+    "16"
+   ],
+   "correctIndex": 2,
+   "explanation": "r に 2 を 5 回掛ける = 2 の 5 乗 = 32。",
+   "source": "生成問題(科目B / トレース)",
+   "relatedWordIds": []
+  },
+  {
+   "questionId": "gb_pow_5_3",
+   "genre": "アルゴリズム",
+   "text": "次の関数 f を実行したときの戻り値はどれか。",
+   "program": "○整数型: f()\n  整数型: r ← 1\n  整数型: i\n  for (i を 1 から 3 まで 1 ずつ増やす)\n    r ← r × 5\n  endfor\n  return r",
+   "choices": [
+    "15",
+    "25",
+    "625",
+    "125"
+   ],
+   "correctIndex": 3,
+   "explanation": "r に 5 を 3 回掛ける = 5 の 3 乗 = 125。",
+   "source": "生成問題(科目B / トレース)",
+   "relatedWordIds": []
+  },
+  {
+   "questionId": "gb_pow_2_2",
+   "genre": "アルゴリズム",
+   "text": "次の関数 f を実行したときの戻り値はどれか。",
+   "program": "○整数型: f()\n  整数型: r ← 1\n  整数型: i\n  for (i を 1 から 2 まで 1 ずつ増やす)\n    r ← r × 2\n  endfor\n  return r",
+   "choices": [
+    "5",
+    "8",
+    "4",
+    "2"
+   ],
+   "correctIndex": 2,
+   "explanation": "r に 2 を 2 回掛ける = 2 の 2 乗 = 4。",
+   "source": "生成問題(科目B / トレース)",
+   "relatedWordIds": []
+  },
+  {
+   "questionId": "gb_gcd_48_56",
+   "genre": "アルゴリズム",
+   "text": "次の関数 f を実行したときの戻り値はどれか。",
+   "program": "○整数型: f()\n  整数型: a ← 48\n  整数型: b ← 56\n  while (b ≠ 0)\n    整数型: t ← a mod b\n    a ← b\n    b ← t\n  endwhile\n  return a",
+   "choices": [
+    "8",
+    "48",
+    "16",
+    "9"
+   ],
+   "correctIndex": 0,
+   "explanation": "ユークリッドの互除法で 48 と 56 の最大公約数を求める = 8。",
+   "source": "生成問題(科目B / トレース)",
+   "relatedWordIds": []
+  },
+  {
+   "questionId": "gb_gcd_12_42",
+   "genre": "アルゴリズム",
+   "text": "次の関数 f を実行したときの戻り値はどれか。",
+   "program": "○整数型: f()\n  整数型: a ← 12\n  整数型: b ← 42\n  while (b ≠ 0)\n    整数型: t ← a mod b\n    a ← b\n    b ← t\n  endwhile\n  return a",
+   "choices": [
+    "30",
+    "6",
+    "12",
+    "7"
+   ],
+   "correctIndex": 1,
+   "explanation": "ユークリッドの互除法で 12 と 42 の最大公約数を求める = 6。",
+   "source": "生成問題(科目B / トレース)",
+   "relatedWordIds": []
+  },
+  {
+   "questionId": "gb_gcd_18_45",
+   "genre": "アルゴリズム",
+   "text": "次の関数 f を実行したときの戻り値はどれか。",
+   "program": "○整数型: f()\n  整数型: a ← 18\n  整数型: b ← 45\n  while (b ≠ 0)\n    整数型: t ← a mod b\n    a ← b\n    b ← t\n  endwhile\n  return a",
+   "choices": [
+    "18",
+    "27",
+    "10",
+    "9"
+   ],
+   "correctIndex": 3,
+   "explanation": "ユークリッドの互除法で 18 と 45 の最大公約数を求める = 9。",
+   "source": "生成問題(科目B / トレース)",
+   "relatedWordIds": []
+  },
+  {
+   "questionId": "gb_gcd_18_16",
+   "genre": "アルゴリズム",
+   "text": "次の関数 f を実行したときの戻り値はどれか。",
+   "program": "○整数型: f()\n  整数型: a ← 18\n  整数型: b ← 16\n  while (b ≠ 0)\n    整数型: t ← a mod b\n    a ← b\n    b ← t\n  endwhile\n  return a",
+   "choices": [
+    "3",
+    "16",
+    "4",
+    "2"
+   ],
+   "correctIndex": 3,
+   "explanation": "ユークリッドの互除法で 18 と 16 の最大公約数を求める = 2。",
+   "source": "生成問題(科目B / トレース)",
+   "relatedWordIds": []
+  },
+  {
+   "questionId": "gb_gcd_36_45",
+   "genre": "アルゴリズム",
+   "text": "次の関数 f を実行したときの戻り値はどれか。",
+   "program": "○整数型: f()\n  整数型: a ← 36\n  整数型: b ← 45\n  while (b ≠ 0)\n    整数型: t ← a mod b\n    a ← b\n    b ← t\n  endwhile\n  return a",
+   "choices": [
+    "10",
+    "18",
+    "36",
+    "9"
+   ],
+   "correctIndex": 3,
+   "explanation": "ユークリッドの互除法で 36 と 45 の最大公約数を求める = 9。",
+   "source": "生成問題(科目B / トレース)",
+   "relatedWordIds": []
+  },
+  {
+   "questionId": "gb_gcd_60_56",
+   "genre": "アルゴリズム",
+   "text": "次の関数 f を実行したときの戻り値はどれか。",
+   "program": "○整数型: f()\n  整数型: a ← 60\n  整数型: b ← 56\n  while (b ≠ 0)\n    整数型: t ← a mod b\n    a ← b\n    b ← t\n  endwhile\n  return a",
+   "choices": [
+    "5",
+    "4",
+    "8",
+    "56"
+   ],
+   "correctIndex": 1,
+   "explanation": "ユークリッドの互除法で 60 と 56 の最大公約数を求める = 4。",
+   "source": "生成問題(科目B / トレース)",
+   "relatedWordIds": []
+  },
+  {
+   "questionId": "gb_gcd_84_28",
+   "genre": "アルゴリズム",
+   "text": "次の関数 f を実行したときの戻り値はどれか。",
+   "program": "○整数型: f()\n  整数型: a ← 84\n  整数型: b ← 28\n  while (b ≠ 0)\n    整数型: t ← a mod b\n    a ← b\n    b ← t\n  endwhile\n  return a",
+   "choices": [
+    "28",
+    "56",
+    "27",
+    "29"
+   ],
+   "correctIndex": 0,
+   "explanation": "ユークリッドの互除法で 84 と 28 の最大公約数を求める = 28。",
+   "source": "生成問題(科目B / トレース)",
+   "relatedWordIds": []
+  },
+  {
+   "questionId": "gb_gcd_24_28",
+   "genre": "アルゴリズム",
+   "text": "次の関数 f を実行したときの戻り値はどれか。",
+   "program": "○整数型: f()\n  整数型: a ← 24\n  整数型: b ← 28\n  while (b ≠ 0)\n    整数型: t ← a mod b\n    a ← b\n    b ← t\n  endwhile\n  return a",
+   "choices": [
+    "5",
+    "24",
+    "8",
+    "4"
+   ],
+   "correctIndex": 3,
+   "explanation": "ユークリッドの互除法で 24 と 28 の最大公約数を求める = 4。",
+   "source": "生成問題(科目B / トレース)",
+   "relatedWordIds": []
+  },
+  {
+   "questionId": "gb_gcd_84_15",
+   "genre": "アルゴリズム",
+   "text": "次の関数 f を実行したときの戻り値はどれか。",
+   "program": "○整数型: f()\n  整数型: a ← 84\n  整数型: b ← 15\n  while (b ≠ 0)\n    整数型: t ← a mod b\n    a ← b\n    b ← t\n  endwhile\n  return a",
+   "choices": [
+    "4",
+    "15",
+    "3",
+    "6"
+   ],
+   "correctIndex": 2,
+   "explanation": "ユークリッドの互除法で 84 と 15 の最大公約数を求める = 3。",
+   "source": "生成問題(科目B / トレース)",
+   "relatedWordIds": []
+  },
+  {
+   "questionId": "gb_gcd_100_28",
+   "genre": "アルゴリズム",
+   "text": "次の関数 f を実行したときの戻り値はどれか。",
+   "program": "○整数型: f()\n  整数型: a ← 100\n  整数型: b ← 28\n  while (b ≠ 0)\n    整数型: t ← a mod b\n    a ← b\n    b ← t\n  endwhile\n  return a",
+   "choices": [
+    "28",
+    "8",
+    "5",
+    "4"
+   ],
+   "correctIndex": 3,
+   "explanation": "ユークリッドの互除法で 100 と 28 の最大公約数を求める = 4。",
+   "source": "生成問題(科目B / トレース)",
+   "relatedWordIds": []
+  },
+  {
+   "questionId": "gb_gcd_100_8",
+   "genre": "アルゴリズム",
+   "text": "次の関数 f を実行したときの戻り値はどれか。",
+   "program": "○整数型: f()\n  整数型: a ← 100\n  整数型: b ← 8\n  while (b ≠ 0)\n    整数型: t ← a mod b\n    a ← b\n    b ← t\n  endwhile\n  return a",
+   "choices": [
+    "5",
+    "4",
+    "92",
+    "8"
+   ],
+   "correctIndex": 1,
+   "explanation": "ユークリッドの互除法で 100 と 8 の最大公約数を求める = 4。",
+   "source": "生成問題(科目B / トレース)",
+   "relatedWordIds": []
+  },
+  {
+   "questionId": "gb_gcd_100_20",
+   "genre": "アルゴリズム",
+   "text": "次の関数 f を実行したときの戻り値はどれか。",
+   "program": "○整数型: f()\n  整数型: a ← 100\n  整数型: b ← 20\n  while (b ≠ 0)\n    整数型: t ← a mod b\n    a ← b\n    b ← t\n  endwhile\n  return a",
+   "choices": [
+    "21",
+    "20",
+    "80",
+    "40"
+   ],
+   "correctIndex": 1,
+   "explanation": "ユークリッドの互除法で 100 と 20 の最大公約数を求める = 20。",
+   "source": "生成問題(科目B / トレース)",
+   "relatedWordIds": []
+  },
+  {
+   "questionId": "gb_gcd_48_42",
+   "genre": "アルゴリズム",
+   "text": "次の関数 f を実行したときの戻り値はどれか。",
+   "program": "○整数型: f()\n  整数型: a ← 48\n  整数型: b ← 42\n  while (b ≠ 0)\n    整数型: t ← a mod b\n    a ← b\n    b ← t\n  endwhile\n  return a",
+   "choices": [
+    "12",
+    "42",
+    "6",
+    "7"
+   ],
+   "correctIndex": 2,
+   "explanation": "ユークリッドの互除法で 48 と 42 の最大公約数を求める = 6。",
+   "source": "生成問題(科目B / トレース)",
+   "relatedWordIds": []
+  },
+  {
+   "questionId": "gb_gcd_24_8",
+   "genre": "アルゴリズム",
+   "text": "次の関数 f を実行したときの戻り値はどれか。",
+   "program": "○整数型: f()\n  整数型: a ← 24\n  整数型: b ← 8\n  while (b ≠ 0)\n    整数型: t ← a mod b\n    a ← b\n    b ← t\n  endwhile\n  return a",
+   "choices": [
+    "16",
+    "8",
+    "9",
+    "7"
+   ],
+   "correctIndex": 1,
+   "explanation": "ユークリッドの互除法で 24 と 8 の最大公約数を求める = 8。",
+   "source": "生成問題(科目B / トレース)",
+   "relatedWordIds": []
+  },
+  {
+   "questionId": "gb_cgt_8_15-2-10-7-4",
+   "genre": "アルゴリズム",
+   "text": "次の関数 f を実行したときの戻り値はどれか。",
+   "program": "○整数型: f()\n  整数型の配列: A ← {15, 2, 10, 7, 4}\n  整数型: count ← 0\n  整数型: i\n  for (i を 1 から A の要素数 まで 1 ずつ増やす)\n    if (A[i] > 8)\n      count ← count + 1\n    endif\n  endfor\n  return count",
+   "choices": [
+    "1",
+    "3",
+    "5",
+    "2"
+   ],
+   "correctIndex": 3,
+   "explanation": "配列 {15, 2, 10, 7, 4} で 8 より大きい要素の個数 = 2。",
+   "source": "生成問題(科目B / トレース)",
+   "relatedWordIds": []
+  },
+  {
+   "questionId": "gb_cgt_12_15-2-16-18-12-15",
+   "genre": "アルゴリズム",
+   "text": "次の関数 f を実行したときの戻り値はどれか。",
+   "program": "○整数型: f()\n  整数型の配列: A ← {15, 2, 16, 18, 12, 15}\n  整数型: count ← 0\n  整数型: i\n  for (i を 1 から A の要素数 まで 1 ずつ増やす)\n    if (A[i] > 12)\n      count ← count + 1\n    endif\n  endfor\n  return count",
+   "choices": [
+    "5",
+    "6",
+    "2",
+    "4"
+   ],
+   "correctIndex": 3,
+   "explanation": "配列 {15, 2, 16, 18, 12, 15} で 12 より大きい要素の個数 = 4。",
+   "source": "生成問題(科目B / トレース)",
+   "relatedWordIds": []
+  },
+  {
+   "questionId": "gb_cgt_10_1-8-14-2-17-3-11",
+   "genre": "アルゴリズム",
+   "text": "次の関数 f を実行したときの戻り値はどれか。",
+   "program": "○整数型: f()\n  整数型の配列: A ← {1, 8, 14, 2, 17, 3, 11}\n  整数型: count ← 0\n  整数型: i\n  for (i を 1 から A の要素数 まで 1 ずつ増やす)\n    if (A[i] > 10)\n      count ← count + 1\n    endif\n  endfor\n  return count",
+   "choices": [
+    "4",
+    "2",
+    "3",
+    "7"
+   ],
+   "correctIndex": 2,
+   "explanation": "配列 {1, 8, 14, 2, 17, 3, 11} で 10 より大きい要素の個数 = 3。",
+   "source": "生成問題(科目B / トレース)",
+   "relatedWordIds": []
+  },
+  {
+   "questionId": "gb_cgt_10_18-14-17-11-1",
+   "genre": "アルゴリズム",
+   "text": "次の関数 f を実行したときの戻り値はどれか。",
+   "program": "○整数型: f()\n  整数型の配列: A ← {18, 14, 17, 11, 1}\n  整数型: count ← 0\n  整数型: i\n  for (i を 1 から A の要素数 まで 1 ずつ増やす)\n    if (A[i] > 10)\n      count ← count + 1\n    endif\n  endfor\n  return count",
+   "choices": [
+    "1",
+    "4",
+    "3",
+    "5"
+   ],
+   "correctIndex": 1,
+   "explanation": "配列 {18, 14, 17, 11, 1} で 10 より大きい要素の個数 = 4。",
+   "source": "生成問題(科目B / トレース)",
+   "relatedWordIds": []
+  },
+  {
+   "questionId": "gb_cgt_5_12-9-16-15-2",
+   "genre": "アルゴリズム",
+   "text": "次の関数 f を実行したときの戻り値はどれか。",
+   "program": "○整数型: f()\n  整数型の配列: A ← {12, 9, 16, 15, 2}\n  整数型: count ← 0\n  整数型: i\n  for (i を 1 から A の要素数 まで 1 ずつ増やす)\n    if (A[i] > 5)\n      count ← count + 1\n    endif\n  endfor\n  return count",
+   "choices": [
+    "5",
+    "4",
+    "3",
+    "1"
+   ],
+   "correctIndex": 1,
+   "explanation": "配列 {12, 9, 16, 15, 2} で 5 より大きい要素の個数 = 4。",
+   "source": "生成問題(科目B / トレース)",
+   "relatedWordIds": []
+  },
+  {
+   "questionId": "gb_cgt_10_12-9-10-12-13-15",
+   "genre": "アルゴリズム",
+   "text": "次の関数 f を実行したときの戻り値はどれか。",
+   "program": "○整数型: f()\n  整数型の配列: A ← {12, 9, 10, 12, 13, 15}\n  整数型: count ← 0\n  整数型: i\n  for (i を 1 から A の要素数 まで 1 ずつ増やす)\n    if (A[i] > 10)\n      count ← count + 1\n    endif\n  endfor\n  return count",
+   "choices": [
+    "4",
+    "6",
+    "2",
+    "5"
+   ],
+   "correctIndex": 0,
+   "explanation": "配列 {12, 9, 10, 12, 13, 15} で 10 より大きい要素の個数 = 4。",
+   "source": "生成問題(科目B / トレース)",
+   "relatedWordIds": []
+  },
+  {
+   "questionId": "gb_cgt_8_14-8-9-2-7-4",
+   "genre": "アルゴリズム",
+   "text": "次の関数 f を実行したときの戻り値はどれか。",
+   "program": "○整数型: f()\n  整数型の配列: A ← {14, 8, 9, 2, 7, 4}\n  整数型: count ← 0\n  整数型: i\n  for (i を 1 から A の要素数 まで 1 ずつ増やす)\n    if (A[i] > 8)\n      count ← count + 1\n    endif\n  endfor\n  return count",
+   "choices": [
+    "6",
+    "4",
+    "2",
+    "3"
+   ],
+   "correctIndex": 2,
+   "explanation": "配列 {14, 8, 9, 2, 7, 4} で 8 より大きい要素の個数 = 2。",
+   "source": "生成問題(科目B / トレース)",
+   "relatedWordIds": []
+  },
+  {
+   "questionId": "gb_cgt_12_2-13-5-12-2",
+   "genre": "アルゴリズム",
+   "text": "次の関数 f を実行したときの戻り値はどれか。",
+   "program": "○整数型: f()\n  整数型の配列: A ← {2, 13, 5, 12, 2}\n  整数型: count ← 0\n  整数型: i\n  for (i を 1 から A の要素数 まで 1 ずつ増やす)\n    if (A[i] > 12)\n      count ← count + 1\n    endif\n  endfor\n  return count",
+   "choices": [
+    "5",
+    "2",
+    "4",
+    "1"
+   ],
+   "correctIndex": 3,
+   "explanation": "配列 {2, 13, 5, 12, 2} で 12 より大きい要素の個数 = 1。",
+   "source": "生成問題(科目B / トレース)",
+   "relatedWordIds": []
+  },
+  {
+   "questionId": "gb_cgt_5_5-16-17-20-13",
+   "genre": "アルゴリズム",
+   "text": "次の関数 f を実行したときの戻り値はどれか。",
+   "program": "○整数型: f()\n  整数型の配列: A ← {5, 16, 17, 20, 13}\n  整数型: count ← 0\n  整数型: i\n  for (i を 1 から A の要素数 まで 1 ずつ増やす)\n    if (A[i] > 5)\n      count ← count + 1\n    endif\n  endfor\n  return count",
+   "choices": [
+    "1",
+    "3",
+    "4",
+    "5"
+   ],
+   "correctIndex": 2,
+   "explanation": "配列 {5, 16, 17, 20, 13} で 5 より大きい要素の個数 = 4。",
+   "source": "生成問題(科目B / トレース)",
+   "relatedWordIds": []
+  },
+  {
+   "questionId": "gb_cgt_8_10-5-13-15-20",
+   "genre": "アルゴリズム",
+   "text": "次の関数 f を実行したときの戻り値はどれか。",
+   "program": "○整数型: f()\n  整数型の配列: A ← {10, 5, 13, 15, 20}\n  整数型: count ← 0\n  整数型: i\n  for (i を 1 から A の要素数 まで 1 ずつ増やす)\n    if (A[i] > 8)\n      count ← count + 1\n    endif\n  endfor\n  return count",
+   "choices": [
+    "4",
+    "5",
+    "1",
+    "3"
+   ],
+   "correctIndex": 0,
+   "explanation": "配列 {10, 5, 13, 15, 20} で 8 より大きい要素の個数 = 4。",
+   "source": "生成問題(科目B / トレース)",
+   "relatedWordIds": []
+  },
+  {
+   "questionId": "gb_cgt_8_11-20-10-10-8",
+   "genre": "アルゴリズム",
+   "text": "次の関数 f を実行したときの戻り値はどれか。",
+   "program": "○整数型: f()\n  整数型の配列: A ← {11, 20, 10, 10, 8}\n  整数型: count ← 0\n  整数型: i\n  for (i を 1 から A の要素数 まで 1 ずつ増やす)\n    if (A[i] > 8)\n      count ← count + 1\n    endif\n  endfor\n  return count",
+   "choices": [
+    "4",
+    "1",
+    "5",
+    "3"
+   ],
+   "correctIndex": 0,
+   "explanation": "配列 {11, 20, 10, 10, 8} で 8 より大きい要素の個数 = 4。",
+   "source": "生成問題(科目B / トレース)",
+   "relatedWordIds": []
+  },
+  {
+   "questionId": "gb_cgt_8_9-2-9-16-18",
+   "genre": "アルゴリズム",
+   "text": "次の関数 f を実行したときの戻り値はどれか。",
+   "program": "○整数型: f()\n  整数型の配列: A ← {9, 2, 9, 16, 18}\n  整数型: count ← 0\n  整数型: i\n  for (i を 1 から A の要素数 まで 1 ずつ増やす)\n    if (A[i] > 8)\n      count ← count + 1\n    endif\n  endfor\n  return count",
+   "choices": [
+    "4",
+    "5",
+    "1",
+    "3"
+   ],
+   "correctIndex": 0,
+   "explanation": "配列 {9, 2, 9, 16, 18} で 8 より大きい要素の個数 = 4。",
+   "source": "生成問題(科目B / トレース)",
+   "relatedWordIds": []
+  },
+  {
+   "questionId": "gb_cgt_12_2-14-3-4-10-7-11",
+   "genre": "アルゴリズム",
+   "text": "次の関数 f を実行したときの戻り値はどれか。",
+   "program": "○整数型: f()\n  整数型の配列: A ← {2, 14, 3, 4, 10, 7, 11}\n  整数型: count ← 0\n  整数型: i\n  for (i を 1 から A の要素数 まで 1 ずつ増やす)\n    if (A[i] > 12)\n      count ← count + 1\n    endif\n  endfor\n  return count",
+   "choices": [
+    "1",
+    "7",
+    "2",
+    "6"
+   ],
+   "correctIndex": 0,
+   "explanation": "配列 {2, 14, 3, 4, 10, 7, 11} で 12 より大きい要素の個数 = 1。",
+   "source": "生成問題(科目B / トレース)",
+   "relatedWordIds": []
+  },
+  {
+   "questionId": "gb_cgt_8_1-15-10-11-15-1",
+   "genre": "アルゴリズム",
+   "text": "次の関数 f を実行したときの戻り値はどれか。",
+   "program": "○整数型: f()\n  整数型の配列: A ← {1, 15, 10, 11, 15, 1}\n  整数型: count ← 0\n  整数型: i\n  for (i を 1 から A の要素数 まで 1 ずつ増やす)\n    if (A[i] > 8)\n      count ← count + 1\n    endif\n  endfor\n  return count",
+   "choices": [
+    "6",
+    "4",
+    "2",
+    "5"
+   ],
+   "correctIndex": 1,
+   "explanation": "配列 {1, 15, 10, 11, 15, 1} で 8 より大きい要素の個数 = 4。",
+   "source": "生成問題(科目B / トレース)",
+   "relatedWordIds": []
+  }
+ ]
+}
