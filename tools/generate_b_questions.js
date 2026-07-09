@@ -130,6 +130,7 @@ for (const [type, want] of Object.entries(TARGET)) {
     questions.push({
       questionId: `gb_${g.idKey}`,
       genre: 'アルゴリズム',
+      subcat: 'アルゴリズム',
       text: TEXT,
       program: g.program,
       choices: g.choices,

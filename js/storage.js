@@ -31,19 +31,15 @@ const Store = (() => {
     getWeak() { return read('weak', {}); },
     setWeak(w) { write('weak', w); },
 
-    // フラッシュカード進捗: { deckKey: { known:[ids], idx } }
-    getFlash() { return read('flash', {}); },
-    setFlash(f) { write('flash', f); },
-
-    // 設定: { apiKey, model }
-    getSettings() { return read('settings', { apiKey: '', model: 'claude-haiku-4-5-20251001' }); },
-    setSettings(s) { write('settings', s); },
+    // 覚えた単語: { wordId: true }。単語帳の一覧・出題から除外するフィルタに使う。
+    getKnown() { return read('known', {}); },
+    setKnown(k) { write('known', k); },
 
     resetAll() {
-      ['log', 'weak', 'flash'].forEach(k => localStorage.removeItem(ns(k)));
+      ['log', 'weak', 'known'].forEach(k => localStorage.removeItem(ns(k)));
     },
     exportAll() {
-      return { qualification: QUAL, log: read('log', []), weak: read('weak', {}), flash: read('flash', {}) };
+      return { qualification: QUAL, log: read('log', []), weak: read('weak', {}), known: read('known', {}) };
     },
     // 書き出したJSONを取り込んで、今の端末のデータへマージする(上書きではなく合算)。
     // 別のURL/ブラウザで学習していた履歴を引き継ぐための機能。
@@ -63,9 +59,9 @@ const Store = (() => {
       });
       write('weak', weak);
 
-      const flash = read('flash', {});
-      Object.entries(data.flash || {}).forEach(([k, v]) => { if (!flash[k]) flash[k] = v; });
-      write('flash', flash);
+      const known = read('known', {});
+      Object.assign(known, data.known || {});
+      write('known', known);
 
       return { logCount: log.length, weakCount: Object.keys(weak).length };
     }

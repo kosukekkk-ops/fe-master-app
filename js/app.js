@@ -5,6 +5,8 @@
   const CATS = ['テクノロジ', 'マネジメント', 'ストラテジ'];
   const CAT_CLASS = { 'テクノロジ': 'tech', 'マネジメント': 'mgmt', 'ストラテジ': 'strat' };
   const CAT_COLOR = { 'テクノロジ': 'var(--tech)', 'マネジメント': 'var(--mgmt)', 'ストラテジ': 'var(--strat)' };
+  // 分野別正答率レーダー用の細分化サブカテゴリ(9分野)
+  const SUBCATS = ['基礎理論', 'アルゴリズム', 'ハードウェア', 'データベース', 'ネットワーク', 'セキュリティ', '開発管理', '経営戦略', '会計法務'];
   const esc = (s) => String(s == null ? '' : s).replace(/[&<>"]/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c]));
   const today = () => new Date().toISOString().slice(0, 10);
   const shuffle = (a) => { const r = a.slice(); for (let i = r.length - 1; i > 0; i--) { const j = Math.floor(Math.random() * (i + 1)); [r[i], r[j]] = [r[j], r[i]]; } return r; };
@@ -22,16 +24,19 @@
   function stats() {
     const log = Store.getLog();
     const byCat = {}; CATS.forEach(c => byCat[c] = { ok: 0, n: 0 });
+    const bySubcat = {}; SUBCATS.forEach(c => bySubcat[c] = { ok: 0, n: 0 });
     const byDay = {};
     let ok = 0;
     log.forEach(e => {
       const q = Data.questionById(e.q); const cat = q ? q.category : null;
       if (cat && byCat[cat]) { byCat[cat].n++; if (e.correct) byCat[cat].ok++; }
+      const sub = Data.subcatOf(q);
+      if (sub && bySubcat[sub]) { bySubcat[sub].n++; if (e.correct) bySubcat[sub].ok++; }
       const day = (e.ts || '').slice(0, 10);
       if (day) { (byDay[day] = byDay[day] || { ok: 0, n: 0 }).n++; if (e.correct) byDay[day].ok++; }
       if (e.correct) ok++;
     });
-    return { total: log.length, ok, byCat, byDay };
+    return { total: log.length, ok, byCat, bySubcat, byDay };
   }
 
   /* ================= ホーム ================= */
@@ -238,7 +243,7 @@
       <div class="card">
         <h2>問題演習</h2>
         <div class="chips" id="quiz-subject">
-          <div class="chip ${qstate.subject === 'A' ? 'active' : ''}" data-subject="A">科目A(午前)</div>
+          <div class="chip ${qstate.subject === 'A' ? 'active' : ''}" data-subject="A">科目A</div>
           <div class="chip ${qstate.subject === 'B' ? 'active' : ''}" data-subject="B">科目B(アルゴリズム/セキュリティ)${bCount ? ` (${bCount})` : ''}</div>
         </div>
         <p class="muted" style="font-size:13px">${qstate.subject === 'A' ? '4択形式。間違えると重要単語が自動で苦手単語帳に貯まります。' : '擬似言語プログラムを読み解く形式(選択肢はア〜コ)。'}</p>
@@ -259,24 +264,28 @@
   }
 
   /* ================= 単語帳(フラッシュカード) ================= */
-  const flash = { deck: [], idx: 0, mode: 'weak', cat: '全分野', flipped: false };
+  const flash = { deck: [], idx: 0, mode: 'weak', cat: '全分野', flipped: false, shuffleOn: false, hideKnown: false };
 
   function buildDeck() {
+    const known = Store.getKnown();
+    let base;
     if (flash.mode === 'weak') {
       const weak = Store.getWeak();
-      flash.deck = Object.keys(weak)
+      base = Object.keys(weak)
         .map(id => ({ ...Data.wordById(id), _weak: weak[id] }))
-        .filter(w => w.wordId)
-        .sort((a, b) => (b._weak.wrongCount) - (a._weak.wrongCount));
+        .filter(w => w.wordId);
+      if (!flash.shuffleOn) base.sort((a, b) => (b._weak.wrongCount) - (a._weak.wrongCount));
     } else {
-      const base = flash.cat === '全分野' ? Data.words : Data.wordsByCategory(flash.cat);
-      flash.deck = shuffle(base);
+      base = (flash.cat === '全分野' ? Data.words : Data.wordsByCategory(flash.cat)).slice();
     }
+    if (flash.hideKnown) base = base.filter(w => !known[w.wordId]);
+    flash.deck = flash.shuffleOn ? shuffle(base) : base;
     flash.idx = 0; flash.flipped = false;
   }
 
   function renderFlashStart() {
     const weakCount = Object.keys(Store.getWeak()).length;
+    const knownCount = Object.keys(Store.getKnown()).length;
     const v = $('#view-flash');
     v.innerHTML = `
       <div class="card">
@@ -290,6 +299,10 @@
             ${['全分野', ...CATS].map(c => `<div class="chip ${flash.cat===c?'active':''}" data-cat="${esc(c)}">${esc(c)}</div>`).join('')}
           </div>
         </div>
+        <div class="chips" id="flash-opts">
+          <div class="chip ${flash.shuffleOn?'active':''}" data-opt="shuffle">🔀 シャッフル</div>
+          <div class="chip ${flash.hideKnown?'active':''}" data-opt="hideKnown">🙈 覚えた単語を隠す${knownCount ? `(${knownCount})` : ''}</div>
+        </div>
         <button class="btn" id="flash-start">📇 開始</button>
       </div>
       <div id="flash-area"></div>
@@ -301,9 +314,14 @@
       v.querySelectorAll('#flash-cats .chip').forEach(x => x.classList.remove('active'));
       ch.classList.add('active'); flash.cat = ch.dataset.cat;
     });
+    v.querySelectorAll('#flash-opts .chip').forEach(ch => ch.onclick = () => {
+      if (ch.dataset.opt === 'shuffle') flash.shuffleOn = !flash.shuffleOn;
+      else flash.hideKnown = !flash.hideKnown;
+      ch.classList.toggle('active');
+    });
     $('#flash-start').onclick = () => {
       buildDeck();
-      if (!flash.deck.length) { toast(flash.mode === 'weak' ? 'まだ苦手単語はありません' : '単語がありません'); return; }
+      if (!flash.deck.length) { toast(flash.mode === 'weak' ? 'まだ苦手単語はありません' : '該当する単語がありません'); return; }
       showCard();
     };
   }
@@ -320,6 +338,7 @@
     flash.flipped = false;
     const pct = Math.round((flash.idx / flash.deck.length) * 100);
     const wc = w._weak ? `<div class="wrongcount">間違えた回数: ${w._weak.wrongCount} 回</div>` : '';
+    const isKnown = !!Store.getKnown()[w.wordId];
     area.innerHTML = `
       <div class="q-progress"><span>${flash.idx + 1} / ${flash.deck.length}</span><span class="pill ${CAT_CLASS[w.category]}">${w.category}</span></div>
       <div class="progress-bar"><span style="width:${pct}%"></span></div>
@@ -335,60 +354,24 @@
           <div class="analogy">${esc(w.analogy || '')}</div>
           ${wc}
           <div class="word-cat"><span class="pill ${CAT_CLASS[w.category]}">${w.category}</span></div>
-          <div id="ai-slot" style="width:100%"></div>
         </div>
       </div></div>
+      <button class="btn ${isKnown ? '' : 'ghost'} small" id="fl-known" style="width:100%;margin-bottom:10px">${isKnown ? '✅ 覚えた(タップで解除)' : '☐ 覚えたにする'}</button>
       <div class="row">
         <button class="btn secondary small" id="fl-prev" style="flex:1" ${flash.idx===0?'disabled':''}>◀ 前へ</button>
         <button class="btn small" id="fl-next" style="flex:2">次へ ▶</button>
       </div>
     `;
     const card = $('#card');
-    card.onclick = (e) => { if (e.target.closest('#ai-slot')) return; card.classList.toggle('flipped'); flash.flipped = !flash.flipped; if (flash.flipped) renderAISlot(w); };
+    card.onclick = () => { card.classList.toggle('flipped'); flash.flipped = !flash.flipped; };
+    $('#fl-known').onclick = () => {
+      const known = Store.getKnown();
+      if (known[w.wordId]) delete known[w.wordId]; else known[w.wordId] = true;
+      Store.setKnown(known);
+      showCard();
+    };
     $('#fl-prev').onclick = () => { if (flash.idx > 0) { flash.idx--; showCard(); } };
     $('#fl-next').onclick = () => { flash.idx++; showCard(); window.scrollTo(0, 0); };
-  }
-
-  /* ---------- AI解説(単語帳の裏面) ---------- */
-  function renderAISlot(w) {
-    const slot = $('#ai-slot'); if (!slot) return;
-    const weak = Store.getWeak();
-    const cached = weak[w.wordId] && weak[w.wordId].ai ? weak[w.wordId].ai : {};
-    const hasKey = AI.hasKey();
-    const shown = cached.base || cached.simpler || cached.alt || '';
-    slot.innerHTML = `
-      <div style="margin-top:14px;border-top:1px solid var(--border);padding-top:12px">
-        <div class="analogy-lbl">🤖 AI解説${hasKey ? '' : '(要APIキー)'}</div>
-        <div id="ai-text" class="ai-out" style="${shown ? '' : 'display:none'}">${esc(shown)}</div>
-        <div class="row wrap" style="margin-top:10px">
-          <button class="btn ghost small" data-ai="base">解説を生成</button>
-          <button class="btn ghost small" data-ai="simpler">もっと簡単に</button>
-          <button class="btn ghost small" data-ai="alt">別の例えで</button>
-        </div>
-      </div>`;
-    slot.querySelectorAll('[data-ai]').forEach(b => b.onclick = (e) => { e.stopPropagation(); genAI(w, b.dataset.ai); });
-  }
-
-  async function genAI(w, style) {
-    const textEl = $('#ai-text'); if (!textEl) return;
-    const weak = Store.getWeak();
-    const entry = weak[w.wordId] && weak[w.wordId].ai ? weak[w.wordId].ai : null;
-    // キャッシュ命中(同じ単語×同じスタイル)なら再呼び出ししない
-    if (entry && entry[style]) { textEl.style.display = 'block'; textEl.textContent = entry[style]; toast('保存済みの解説を表示'); return; }
-    if (!AI.hasKey()) { toast('設定タブでAPIキーを登録してください'); go('settings'); return; }
-    textEl.style.display = 'block';
-    textEl.innerHTML = '<span class="spin"></span> 生成中…';
-    try {
-      const out = await AI.explain(w, style);
-      textEl.textContent = out;
-      // 苦手単語(または新規)エントリにキャッシュ保存
-      const all = Store.getWeak();
-      const e = all[w.wordId] || { wrongCount: 0, sourceQuestionIds: [], ai: {} };
-      e.ai = e.ai || {}; e.ai[style] = out;
-      all[w.wordId] = e; Store.setWeak(all);
-    } catch (err) {
-      textEl.textContent = err.message === 'NO_KEY' ? 'APIキーが未設定です(設定タブ)。' : ('生成に失敗しました: ' + err.message);
-    }
   }
 
   /* ================= 学習ログ ================= */
@@ -397,7 +380,7 @@
     const v = $('#view-stats');
     if (!s.total) { v.innerHTML = `<div class="empty"><div class="big">📊</div>まだ解答データがありません。<br>問題演習を始めると、ここに分析が表示されます。</div>`; return; }
 
-    const axes = CATS.map(c => ({ label: c.slice(0, 4), value: s.byCat[c].n ? s.byCat[c].ok / s.byCat[c].n : 0 }));
+    const axes = SUBCATS.map(c => ({ label: c, value: s.bySubcat[c].n ? s.bySubcat[c].ok / s.bySubcat[c].n : 0 }));
     const barItems = CATS.map(c => ({
       label: c, color: CAT_COLOR[c],
       value: s.byCat[c].n ? s.byCat[c].ok / s.byCat[c].n : 0,
@@ -415,7 +398,7 @@
     v.innerHTML = `
       <div class="card">
         <h2>分野別 正答率(レーダー)</h2>
-        <div class="chart-box">${Charts.radar(axes)}</div>
+        <div class="chart-box">${Charts.radar(axes, 320)}</div>
       </div>
       <div class="card">
         <h2>分野別 正答率(棒グラフ)</h2>
@@ -438,23 +421,8 @@
 
   /* ================= 設定 ================= */
   function renderSettings() {
-    const s = Store.getSettings();
     const v = $('#view-settings');
     v.innerHTML = `
-      <div class="card">
-        <h2>AI解説の設定</h2>
-        <p class="muted" style="font-size:13px">苦手単語のAI解説生成に Claude API を使います。キーは<strong>この端末のブラウザにのみ</strong>保存され、外部には送信されません(呼び出し先はAnthropic APIのみ)。未設定でも他の機能はすべて使えます。</p>
-        <label class="field">Anthropic API キー</label>
-        <input class="inp" id="set-key" type="password" placeholder="sk-ant-..." value="${esc(s.apiKey)}">
-        <label class="field">モデル</label>
-        <select class="inp" id="set-model">
-          <option value="claude-haiku-4-5-20251001">Claude Haiku 4.5(低コスト・推奨)</option>
-          <option value="claude-sonnet-5">Claude Sonnet 5(高品質)</option>
-          <option value="claude-opus-4-8">Claude Opus 4.8(最高品質)</option>
-        </select>
-        <div style="height:12px"></div>
-        <button class="btn" id="set-save">保存</button>
-      </div>
       <div class="card">
         <h2>データ管理</h2>
         <p class="muted" style="font-size:13px">学習ログ・苦手単語帳はブラウザ(localStorage)に保存され、次回も引き継がれます。別のURL/ブラウザで学習していた履歴は、書き出したJSONをこの端末で読み込むと合算されます。</p>
@@ -472,11 +440,6 @@
         オフライン対応(単語帳・演習・分析は通信不要)。ホーム画面に追加してPWAとして利用できます。</p>
       </div>
     `;
-    $('#set-model').value = s.model || 'claude-haiku-4-5-20251001';
-    $('#set-save').onclick = () => {
-      Store.setSettings({ apiKey: $('#set-key').value.trim(), model: $('#set-model').value });
-      toast('設定を保存しました');
-    };
     $('#set-export').onclick = () => {
       const blob = new Blob([JSON.stringify(Store.exportAll(), null, 2)], { type: 'application/json' });
       const a = document.createElement('a');

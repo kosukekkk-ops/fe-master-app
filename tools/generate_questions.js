@@ -25,6 +25,8 @@ function detail(w) { return DETAILS[w.wordId] || w.meaning; }
 function otherWordsNote(ds) { return `(他の選択肢は「${ds.map(d => d.word).join('」「')}」の説明)`; }
 // 選択肢が用語名そのものの問題タイプ用: 他の選択肢(=別の用語)が何を指すかを添える
 function otherMeaningsNote(ds) { return `(他の選択肢: ${ds.map(d => `「${d.word}」=${d.meaning}`).join(' / ')})`; }
+// 例え話は学習用の補助であり、実際の試験では技術的な定義で問われることを明示する
+function examNote(w) { return `※実際の試験では、この例え話ではなく「${w.meaning}」のような技術的な定義の文章で問われる。`; }
 
 // 再現性のあるシャッフル(mulberry32)。実行のたび同じ結果になるよう固定シード。
 function mulberry32(seed) {
@@ -153,7 +155,7 @@ for (const w of words) {
         category: w.category,
         text: `次の「例え」が表す用語として最も適切なものはどれか。\n「${w.analogy}」`,
         choices, correctIndex,
-        explanation: `正解は「${w.word}」。${detail(w)}\n${otherMeaningsNote(ds)}`,
+        explanation: `正解は「${w.word}」。${detail(w)}\n${otherMeaningsNote(ds)}\n${examNote(w)}`,
         source: `生成問題(例えから用語 / ${w.word})`,
         relatedWordIds: [w.wordId]
       });
@@ -189,7 +191,7 @@ for (const w of words) {
         category: w.category,
         text: `${w.word} を身近なものに例えた説明として、最も適切なものはどれか。`,
         choices, correctIndex,
-        explanation: `${w.word}: ${detail(w)}\n(他の選択肢は「${ds.map(d => d.word).join('」「')}」の例え)`,
+        explanation: `${w.word}: ${detail(w)}\n(他の選択肢は「${ds.map(d => d.word).join('」「')}」の例え)\n${examNote(w)}`,
         source: `生成問題(例え / ${w.word})`,
         relatedWordIds: [w.wordId]
       });

@@ -1,112 +1,132 @@
 {
-  "qualification": "FE",
-  "version": 1,
-  "note": "IPA公式『基本情報技術者試験 科目B 公開問題』(令和7年度)より。擬似言語のアルゴリズム問題。問題文・正答の著作権はIPAに帰属(出典を各問sourceに明記)。図・表が解答に必須のセキュリティ設問等は本文だけで成立しないため対象外。",
-  "questions": [
-    {
-      "questionId": "qb_r7_01",
-      "genre": "アルゴリズム",
-      "text": "関数 function1 が受け取る引数と、関数 function2 が受け取る引数とが同じとき、二つの関数は同じ値を返す。ここで、引数 n と引数 m は正の整数であり、引数 m は引数 n よりも 10 以上大きい数とする。プログラム中の〔a〕と〔b〕に入れる正しい答えの組合せはどれか。",
-      "program": "○整数型: function1(整数型: n, 整数型: m)\n  整数型: count ← 0\n  整数型: i\n  for (i を n から m まで 1 ずつ増やす)\n    if ((i mod 4) が 0 と等しい)\n      count ← count + 1\n    endif\n  endfor\n  return count\n\n○整数型: function2(整数型: n, 整数型: m)\n  整数型: count ← 0\n  整数型: tempN ← n\n  整数型: i, j\n  for ( 〔 a 〕 )\n    if ((tempN mod 4) が 0 と等しい)\n      繰返し処理を終了する\n    endif\n    tempN ← tempN + 1\n  endfor\n  for ( 〔 b 〕 )\n    count ← count + 1\n  endfor\n  return count",
-      "choices": [
-        "a: i を 1 から 2 まで 1 ずつ増やす\nb: j を n から始めて m を超えない範囲で tempN ずつ増やす",
-        "a: i を 1 から 2 まで 1 ずつ増やす\nb: j を tempN から m まで 1 ずつ増やす",
-        "a: i を 1 から 2 まで 1 ずつ増やす\nb: j を tempN から始めて m を超えない範囲で 4 ずつ増やす",
-        "a: i を 1 から 3 まで 1 ずつ増やす\nb: j を n から始めて m を超えない範囲で tempN ずつ増やす",
-        "a: i を 1 から 3 まで 1 ずつ増やす\nb: j を tempN から m まで 1 ずつ増やす",
-        "a: i を 1 から 3 まで 1 ずつ増やす\nb: j を tempN から始めて m を超えない範囲で 4 ずつ増やす"
-      ],
-      "correctIndex": 5,
-      "explanation": "function1 は n〜m のうち 4 の倍数の個数を数える。function2 では前半 for で tempN を n から進めて最初の 4 の倍数(=範囲内の最小の 4 の倍数)を求め、後半 for でそこから m までを 4 刻みで数える。前半 for は最大 3 回で最初の 4 の倍数に到達するので a は「1 から 3」、後半は tempN から m まで 4 ずつなので b は「tempN から始めて m を超えない範囲で 4 ずつ増やす」。よって カ。",
-      "source": "令和7年度 科目B 問1",
-      "relatedWordIds": []
-    },
-    {
-      "questionId": "qb_r7_02",
-      "genre": "アルゴリズム",
-      "text": "関数 change は、10 より大きい整数を引数 n で受け取り、1 円玉・5 円玉・10 円玉を使ってちょうど n 円にする組合せの総数を返す。例えば 12 円では、10 円玉を使わない場合は (12÷5 の商)+1=3 通り、10 円玉を 1 枚使う場合は (2÷5 の商)+1=1 通りで、合計 4 通りである。プログラム中の空欄に入れる正しい答えはどれか。",
-      "program": "○整数型: change(整数型: n)\n  整数型: count ← 0\n  整数型: rest ← n\n  while ( 〔     〕 )\n    count ← count + (rest ÷ 5 の商) + 1\n    rest ← rest - 10\n  endwhile\n  return count",
-      "choices": [
-        "rest ≧ 0",
-        "rest ≧ 5",
-        "rest ≧ 10",
-        "rest > 0",
-        "rest > 5",
-        "rest > 10"
-      ],
-      "correctIndex": 0,
-      "explanation": "10 円玉を 0 枚、1 枚、…と使うたびに残額 rest を 10 ずつ減らし、その rest を 1 円玉・5 円玉で作る組合せ数 (rest÷5 の商)+1 を加算する。rest が 0 のときも 1 通り(全部を 1 円玉未使用でちょうど)を数える必要があるため、条件は rest ≧ 0。よって ア。",
-      "source": "令和7年度 科目B 問2",
-      "relatedWordIds": []
-    },
-    {
-      "questionId": "qb_r7_03",
-      "genre": "アルゴリズム",
-      "text": "関数 push は引数の整数をスタックに格納し、格納できたら true、できなければ false を返す。関数 pop はスタックから値を取り出して返し、空のときは未定義の値を返す。スタックは要素数 4 の大域配列 stack と、次に値を格納する位置を示す大域変数 stackPos で表現する。初期状態は stackPos=3、stack={4,3,未定義,未定義}。配列の要素番号は 1 から始まり、領域外は参照しない。プログラム中の〔a〕と〔b〕に入れる正しい答えの組合せはどれか。",
-      "program": "大域: 整数型: stackPos ← 3\n大域: 整数型の配列: stack ← {4, 3, 未定義の値, 未定義の値}\n\n○論理型: push(整数型: inputData)\n  if (stackPos ≦ stack の要素数)\n    stack[ 〔 a 〕 ] ← inputData\n    stackPos ← stackPos + 1\n    return true\n  else\n    return false\n  endif\n\n○整数型: pop()\n  整数型: popData ← 未定義の値\n  if (stackPos > 1)\n    stackPos ← 〔 b 〕\n    popData ← stack[stackPos]\n    stack[stackPos] ← 未定義の値\n  endif\n  return popData",
-      "choices": [
-        "a: stackPos\nb: stackPos + 1",
-        "a: stackPos\nb: stackPos - 1",
-        "a: stackPos - 1\nb: stackPos + 1",
-        "a: stackPos - 1\nb: stackPos - 1"
-      ],
-      "correctIndex": 1,
-      "explanation": "stackPos は「次に格納する位置」。push はその位置 stack[stackPos] に格納してから stackPos を +1 するので a は stackPos。pop は直前に格納された位置(stackPos-1)から取り出すので、先に stackPos を -1 してから stack[stackPos] を参照する。よって b は stackPos-1、答えは イ。",
-      "source": "令和7年度 科目B 問3",
-      "relatedWordIds": ["w020"]
-    },
-    {
-      "questionId": "qb_r7_04",
-      "genre": "アルゴリズム",
-      "text": "関数 search は、二つの文字型の配列を引数 data 及び key で受け取り、data から key の要素の並びと同じ並びを全て探し、その先頭の要素番号を全て格納した配列を返す。見つからなければ要素数 0 の配列を返す。search({\"a\",\"b\",\"a\",\"b\",\"c\",\"a\",\"b\",\"c\"}, {\"a\",\"b\",\"c\"}) として呼び出すと、/*** β ***/ の行の条件式が真となる回数は何回か。ここで配列の要素番号は 1 から始まる。",
-      "program": "/* key は，要素数1以上の配列である */\n○整数型の配列: search(文字型の配列: data, 文字型の配列: key)\n  整数型: i, j, lenData, lenKey\n  整数型の配列: result ← {}  // 要素数0の配列\n  lenData ← data の要素数\n  lenKey ← key の要素数\n  /* (lenData - lenKey + 1) が0以下のときは繰返し処理を実行しない */\n  for (i を 1 から (lenData - lenKey + 1) まで 1 ずつ増やす)\n    for (j を 1 から lenKey まで 1 ずつ増やす)  // α\n      if (data[i + j - 1] が key[j] と等しい)  /*** β ***/\n        if (j が lenKey と等しい)\n          result の末尾に i の値を追加する\n        endif\n      else\n        α の行から始まる繰返し処理を終了する\n      endif\n    endfor\n  endfor\n  return result",
-      "choices": ["1", "2", "3", "4", "5", "6", "7", "8", "9", "10"],
-      "correctIndex": 7,
-      "explanation": "data=a b a b c a b c(8要素)、key=a b c。i は 1〜6。i=1: a,b が一致(真2回)、次が不一致。i=2: 先頭で不一致(真0)。i=3: a,b,c すべて一致(真3回)。i=4,5: 先頭で不一致(真0)。i=6: a,b,c すべて一致(真3回)。合計 2+3+3=8 回。よって ク。",
-      "source": "令和7年度 科目B 問4",
-      "relatedWordIds": []
-    },
-    {
-      "questionId": "qb_r7_05",
-      "genre": "アルゴリズム",
-      "text": "予防接種の病気Xに対する予防効果を調査するために集めたデータの集計結果(表1)を基に、病気Xにかかるかどうかが予防接種の有無に影響されないと仮定した場合の人数(理論度数、表2)を計算する。関数 f は、引数 data で受け取った集計結果を基に計算した理論度数を返す。引数と戻り値は二次元配列で、その行が表の行、その列が表の列に対応する。表2中の〔a〕と〔b〕に入れる正しい答えの組合せはどれか。ここで配列の要素番号は 1 から始まる。",
-      "bodyHtml": "<p class=\"note\">表1 集計結果の例(単位:人)</p><table><tr><th></th><th>病気Xにかからなかった</th><th>病気Xにかかった</th></tr><tr><th>予防接種を受けた</th><td>82</td><td>6</td></tr><tr><th>予防接種を受けていない</th><td>58</td><td>8</td></tr></table><p class=\"note\">表2 表1を基に計算した理論度数(網掛け部分は非表示)</p><table><tr><th></th><th>病気Xにかからなかった</th><th>病気Xにかかった</th></tr><tr><th>予防接種を受けた</th><td>〔 a 〕</td><td>―</td></tr><tr><th>予防接種を受けていない</th><td>―</td><td>〔 b 〕</td></tr></table>",
-      "program": "○実数型の二次元配列: f(実数型の二次元配列: data)\n  実数型: t ← data の要素の和\n  整数型: row ← data の行数\n  整数型: col ← data の列数\n  実数型の二次元配列: result ← {row 行 col 列の 未定義の値}\n  整数型: r, c\n  for (r を 1 から row まで 1 ずつ増やす)\n    for (c を 1 から col まで 1 ずつ増やす)\n      result[r, c] ← (data の行番号 r の要素の和)\n                   × (data の列番号 c の要素の和) ÷ t\n    endfor\n  endfor\n  return result",
-      "choices": [
-        "a: 44 / b: 33",
-        "a: 58 / b: 8",
-        "a: 70 / b: 7",
-        "a: 75 / b: 2",
-        "a: 80 / b: 6",
-        "a: 80 / b: 8",
-        "a: 82 / b: 6"
-      ],
-      "correctIndex": 4,
-      "explanation": "理論度数 = (その行の合計 × その列の合計) ÷ 総数。総数 = 82+6+58+8 = 154。a(予防接種を受けた×かからなかった) = (82+6)×(82+58)÷154 = 88×140÷154 = 80。b(受けていない×かかった) = (58+8)×(6+8)÷154 = 66×14÷154 = 6。よって オ。",
-      "source": "令和7年度 科目B 問5",
-      "relatedWordIds": []
-    },
-    {
-      "questionId": "qb_r7_06",
-      "genre": "セキュリティ",
-      "text": "A社(従業員200名の電子機器メーカー。東京に本社、新潟に工場)は、ファイルサーバを次のように運用している。表2中の〔a1〕〜〔a3〕に入れる字句の適切な組合せはどれか。",
-      "bodyHtml": "<p class=\"note\">図1 A社のファイルサーバの運用</p><ul><li>ファイルサーバは本社と工場のサーバルームに設置している。</li><li>磁気テープを使用してファイルのバックアップを取得している。</li><li>土曜日の午前2時からフルバックアップを取得し、翌週の火曜日と木曜日の午前2時から増分バックアップを取得している。</li><li>情報システム部の担当者は毎週月・火・木曜日の朝10時頃、バックアップジョブの実行結果の確認と磁気テープの交換を行い、磁気テープは耐火金庫に保管している。</li><li>磁気テープには上書きモードでバックアップを取得し、1か月分を世代管理している。</li><li>フルバックアップからのリストアには平均4時間、1回の増分バックアップからは平均0.25時間掛かっている。</li><li>A社はICT継続のための試験を実施しており、ファイルサーバも試験対象である。</li></ul><p class=\"note\">注記:事業影響度分析の結果に基づき、ファイルサーバは72時間の目標復旧時点(RPO)と120時間の目標復旧時間(RTO)が要求事項として定められている。</p><p>A社はISMS認証を取得しており、CISO(最高情報セキュリティ責任者)を中心に情報セキュリティに取り組み、定期的にリスクアセスメントを行っている。ISMS認証基準がJIS Q 27001:2023に改正されたことを受け、情報セキュリティリーダーのBさんが移行審査に向けて準備することになった。新たに追加された管理策の取組状況を確認し、表1にまとめた。</p><table><tr><th>項番</th><th>情報セキュリティ管理策</th><th>評価結果</th></tr><tr><td>1</td><td>(事業継続のためのICTの備え)事業継続の目的及びICT継続の要求事項に基づいて、ICTの備えを計画し、実施し、維持し、試験しなければならない。</td><td>実施している</td></tr></table><p>Bさんは、移行審査前の内部監査で表1項番1に関する質問を受け、表2のとおり回答した。</p><p class=\"note\">表2 内部監査室へのBさんの回答(抜粋)</p><table><tr><th>項番</th><th>Bさんの回答</th></tr><tr><td>1</td><td>例えば、金曜日の正午に障害が発生した場合、少なくとも〔a1〕の時点のデータは復元しなければならない。</td></tr><tr><td>2</td><td>例えば、木曜日の正午に障害が発生し、ファイルサーバの全データが消失したとすると、バックアップからのリストアには〔a2〕時間掛かると予想される。</td></tr><tr><td>3</td><td>ICT継続の計画書は、〔a3〕が承認している。</td></tr></table>",
-      "choices": [
-        "a1: 月曜日の正午 / a2: 4.25 / a3: CISO",
-        "a1: 月曜日の正午 / a2: 4.25 / a3: 情報システム部の担当者",
-        "a1: 月曜日の正午 / a2: 4.25 / a3: 内部監査室長",
-        "a1: 月曜日の正午 / a2: 4.50 / a3: CISO",
-        "a1: 月曜日の正午 / a2: 4.50 / a3: 情報システム部の担当者",
-        "a1: 火曜日の正午 / a2: 4.25 / a3: 情報システム部の担当者",
-        "a1: 火曜日の正午 / a2: 4.25 / a3: 内部監査室長",
-        "a1: 火曜日の正午 / a2: 4.50 / a3: CISO",
-        "a1: 火曜日の正午 / a2: 4.50 / a3: 情報システム部の担当者",
-        "a1: 火曜日の正午 / a2: 4.50 / a3: 内部監査室長"
-      ],
-      "correctIndex": 7,
-      "explanation": "a1:RPOは72時間(3日)。金曜正午に障害なら、少なくとも72時間前=火曜正午の時点のデータは復元が必要。a2:木曜正午の障害では、土曜のフルバックアップ(4時間)＋火曜・木曜の増分2回(各0.25時間)で 4+0.5=4.50時間。a3:ICT継続の計画は最高情報セキュリティ責任者(CISO)が承認する。よって ク。",
-      "source": "令和7年度 科目B 問6",
-      "relatedWordIds": ["w111", "w153"]
-    }
-  ]
+ "qualification": "FE",
+ "version": 1,
+ "note": "IPA公式『基本情報技術者試験 科目B 公開問題』(令和7年度)より。擬似言語のアルゴリズム問題。問題文・正答の著作権はIPAに帰属(出典を各問sourceに明記)。図・表が解答に必須のセキュリティ設問等は本文だけで成立しないため対象外。",
+ "questions": [
+  {
+   "questionId": "qb_r7_01",
+   "genre": "アルゴリズム",
+   "text": "関数 function1 が受け取る引数と、関数 function2 が受け取る引数とが同じとき、二つの関数は同じ値を返す。ここで、引数 n と引数 m は正の整数であり、引数 m は引数 n よりも 10 以上大きい数とする。プログラム中の〔a〕と〔b〕に入れる正しい答えの組合せはどれか。",
+   "program": "○整数型: function1(整数型: n, 整数型: m)\n  整数型: count ← 0\n  整数型: i\n  for (i を n から m まで 1 ずつ増やす)\n    if ((i mod 4) が 0 と等しい)\n      count ← count + 1\n    endif\n  endfor\n  return count\n\n○整数型: function2(整数型: n, 整数型: m)\n  整数型: count ← 0\n  整数型: tempN ← n\n  整数型: i, j\n  for ( 〔 a 〕 )\n    if ((tempN mod 4) が 0 と等しい)\n      繰返し処理を終了する\n    endif\n    tempN ← tempN + 1\n  endfor\n  for ( 〔 b 〕 )\n    count ← count + 1\n  endfor\n  return count",
+   "choices": [
+    "a: i を 1 から 2 まで 1 ずつ増やす\nb: j を n から始めて m を超えない範囲で tempN ずつ増やす",
+    "a: i を 1 から 2 まで 1 ずつ増やす\nb: j を tempN から m まで 1 ずつ増やす",
+    "a: i を 1 から 2 まで 1 ずつ増やす\nb: j を tempN から始めて m を超えない範囲で 4 ずつ増やす",
+    "a: i を 1 から 3 まで 1 ずつ増やす\nb: j を n から始めて m を超えない範囲で tempN ずつ増やす",
+    "a: i を 1 から 3 まで 1 ずつ増やす\nb: j を tempN から m まで 1 ずつ増やす",
+    "a: i を 1 から 3 まで 1 ずつ増やす\nb: j を tempN から始めて m を超えない範囲で 4 ずつ増やす"
+   ],
+   "correctIndex": 5,
+   "explanation": "function1 は n〜m のうち 4 の倍数の個数を数える。function2 では前半 for で tempN を n から進めて最初の 4 の倍数(=範囲内の最小の 4 の倍数)を求め、後半 for でそこから m までを 4 刻みで数える。前半 for は最大 3 回で最初の 4 の倍数に到達するので a は「1 から 3」、後半は tempN から m まで 4 ずつなので b は「tempN から始めて m を超えない範囲で 4 ずつ増やす」。よって カ。",
+   "source": "令和7年度 科目B 問1",
+   "relatedWordIds": [],
+   "subcat": "アルゴリズム"
+  },
+  {
+   "questionId": "qb_r7_02",
+   "genre": "アルゴリズム",
+   "text": "関数 change は、10 より大きい整数を引数 n で受け取り、1 円玉・5 円玉・10 円玉を使ってちょうど n 円にする組合せの総数を返す。例えば 12 円では、10 円玉を使わない場合は (12÷5 の商)+1=3 通り、10 円玉を 1 枚使う場合は (2÷5 の商)+1=1 通りで、合計 4 通りである。プログラム中の空欄に入れる正しい答えはどれか。",
+   "program": "○整数型: change(整数型: n)\n  整数型: count ← 0\n  整数型: rest ← n\n  while ( 〔     〕 )\n    count ← count + (rest ÷ 5 の商) + 1\n    rest ← rest - 10\n  endwhile\n  return count",
+   "choices": [
+    "rest ≧ 0",
+    "rest ≧ 5",
+    "rest ≧ 10",
+    "rest > 0",
+    "rest > 5",
+    "rest > 10"
+   ],
+   "correctIndex": 0,
+   "explanation": "10 円玉を 0 枚、1 枚、…と使うたびに残額 rest を 10 ずつ減らし、その rest を 1 円玉・5 円玉で作る組合せ数 (rest÷5 の商)+1 を加算する。rest が 0 のときも 1 通り(全部を 1 円玉未使用でちょうど)を数える必要があるため、条件は rest ≧ 0。よって ア。",
+   "source": "令和7年度 科目B 問2",
+   "relatedWordIds": [],
+   "subcat": "アルゴリズム"
+  },
+  {
+   "questionId": "qb_r7_03",
+   "genre": "アルゴリズム",
+   "text": "関数 push は引数の整数をスタックに格納し、格納できたら true、できなければ false を返す。関数 pop はスタックから値を取り出して返し、空のときは未定義の値を返す。スタックは要素数 4 の大域配列 stack と、次に値を格納する位置を示す大域変数 stackPos で表現する。初期状態は stackPos=3、stack={4,3,未定義,未定義}。配列の要素番号は 1 から始まり、領域外は参照しない。プログラム中の〔a〕と〔b〕に入れる正しい答えの組合せはどれか。",
+   "program": "大域: 整数型: stackPos ← 3\n大域: 整数型の配列: stack ← {4, 3, 未定義の値, 未定義の値}\n\n○論理型: push(整数型: inputData)\n  if (stackPos ≦ stack の要素数)\n    stack[ 〔 a 〕 ] ← inputData\n    stackPos ← stackPos + 1\n    return true\n  else\n    return false\n  endif\n\n○整数型: pop()\n  整数型: popData ← 未定義の値\n  if (stackPos > 1)\n    stackPos ← 〔 b 〕\n    popData ← stack[stackPos]\n    stack[stackPos] ← 未定義の値\n  endif\n  return popData",
+   "choices": [
+    "a: stackPos\nb: stackPos + 1",
+    "a: stackPos\nb: stackPos - 1",
+    "a: stackPos - 1\nb: stackPos + 1",
+    "a: stackPos - 1\nb: stackPos - 1"
+   ],
+   "correctIndex": 1,
+   "explanation": "stackPos は「次に格納する位置」。push はその位置 stack[stackPos] に格納してから stackPos を +1 するので a は stackPos。pop は直前に格納された位置(stackPos-1)から取り出すので、先に stackPos を -1 してから stack[stackPos] を参照する。よって b は stackPos-1、答えは イ。",
+   "source": "令和7年度 科目B 問3",
+   "relatedWordIds": [
+    "w020"
+   ]
+  },
+  {
+   "questionId": "qb_r7_04",
+   "genre": "アルゴリズム",
+   "text": "関数 search は、二つの文字型の配列を引数 data 及び key で受け取り、data から key の要素の並びと同じ並びを全て探し、その先頭の要素番号を全て格納した配列を返す。見つからなければ要素数 0 の配列を返す。search({\"a\",\"b\",\"a\",\"b\",\"c\",\"a\",\"b\",\"c\"}, {\"a\",\"b\",\"c\"}) として呼び出すと、/*** β ***/ の行の条件式が真となる回数は何回か。ここで配列の要素番号は 1 から始まる。",
+   "program": "/* key は，要素数1以上の配列である */\n○整数型の配列: search(文字型の配列: data, 文字型の配列: key)\n  整数型: i, j, lenData, lenKey\n  整数型の配列: result ← {}  // 要素数0の配列\n  lenData ← data の要素数\n  lenKey ← key の要素数\n  /* (lenData - lenKey + 1) が0以下のときは繰返し処理を実行しない */\n  for (i を 1 から (lenData - lenKey + 1) まで 1 ずつ増やす)\n    for (j を 1 から lenKey まで 1 ずつ増やす)  // α\n      if (data[i + j - 1] が key[j] と等しい)  /*** β ***/\n        if (j が lenKey と等しい)\n          result の末尾に i の値を追加する\n        endif\n      else\n        α の行から始まる繰返し処理を終了する\n      endif\n    endfor\n  endfor\n  return result",
+   "choices": [
+    "1",
+    "2",
+    "3",
+    "4",
+    "5",
+    "6",
+    "7",
+    "8",
+    "9",
+    "10"
+   ],
+   "correctIndex": 7,
+   "explanation": "data=a b a b c a b c(8要素)、key=a b c。i は 1〜6。i=1: a,b が一致(真2回)、次が不一致。i=2: 先頭で不一致(真0)。i=3: a,b,c すべて一致(真3回)。i=4,5: 先頭で不一致(真0)。i=6: a,b,c すべて一致(真3回)。合計 2+3+3=8 回。よって ク。",
+   "source": "令和7年度 科目B 問4",
+   "relatedWordIds": [],
+   "subcat": "アルゴリズム"
+  },
+  {
+   "questionId": "qb_r7_05",
+   "genre": "アルゴリズム",
+   "text": "予防接種の病気Xに対する予防効果を調査するために集めたデータの集計結果(表1)を基に、病気Xにかかるかどうかが予防接種の有無に影響されないと仮定した場合の人数(理論度数、表2)を計算する。関数 f は、引数 data で受け取った集計結果を基に計算した理論度数を返す。引数と戻り値は二次元配列で、その行が表の行、その列が表の列に対応する。表2中の〔a〕と〔b〕に入れる正しい答えの組合せはどれか。ここで配列の要素番号は 1 から始まる。",
+   "bodyHtml": "<p class=\"note\">表1 集計結果の例(単位:人)</p><table><tr><th></th><th>病気Xにかからなかった</th><th>病気Xにかかった</th></tr><tr><th>予防接種を受けた</th><td>82</td><td>6</td></tr><tr><th>予防接種を受けていない</th><td>58</td><td>8</td></tr></table><p class=\"note\">表2 表1を基に計算した理論度数(網掛け部分は非表示)</p><table><tr><th></th><th>病気Xにかからなかった</th><th>病気Xにかかった</th></tr><tr><th>予防接種を受けた</th><td>〔 a 〕</td><td>―</td></tr><tr><th>予防接種を受けていない</th><td>―</td><td>〔 b 〕</td></tr></table>",
+   "program": "○実数型の二次元配列: f(実数型の二次元配列: data)\n  実数型: t ← data の要素の和\n  整数型: row ← data の行数\n  整数型: col ← data の列数\n  実数型の二次元配列: result ← {row 行 col 列の 未定義の値}\n  整数型: r, c\n  for (r を 1 から row まで 1 ずつ増やす)\n    for (c を 1 から col まで 1 ずつ増やす)\n      result[r, c] ← (data の行番号 r の要素の和)\n                   × (data の列番号 c の要素の和) ÷ t\n    endfor\n  endfor\n  return result",
+   "choices": [
+    "a: 44 / b: 33",
+    "a: 58 / b: 8",
+    "a: 70 / b: 7",
+    "a: 75 / b: 2",
+    "a: 80 / b: 6",
+    "a: 80 / b: 8",
+    "a: 82 / b: 6"
+   ],
+   "correctIndex": 4,
+   "explanation": "理論度数 = (その行の合計 × その列の合計) ÷ 総数。総数 = 82+6+58+8 = 154。a(予防接種を受けた×かからなかった) = (82+6)×(82+58)÷154 = 88×140÷154 = 80。b(受けていない×かかった) = (58+8)×(6+8)÷154 = 66×14÷154 = 6。よって オ。",
+   "source": "令和7年度 科目B 問5",
+   "relatedWordIds": [],
+   "subcat": "アルゴリズム"
+  },
+  {
+   "questionId": "qb_r7_06",
+   "genre": "セキュリティ",
+   "text": "A社(従業員200名の電子機器メーカー。東京に本社、新潟に工場)は、ファイルサーバを次のように運用している。表2中の〔a1〕〜〔a3〕に入れる字句の適切な組合せはどれか。",
+   "bodyHtml": "<p class=\"note\">図1 A社のファイルサーバの運用</p><ul><li>ファイルサーバは本社と工場のサーバルームに設置している。</li><li>磁気テープを使用してファイルのバックアップを取得している。</li><li>土曜日の午前2時からフルバックアップを取得し、翌週の火曜日と木曜日の午前2時から増分バックアップを取得している。</li><li>情報システム部の担当者は毎週月・火・木曜日の朝10時頃、バックアップジョブの実行結果の確認と磁気テープの交換を行い、磁気テープは耐火金庫に保管している。</li><li>磁気テープには上書きモードでバックアップを取得し、1か月分を世代管理している。</li><li>フルバックアップからのリストアには平均4時間、1回の増分バックアップからは平均0.25時間掛かっている。</li><li>A社はICT継続のための試験を実施しており、ファイルサーバも試験対象である。</li></ul><p class=\"note\">注記:事業影響度分析の結果に基づき、ファイルサーバは72時間の目標復旧時点(RPO)と120時間の目標復旧時間(RTO)が要求事項として定められている。</p><p>A社はISMS認証を取得しており、CISO(最高情報セキュリティ責任者)を中心に情報セキュリティに取り組み、定期的にリスクアセスメントを行っている。ISMS認証基準がJIS Q 27001:2023に改正されたことを受け、情報セキュリティリーダーのBさんが移行審査に向けて準備することになった。新たに追加された管理策の取組状況を確認し、表1にまとめた。</p><table><tr><th>項番</th><th>情報セキュリティ管理策</th><th>評価結果</th></tr><tr><td>1</td><td>(事業継続のためのICTの備え)事業継続の目的及びICT継続の要求事項に基づいて、ICTの備えを計画し、実施し、維持し、試験しなければならない。</td><td>実施している</td></tr></table><p>Bさんは、移行審査前の内部監査で表1項番1に関する質問を受け、表2のとおり回答した。</p><p class=\"note\">表2 内部監査室へのBさんの回答(抜粋)</p><table><tr><th>項番</th><th>Bさんの回答</th></tr><tr><td>1</td><td>例えば、金曜日の正午に障害が発生した場合、少なくとも〔a1〕の時点のデータは復元しなければならない。</td></tr><tr><td>2</td><td>例えば、木曜日の正午に障害が発生し、ファイルサーバの全データが消失したとすると、バックアップからのリストアには〔a2〕時間掛かると予想される。</td></tr><tr><td>3</td><td>ICT継続の計画書は、〔a3〕が承認している。</td></tr></table>",
+   "choices": [
+    "a1: 月曜日の正午 / a2: 4.25 / a3: CISO",
+    "a1: 月曜日の正午 / a2: 4.25 / a3: 情報システム部の担当者",
+    "a1: 月曜日の正午 / a2: 4.25 / a3: 内部監査室長",
+    "a1: 月曜日の正午 / a2: 4.50 / a3: CISO",
+    "a1: 月曜日の正午 / a2: 4.50 / a3: 情報システム部の担当者",
+    "a1: 火曜日の正午 / a2: 4.25 / a3: 情報システム部の担当者",
+    "a1: 火曜日の正午 / a2: 4.25 / a3: 内部監査室長",
+    "a1: 火曜日の正午 / a2: 4.50 / a3: CISO",
+    "a1: 火曜日の正午 / a2: 4.50 / a3: 情報システム部の担当者",
+    "a1: 火曜日の正午 / a2: 4.50 / a3: 内部監査室長"
+   ],
+   "correctIndex": 7,
+   "explanation": "a1:RPOは72時間(3日)。金曜正午に障害なら、少なくとも72時間前=火曜正午の時点のデータは復元が必要。a2:木曜正午の障害では、土曜のフルバックアップ(4時間)＋火曜・木曜の増分2回(各0.25時間)で 4+0.5=4.50時間。a3:ICT継続の計画は最高情報セキュリティ責任者(CISO)が承認する。よって ク。",
+   "source": "令和7年度 科目B 問6",
+   "relatedWordIds": [
+    "w111",
+    "w153"
+   ]
+  }
+ ]
 }

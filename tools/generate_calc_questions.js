@@ -533,6 +533,14 @@ const TARGET = {
   colors: 6, subnet: 6, expval: 75, payback: 25, raid5: 20,
   seriesn: 40, queueW: 36, cputime: 30, hamming: 5, diskcap: 44, raid01: 30
 };
+// 分野別正答率レーダー用のサブカテゴリ(relatedWordIdsが無い系統もあるため系統ごとに直接指定)
+const SUBCAT_BY_TYPE = {
+  avail: '基礎理論', sysavail: '基礎理論', radix: '基礎理論', transfer: 'ネットワーク', breakeven: '会計法務',
+  cache: 'ハードウェア', imgsize: '基礎理論', compl2: '基礎理論', mips: 'ハードウェア', addr: 'ハードウェア',
+  queue: '基礎理論', pcm: '基礎理論', depreciation: '会計法務', rotwait: 'ハードウェア', pert: '開発管理',
+  colors: '基礎理論', subnet: 'ネットワーク', expval: '経営戦略', payback: '会計法務', raid5: 'ハードウェア',
+  seriesn: '基礎理論', queueW: '基礎理論', cputime: 'ハードウェア', hamming: '基礎理論', diskcap: 'ハードウェア', raid01: 'ハードウェア'
+};
 for (const [type, want] of Object.entries(TARGET)) {
   let made = 0, attempts = 0;
   while (made < want && attempts < want * 60) {
@@ -544,6 +552,7 @@ for (const [type, want] of Object.entries(TARGET)) {
     const question = {
       questionId: `gc_${q.idKey}`,
       category: q.category,
+      subcat: SUBCAT_BY_TYPE[type],
       text: q.text,
       choices: q.choices,
       correctIndex: q.correctIndex,

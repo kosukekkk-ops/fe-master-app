@@ -7,6 +7,7 @@
   {
    "questionId": "gb_cdiv_15_5",
    "genre": "アルゴリズム",
+   "subcat": "アルゴリズム",
    "text": "次の関数 f を実行したときの戻り値はどれか。",
    "program": "○整数型: f()\n  整数型: count ← 0\n  整数型: i\n  for (i を 1 から 15 まで 1 ずつ増やす)\n    if ((i mod 5) が 0 と等しい)\n      count ← count + 1\n    endif\n  endfor\n  return count",
    "choices": [
@@ -23,6 +24,7 @@
   {
    "questionId": "gb_cdiv_10_5",
    "genre": "アルゴリズム",
+   "subcat": "アルゴリズム",
    "text": "次の関数 f を実行したときの戻り値はどれか。",
    "program": "○整数型: f()\n  整数型: count ← 0\n  整数型: i\n  for (i を 1 から 10 まで 1 ずつ増やす)\n    if ((i mod 5) が 0 と等しい)\n      count ← count + 1\n    endif\n  endfor\n  return count",
    "choices": [
@@ -39,6 +41,7 @@
   {
    "questionId": "gb_cdiv_10_2",
    "genre": "アルゴリズム",
+   "subcat": "アルゴリズム",
    "text": "次の関数 f を実行したときの戻り値はどれか。",
    "program": "○整数型: f()\n  整数型: count ← 0\n  整数型: i\n  for (i を 1 から 10 まで 1 ずつ増やす)\n    if ((i mod 2) が 0 と等しい)\n      count ← count + 1\n    endif\n  endfor\n  return count",
    "choices": [
@@ -55,6 +58,7 @@
   {
    "questionId": "gb_cdiv_30_6",
    "genre": "アルゴリズム",
+   "subcat": "アルゴリズム",
    "text": "次の関数 f を実行したときの戻り値はどれか。",
    "program": "○整数型: f()\n  整数型: count ← 0\n  整数型: i\n  for (i を 1 から 30 まで 1 ずつ増やす)\n    if ((i mod 6) が 0 と等しい)\n      count ← count + 1\n    endif\n  endfor\n  return count",
    "choices": [
@@ -71,6 +75,7 @@
   {
    "questionId": "gb_cdiv_10_4",
    "genre": "アルゴリズム",
+   "subcat": "アルゴリズム",
    "text": "次の関数 f を実行したときの戻り値はどれか。",
    "program": "○整数型: f()\n  整数型: count ← 0\n  整数型: i\n  for (i を 1 から 10 まで 1 ずつ増やす)\n    if ((i mod 4) が 0 と等しい)\n      count ← count + 1\n    endif\n  endfor\n  return count",
    "choices": [
@@ -87,6 +92,7 @@
   {
    "questionId": "gb_cdiv_12_4",
    "genre": "アルゴリズム",
+   "subcat": "アルゴリズム",
    "text": "次の関数 f を実行したときの戻り値はどれか。",
    "program": "○整数型: f()\n  整数型: count ← 0\n  整数型: i\n  for (i を 1 から 12 まで 1 ずつ増やす)\n    if ((i mod 4) が 0 と等しい)\n      count ← count + 1\n    endif\n  endfor\n  return count",
    "choices": [
@@ -103,6 +109,7 @@
   {
    "questionId": "gb_cdiv_15_6",
    "genre": "アルゴリズム",
+   "subcat": "アルゴリズム",
    "text": "次の関数 f を実行したときの戻り値はどれか。",
    "program": "○整数型: f()\n  整数型: count ← 0\n  整数型: i\n  for (i を 1 から 15 まで 1 ずつ増やす)\n    if ((i mod 6) が 0 と等しい)\n      count ← count + 1\n    endif\n  endfor\n  return count",
    "choices": [
@@ -119,6 +126,7 @@
   {
    "questionId": "gb_cdiv_24_5",
    "genre": "アルゴリズム",
+   "subcat": "アルゴリズム",
    "text": "次の関数 f を実行したときの戻り値はどれか。",
    "program": "○整数型: f()\n  整数型: count ← 0\n  整数型: i\n  for (i を 1 から 24 まで 1 ずつ増やす)\n    if ((i mod 5) が 0 と等しい)\n      count ← count + 1\n    endif\n  endfor\n  return count",
    "choices": [
@@ -135,6 +143,7 @@
   {
    "questionId": "gb_cdiv_12_3",
    "genre": "アルゴリズム",
+   "subcat": "アルゴリズム",
    "text": "次の関数 f を実行したときの戻り値はどれか。",
    "program": "○整数型: f()\n  整数型: count ← 0\n  整数型: i\n  for (i を 1 から 12 まで 1 ずつ増やす)\n    if ((i mod 3) が 0 と等しい)\n      count ← count + 1\n    endif\n  endfor\n  return count",
    "choices": [
@@ -151,6 +160,7 @@
   {
    "questionId": "gb_cdiv_24_3",
    "genre": "アルゴリズム",
+   "subcat": "アルゴリズム",
    "text": "次の関数 f を実行したときの戻り値はどれか。",
    "program": "○整数型: f()\n  整数型: count ← 0\n  整数型: i\n  for (i を 1 から 24 まで 1 ずつ増やす)\n    if ((i mod 3) が 0 と等しい)\n      count ← count + 1\n    endif\n  endfor\n  return count",
    "choices": [
@@ -167,6 +177,7 @@
   {
    "questionId": "gb_cdiv_100_4",
    "genre": "アルゴリズム",
+   "subcat": "アルゴリズム",
    "text": "次の関数 f を実行したときの戻り値はどれか。",
    "program": "○整数型: f()\n  整数型: count ← 0\n  整数型: i\n  for (i を 1 から 100 まで 1 ずつ増やす)\n    if ((i mod 4) が 0 と等しい)\n      count ← count + 1\n    endif\n  endfor\n  return count",
    "choices": [
@@ -183,6 +194,7 @@
   {
    "questionId": "gb_cdiv_100_5",
    "genre": "アルゴリズム",
+   "subcat": "アルゴリズム",
    "text": "次の関数 f を実行したときの戻り値はどれか。",
    "program": "○整数型: f()\n  整数型: count ← 0\n  整数型: i\n  for (i を 1 から 100 まで 1 ずつ増やす)\n    if ((i mod 5) が 0 と等しい)\n      count ← count + 1\n    endif\n  endfor\n  return count",
    "choices": [
@@ -199,6 +211,7 @@
   {
    "questionId": "gb_cdiv_30_4",
    "genre": "アルゴリズム",
+   "subcat": "アルゴリズム",
    "text": "次の関数 f を実行したときの戻り値はどれか。",
    "program": "○整数型: f()\n  整数型: count ← 0\n  整数型: i\n  for (i を 1 から 30 まで 1 ずつ増やす)\n    if ((i mod 4) が 0 と等しい)\n      count ← count + 1\n    endif\n  endfor\n  return count",
    "choices": [
@@ -215,6 +228,7 @@
   {
    "questionId": "gb_cdiv_50_6",
    "genre": "アルゴリズム",
+   "subcat": "アルゴリズム",
    "text": "次の関数 f を実行したときの戻り値はどれか。",
    "program": "○整数型: f()\n  整数型: count ← 0\n  整数型: i\n  for (i を 1 から 50 まで 1 ずつ増やす)\n    if ((i mod 6) が 0 と等しい)\n      count ← count + 1\n    endif\n  endfor\n  return count",
    "choices": [
@@ -231,6 +245,7 @@
   {
    "questionId": "gb_srange_2_10",
    "genre": "アルゴリズム",
+   "subcat": "アルゴリズム",
    "text": "次の関数 f を実行したときの戻り値はどれか。",
    "program": "○整数型: f()\n  整数型: sum ← 0\n  整数型: i\n  for (i を 2 から 10 まで 1 ずつ増やす)\n    sum ← sum + i\n  endfor\n  return sum",
    "choices": [
@@ -247,6 +262,7 @@
   {
    "questionId": "gb_srange_5_10",
    "genre": "アルゴリズム",
+   "subcat": "アルゴリズム",
    "text": "次の関数 f を実行したときの戻り値はどれか。",
    "program": "○整数型: f()\n  整数型: sum ← 0\n  整数型: i\n  for (i を 5 から 10 まで 1 ずつ増やす)\n    sum ← sum + i\n  endfor\n  return sum",
    "choices": [
@@ -263,6 +279,7 @@
   {
    "questionId": "gb_srange_1_10",
    "genre": "アルゴリズム",
+   "subcat": "アルゴリズム",
    "text": "次の関数 f を実行したときの戻り値はどれか。",
    "program": "○整数型: f()\n  整数型: sum ← 0\n  整数型: i\n  for (i を 1 から 10 まで 1 ずつ増やす)\n    sum ← sum + i\n  endfor\n  return sum",
    "choices": [
@@ -279,6 +296,7 @@
   {
    "questionId": "gb_srange_5_50",
    "genre": "アルゴリズム",
+   "subcat": "アルゴリズム",
    "text": "次の関数 f を実行したときの戻り値はどれか。",
    "program": "○整数型: f()\n  整数型: sum ← 0\n  整数型: i\n  for (i を 5 から 50 まで 1 ずつ増やす)\n    sum ← sum + i\n  endfor\n  return sum",
    "choices": [
@@ -295,6 +313,7 @@
   {
    "questionId": "gb_srange_5_100",
    "genre": "アルゴリズム",
+   "subcat": "アルゴリズム",
    "text": "次の関数 f を実行したときの戻り値はどれか。",
    "program": "○整数型: f()\n  整数型: sum ← 0\n  整数型: i\n  for (i を 5 から 100 まで 1 ずつ増やす)\n    sum ← sum + i\n  endfor\n  return sum",
    "choices": [
@@ -311,6 +330,7 @@
   {
    "questionId": "gb_srange_1_15",
    "genre": "アルゴリズム",
+   "subcat": "アルゴリズム",
    "text": "次の関数 f を実行したときの戻り値はどれか。",
    "program": "○整数型: f()\n  整数型: sum ← 0\n  整数型: i\n  for (i を 1 から 15 まで 1 ずつ増やす)\n    sum ← sum + i\n  endfor\n  return sum",
    "choices": [
@@ -327,6 +347,7 @@
   {
    "questionId": "gb_srange_2_100",
    "genre": "アルゴリズム",
+   "subcat": "アルゴリズム",
    "text": "次の関数 f を実行したときの戻り値はどれか。",
    "program": "○整数型: f()\n  整数型: sum ← 0\n  整数型: i\n  for (i を 2 から 100 まで 1 ずつ増やす)\n    sum ← sum + i\n  endfor\n  return sum",
    "choices": [
@@ -343,6 +364,7 @@
   {
    "questionId": "gb_srange_2_15",
    "genre": "アルゴリズム",
+   "subcat": "アルゴリズム",
    "text": "次の関数 f を実行したときの戻り値はどれか。",
    "program": "○整数型: f()\n  整数型: sum ← 0\n  整数型: i\n  for (i を 2 から 15 まで 1 ずつ増やす)\n    sum ← sum + i\n  endfor\n  return sum",
    "choices": [
@@ -359,6 +381,7 @@
   {
    "questionId": "gb_srange_1_50",
    "genre": "アルゴリズム",
+   "subcat": "アルゴリズム",
    "text": "次の関数 f を実行したときの戻り値はどれか。",
    "program": "○整数型: f()\n  整数型: sum ← 0\n  整数型: i\n  for (i を 1 から 50 まで 1 ずつ増やす)\n    sum ← sum + i\n  endfor\n  return sum",
    "choices": [
@@ -375,6 +398,7 @@
   {
    "questionId": "gb_srange_10_50",
    "genre": "アルゴリズム",
+   "subcat": "アルゴリズム",
    "text": "次の関数 f を実行したときの戻り値はどれか。",
    "program": "○整数型: f()\n  整数型: sum ← 0\n  整数型: i\n  for (i を 10 から 50 まで 1 ずつ増やす)\n    sum ← sum + i\n  endfor\n  return sum",
    "choices": [
@@ -391,6 +415,7 @@
   {
    "questionId": "gb_srange_2_50",
    "genre": "アルゴリズム",
+   "subcat": "アルゴリズム",
    "text": "次の関数 f を実行したときの戻り値はどれか。",
    "program": "○整数型: f()\n  整数型: sum ← 0\n  整数型: i\n  for (i を 2 から 50 まで 1 ずつ増やす)\n    sum ← sum + i\n  endfor\n  return sum",
    "choices": [
@@ -407,6 +432,7 @@
   {
    "questionId": "gb_srange_2_25",
    "genre": "アルゴリズム",
+   "subcat": "アルゴリズム",
    "text": "次の関数 f を実行したときの戻り値はどれか。",
    "program": "○整数型: f()\n  整数型: sum ← 0\n  整数型: i\n  for (i を 2 から 25 まで 1 ずつ増やす)\n    sum ← sum + i\n  endfor\n  return sum",
    "choices": [
@@ -423,6 +449,7 @@
   {
    "questionId": "gb_asum_16-18-2-2-16",
    "genre": "アルゴリズム",
+   "subcat": "アルゴリズム",
    "text": "次の関数 f を実行したときの戻り値はどれか。",
    "program": "○整数型: f()\n  整数型の配列: A ← {16, 18, 2, 2, 16}\n  整数型: sum ← 0\n  整数型: i\n  for (i を 1 から A の要素数 まで 1 ずつ増やす)\n    sum ← sum + A[i]\n  endfor\n  return sum",
    "choices": [
@@ -439,6 +466,7 @@
   {
    "questionId": "gb_asum_18-5-6-14-14",
    "genre": "アルゴリズム",
+   "subcat": "アルゴリズム",
    "text": "次の関数 f を実行したときの戻り値はどれか。",
    "program": "○整数型: f()\n  整数型の配列: A ← {18, 5, 6, 14, 14}\n  整数型: sum ← 0\n  整数型: i\n  for (i を 1 から A の要素数 まで 1 ずつ増やす)\n    sum ← sum + A[i]\n  endfor\n  return sum",
    "choices": [
@@ -455,6 +483,7 @@
   {
    "questionId": "gb_asum_16-8-8-7-14",
    "genre": "アルゴリズム",
+   "subcat": "アルゴリズム",
    "text": "次の関数 f を実行したときの戻り値はどれか。",
    "program": "○整数型: f()\n  整数型の配列: A ← {16, 8, 8, 7, 14}\n  整数型: sum ← 0\n  整数型: i\n  for (i を 1 から A の要素数 まで 1 ずつ増やす)\n    sum ← sum + A[i]\n  endfor\n  return sum",
    "choices": [
@@ -471,6 +500,7 @@
   {
    "questionId": "gb_asum_11-6-10-5-19",
    "genre": "アルゴリズム",
+   "subcat": "アルゴリズム",
    "text": "次の関数 f を実行したときの戻り値はどれか。",
    "program": "○整数型: f()\n  整数型の配列: A ← {11, 6, 10, 5, 19}\n  整数型: sum ← 0\n  整数型: i\n  for (i を 1 から A の要素数 まで 1 ずつ増やす)\n    sum ← sum + A[i]\n  endfor\n  return sum",
    "choices": [
@@ -487,6 +517,7 @@
   {
    "questionId": "gb_asum_7-10-9-20-6-18",
    "genre": "アルゴリズム",
+   "subcat": "アルゴリズム",
    "text": "次の関数 f を実行したときの戻り値はどれか。",
    "program": "○整数型: f()\n  整数型の配列: A ← {7, 10, 9, 20, 6, 18}\n  整数型: sum ← 0\n  整数型: i\n  for (i を 1 から A の要素数 まで 1 ずつ増やす)\n    sum ← sum + A[i]\n  endfor\n  return sum",
    "choices": [
@@ -503,6 +534,7 @@
   {
    "questionId": "gb_asum_7-10-18-15",
    "genre": "アルゴリズム",
+   "subcat": "アルゴリズム",
    "text": "次の関数 f を実行したときの戻り値はどれか。",
    "program": "○整数型: f()\n  整数型の配列: A ← {7, 10, 18, 15}\n  整数型: sum ← 0\n  整数型: i\n  for (i を 1 から A の要素数 まで 1 ずつ増やす)\n    sum ← sum + A[i]\n  endfor\n  return sum",
    "choices": [
@@ -519,6 +551,7 @@
   {
    "questionId": "gb_asum_14-18-15-6-2",
    "genre": "アルゴリズム",
+   "subcat": "アルゴリズム",
    "text": "次の関数 f を実行したときの戻り値はどれか。",
    "program": "○整数型: f()\n  整数型の配列: A ← {14, 18, 15, 6, 2}\n  整数型: sum ← 0\n  整数型: i\n  for (i を 1 から A の要素数 まで 1 ずつ増やす)\n    sum ← sum + A[i]\n  endfor\n  return sum",
    "choices": [
@@ -535,6 +568,7 @@
   {
    "questionId": "gb_asum_6-16-13-4-5-2",
    "genre": "アルゴリズム",
+   "subcat": "アルゴリズム",
    "text": "次の関数 f を実行したときの戻り値はどれか。",
    "program": "○整数型: f()\n  整数型の配列: A ← {6, 16, 13, 4, 5, 2}\n  整数型: sum ← 0\n  整数型: i\n  for (i を 1 から A の要素数 まで 1 ずつ増やす)\n    sum ← sum + A[i]\n  endfor\n  return sum",
    "choices": [
@@ -551,6 +585,7 @@
   {
    "questionId": "gb_asum_16-1-16-19-18",
    "genre": "アルゴリズム",
+   "subcat": "アルゴリズム",
    "text": "次の関数 f を実行したときの戻り値はどれか。",
    "program": "○整数型: f()\n  整数型の配列: A ← {16, 1, 16, 19, 18}\n  整数型: sum ← 0\n  整数型: i\n  for (i を 1 から A の要素数 まで 1 ずつ増やす)\n    sum ← sum + A[i]\n  endfor\n  return sum",
    "choices": [
@@ -567,6 +602,7 @@
   {
    "questionId": "gb_asum_1-13-3-19-11-12",
    "genre": "アルゴリズム",
+   "subcat": "アルゴリズム",
    "text": "次の関数 f を実行したときの戻り値はどれか。",
    "program": "○整数型: f()\n  整数型の配列: A ← {1, 13, 3, 19, 11, 12}\n  整数型: sum ← 0\n  整数型: i\n  for (i を 1 から A の要素数 まで 1 ずつ増やす)\n    sum ← sum + A[i]\n  endfor\n  return sum",
    "choices": [
@@ -583,6 +619,7 @@
   {
    "questionId": "gb_asum_2-4-3-4-20",
    "genre": "アルゴリズム",
+   "subcat": "アルゴリズム",
    "text": "次の関数 f を実行したときの戻り値はどれか。",
    "program": "○整数型: f()\n  整数型の配列: A ← {2, 4, 3, 4, 20}\n  整数型: sum ← 0\n  整数型: i\n  for (i を 1 から A の要素数 まで 1 ずつ増やす)\n    sum ← sum + A[i]\n  endfor\n  return sum",
    "choices": [
@@ -599,6 +636,7 @@
   {
    "questionId": "gb_asum_14-8-13-7-1-11",
    "genre": "アルゴリズム",
+   "subcat": "アルゴリズム",
    "text": "次の関数 f を実行したときの戻り値はどれか。",
    "program": "○整数型: f()\n  整数型の配列: A ← {14, 8, 13, 7, 1, 11}\n  整数型: sum ← 0\n  整数型: i\n  for (i を 1 から A の要素数 まで 1 ずつ増やす)\n    sum ← sum + A[i]\n  endfor\n  return sum",
    "choices": [
@@ -615,6 +653,7 @@
   {
    "questionId": "gb_asum_8-4-2-19-7-2",
    "genre": "アルゴリズム",
+   "subcat": "アルゴリズム",
    "text": "次の関数 f を実行したときの戻り値はどれか。",
    "program": "○整数型: f()\n  整数型の配列: A ← {8, 4, 2, 19, 7, 2}\n  整数型: sum ← 0\n  整数型: i\n  for (i を 1 から A の要素数 まで 1 ずつ増やす)\n    sum ← sum + A[i]\n  endfor\n  return sum",
    "choices": [
@@ -631,6 +670,7 @@
   {
    "questionId": "gb_asum_6-2-18-12-5-11",
    "genre": "アルゴリズム",
+   "subcat": "アルゴリズム",
    "text": "次の関数 f を実行したときの戻り値はどれか。",
    "program": "○整数型: f()\n  整数型の配列: A ← {6, 2, 18, 12, 5, 11}\n  整数型: sum ← 0\n  整数型: i\n  for (i を 1 から A の要素数 まで 1 ずつ増やす)\n    sum ← sum + A[i]\n  endfor\n  return sum",
    "choices": [
@@ -647,6 +687,7 @@
   {
    "questionId": "gb_amax_22-9-2-40-10",
    "genre": "アルゴリズム",
+   "subcat": "アルゴリズム",
    "text": "次の関数 f を実行したときの戻り値はどれか。",
    "program": "○整数型: f()\n  整数型の配列: A ← {22, 9, 2, 40, 10}\n  整数型: r ← A[1]\n  整数型: i\n  for (i を 2 から A の要素数 まで 1 ずつ増やす)\n    if (A[i] > r)\n      r ← A[i]\n    endif\n  endfor\n  return r",
    "choices": [
@@ -663,6 +704,7 @@
   {
    "questionId": "gb_amax_2-27-24-13-5-1",
    "genre": "アルゴリズム",
+   "subcat": "アルゴリズム",
    "text": "次の関数 f を実行したときの戻り値はどれか。",
    "program": "○整数型: f()\n  整数型の配列: A ← {2, 27, 24, 13, 5, 1}\n  整数型: r ← A[1]\n  整数型: i\n  for (i を 2 から A の要素数 まで 1 ずつ増やす)\n    if (A[i] > r)\n      r ← A[i]\n    endif\n  endfor\n  return r",
    "choices": [
@@ -679,6 +721,7 @@
   {
    "questionId": "gb_amax_35-26-29-2-34-27",
    "genre": "アルゴリズム",
+   "subcat": "アルゴリズム",
    "text": "次の関数 f を実行したときの戻り値はどれか。",
    "program": "○整数型: f()\n  整数型の配列: A ← {35, 26, 29, 2, 34, 27}\n  整数型: r ← A[1]\n  整数型: i\n  for (i を 2 から A の要素数 まで 1 ずつ増やす)\n    if (A[i] > r)\n      r ← A[i]\n    endif\n  endfor\n  return r",
    "choices": [
@@ -695,6 +738,7 @@
   {
    "questionId": "gb_amax_8-12-9-40-1-29",
    "genre": "アルゴリズム",
+   "subcat": "アルゴリズム",
    "text": "次の関数 f を実行したときの戻り値はどれか。",
    "program": "○整数型: f()\n  整数型の配列: A ← {8, 12, 9, 40, 1, 29}\n  整数型: r ← A[1]\n  整数型: i\n  for (i を 2 から A の要素数 まで 1 ずつ増やす)\n    if (A[i] > r)\n      r ← A[i]\n    endif\n  endfor\n  return r",
    "choices": [
@@ -711,6 +755,7 @@
   {
    "questionId": "gb_amax_26-22-30-21-32-5",
    "genre": "アルゴリズム",
+   "subcat": "アルゴリズム",
    "text": "次の関数 f を実行したときの戻り値はどれか。",
    "program": "○整数型: f()\n  整数型の配列: A ← {26, 22, 30, 21, 32, 5}\n  整数型: r ← A[1]\n  整数型: i\n  for (i を 2 から A の要素数 まで 1 ずつ増やす)\n    if (A[i] > r)\n      r ← A[i]\n    endif\n  endfor\n  return r",
    "choices": [
@@ -727,6 +772,7 @@
   {
    "questionId": "gb_amax_11-4-36-30-35-21",
    "genre": "アルゴリズム",
+   "subcat": "アルゴリズム",
    "text": "次の関数 f を実行したときの戻り値はどれか。",
    "program": "○整数型: f()\n  整数型の配列: A ← {11, 4, 36, 30, 35, 21}\n  整数型: r ← A[1]\n  整数型: i\n  for (i を 2 から A の要素数 まで 1 ずつ増やす)\n    if (A[i] > r)\n      r ← A[i]\n    endif\n  endfor\n  return r",
    "choices": [
@@ -743,6 +789,7 @@
   {
    "questionId": "gb_amax_8-1-37-24-22",
    "genre": "アルゴリズム",
+   "subcat": "アルゴリズム",
    "text": "次の関数 f を実行したときの戻り値はどれか。",
    "program": "○整数型: f()\n  整数型の配列: A ← {8, 1, 37, 24, 22}\n  整数型: r ← A[1]\n  整数型: i\n  for (i を 2 から A の要素数 まで 1 ずつ増やす)\n    if (A[i] > r)\n      r ← A[i]\n    endif\n  endfor\n  return r",
    "choices": [
@@ -759,6 +806,7 @@
   {
    "questionId": "gb_amax_3-5-5-4",
    "genre": "アルゴリズム",
+   "subcat": "アルゴリズム",
    "text": "次の関数 f を実行したときの戻り値はどれか。",
    "program": "○整数型: f()\n  整数型の配列: A ← {3, 5, 5, 4}\n  整数型: r ← A[1]\n  整数型: i\n  for (i を 2 から A の要素数 まで 1 ずつ増やす)\n    if (A[i] > r)\n      r ← A[i]\n    endif\n  endfor\n  return r",
    "choices": [
@@ -775,6 +823,7 @@
   {
    "questionId": "gb_amax_31-11-27-21-2",
    "genre": "アルゴリズム",
+   "subcat": "アルゴリズム",
    "text": "次の関数 f を実行したときの戻り値はどれか。",
    "program": "○整数型: f()\n  整数型の配列: A ← {31, 11, 27, 21, 2}\n  整数型: r ← A[1]\n  整数型: i\n  for (i を 2 から A の要素数 まで 1 ずつ増やす)\n    if (A[i] > r)\n      r ← A[i]\n    endif\n  endfor\n  return r",
    "choices": [
@@ -791,6 +840,7 @@
   {
    "questionId": "gb_amax_28-8-16-29-1",
    "genre": "アルゴリズム",
+   "subcat": "アルゴリズム",
    "text": "次の関数 f を実行したときの戻り値はどれか。",
    "program": "○整数型: f()\n  整数型の配列: A ← {28, 8, 16, 29, 1}\n  整数型: r ← A[1]\n  整数型: i\n  for (i を 2 から A の要素数 まで 1 ずつ増やす)\n    if (A[i] > r)\n      r ← A[i]\n    endif\n  endfor\n  return r",
    "choices": [
@@ -807,6 +857,7 @@
   {
    "questionId": "gb_amax_25-10-32-34-35",
    "genre": "アルゴリズム",
+   "subcat": "アルゴリズム",
    "text": "次の関数 f を実行したときの戻り値はどれか。",
    "program": "○整数型: f()\n  整数型の配列: A ← {25, 10, 32, 34, 35}\n  整数型: r ← A[1]\n  整数型: i\n  for (i を 2 から A の要素数 まで 1 ずつ増やす)\n    if (A[i] > r)\n      r ← A[i]\n    endif\n  endfor\n  return r",
    "choices": [
@@ -823,6 +874,7 @@
   {
    "questionId": "gb_amax_21-27-8-22",
    "genre": "アルゴリズム",
+   "subcat": "アルゴリズム",
    "text": "次の関数 f を実行したときの戻り値はどれか。",
    "program": "○整数型: f()\n  整数型の配列: A ← {21, 27, 8, 22}\n  整数型: r ← A[1]\n  整数型: i\n  for (i を 2 から A の要素数 まで 1 ずつ増やす)\n    if (A[i] > r)\n      r ← A[i]\n    endif\n  endfor\n  return r",
    "choices": [
@@ -839,6 +891,7 @@
   {
    "questionId": "gb_amax_33-6-5-2-13",
    "genre": "アルゴリズム",
+   "subcat": "アルゴリズム",
    "text": "次の関数 f を実行したときの戻り値はどれか。",
    "program": "○整数型: f()\n  整数型の配列: A ← {33, 6, 5, 2, 13}\n  整数型: r ← A[1]\n  整数型: i\n  for (i を 2 から A の要素数 まで 1 ずつ増やす)\n    if (A[i] > r)\n      r ← A[i]\n    endif\n  endfor\n  return r",
    "choices": [
@@ -855,6 +908,7 @@
   {
    "questionId": "gb_amax_7-14-30-3-36-31",
    "genre": "アルゴリズム",
+   "subcat": "アルゴリズム",
    "text": "次の関数 f を実行したときの戻り値はどれか。",
    "program": "○整数型: f()\n  整数型の配列: A ← {7, 14, 30, 3, 36, 31}\n  整数型: r ← A[1]\n  整数型: i\n  for (i を 2 から A の要素数 まで 1 ずつ増やす)\n    if (A[i] > r)\n      r ← A[i]\n    endif\n  endfor\n  return r",
    "choices": [
@@ -871,6 +925,7 @@
   {
    "questionId": "gb_halve_50",
    "genre": "アルゴリズム",
+   "subcat": "アルゴリズム",
    "text": "次の関数 f を実行したときの戻り値はどれか。",
    "program": "○整数型: f()\n  整数型: x ← 50\n  整数型: count ← 0\n  while (x > 1)\n    x ← x ÷ 2 の商\n    count ← count + 1\n  endwhile\n  return count",
    "choices": [
@@ -887,6 +942,7 @@
   {
    "questionId": "gb_halve_16",
    "genre": "アルゴリズム",
+   "subcat": "アルゴリズム",
    "text": "次の関数 f を実行したときの戻り値はどれか。",
    "program": "○整数型: f()\n  整数型: x ← 16\n  整数型: count ← 0\n  while (x > 1)\n    x ← x ÷ 2 の商\n    count ← count + 1\n  endwhile\n  return count",
    "choices": [
@@ -903,6 +959,7 @@
   {
    "questionId": "gb_halve_10",
    "genre": "アルゴリズム",
+   "subcat": "アルゴリズム",
    "text": "次の関数 f を実行したときの戻り値はどれか。",
    "program": "○整数型: f()\n  整数型: x ← 10\n  整数型: count ← 0\n  while (x > 1)\n    x ← x ÷ 2 の商\n    count ← count + 1\n  endwhile\n  return count",
    "choices": [
@@ -919,6 +976,7 @@
   {
    "questionId": "gb_halve_8",
    "genre": "アルゴリズム",
+   "subcat": "アルゴリズム",
    "text": "次の関数 f を実行したときの戻り値はどれか。",
    "program": "○整数型: f()\n  整数型: x ← 8\n  整数型: count ← 0\n  while (x > 1)\n    x ← x ÷ 2 の商\n    count ← count + 1\n  endwhile\n  return count",
    "choices": [
@@ -935,6 +993,7 @@
   {
    "questionId": "gb_halve_20",
    "genre": "アルゴリズム",
+   "subcat": "アルゴリズム",
    "text": "次の関数 f を実行したときの戻り値はどれか。",
    "program": "○整数型: f()\n  整数型: x ← 20\n  整数型: count ← 0\n  while (x > 1)\n    x ← x ÷ 2 の商\n    count ← count + 1\n  endwhile\n  return count",
    "choices": [
@@ -951,6 +1010,7 @@
   {
    "questionId": "gb_halve_64",
    "genre": "アルゴリズム",
+   "subcat": "アルゴリズム",
    "text": "次の関数 f を実行したときの戻り値はどれか。",
    "program": "○整数型: f()\n  整数型: x ← 64\n  整数型: count ← 0\n  while (x > 1)\n    x ← x ÷ 2 の商\n    count ← count + 1\n  endwhile\n  return count",
    "choices": [
@@ -967,6 +1027,7 @@
   {
    "questionId": "gb_halve_100",
    "genre": "アルゴリズム",
+   "subcat": "アルゴリズム",
    "text": "次の関数 f を実行したときの戻り値はどれか。",
    "program": "○整数型: f()\n  整数型: x ← 100\n  整数型: count ← 0\n  while (x > 1)\n    x ← x ÷ 2 の商\n    count ← count + 1\n  endwhile\n  return count",
    "choices": [
@@ -983,6 +1044,7 @@
   {
    "questionId": "gb_halve_32",
    "genre": "アルゴリズム",
+   "subcat": "アルゴリズム",
    "text": "次の関数 f を実行したときの戻り値はどれか。",
    "program": "○整数型: f()\n  整数型: x ← 32\n  整数型: count ← 0\n  while (x > 1)\n    x ← x ÷ 2 の商\n    count ← count + 1\n  endwhile\n  return count",
    "choices": [
@@ -999,6 +1061,7 @@
   {
    "questionId": "gb_pow_2_3",
    "genre": "アルゴリズム",
+   "subcat": "アルゴリズム",
    "text": "次の関数 f を実行したときの戻り値はどれか。",
    "program": "○整数型: f()\n  整数型: r ← 1\n  整数型: i\n  for (i を 1 から 3 まで 1 ずつ増やす)\n    r ← r × 2\n  endfor\n  return r",
    "choices": [
@@ -1015,6 +1078,7 @@
   {
    "questionId": "gb_pow_3_4",
    "genre": "アルゴリズム",
+   "subcat": "アルゴリズム",
    "text": "次の関数 f を実行したときの戻り値はどれか。",
    "program": "○整数型: f()\n  整数型: r ← 1\n  整数型: i\n  for (i を 1 から 4 まで 1 ずつ増やす)\n    r ← r × 3\n  endfor\n  return r",
    "choices": [
@@ -1031,6 +1095,7 @@
   {
    "questionId": "gb_pow_5_2",
    "genre": "アルゴリズム",
+   "subcat": "アルゴリズム",
    "text": "次の関数 f を実行したときの戻り値はどれか。",
    "program": "○整数型: f()\n  整数型: r ← 1\n  整数型: i\n  for (i を 1 から 2 まで 1 ずつ増やす)\n    r ← r × 5\n  endfor\n  return r",
    "choices": [
@@ -1047,6 +1112,7 @@
   {
    "questionId": "gb_pow_3_3",
    "genre": "アルゴリズム",
+   "subcat": "アルゴリズム",
    "text": "次の関数 f を実行したときの戻り値はどれか。",
    "program": "○整数型: f()\n  整数型: r ← 1\n  整数型: i\n  for (i を 1 から 3 まで 1 ずつ増やす)\n    r ← r × 3\n  endfor\n  return r",
    "choices": [
@@ -1063,6 +1129,7 @@
   {
    "questionId": "gb_pow_3_5",
    "genre": "アルゴリズム",
+   "subcat": "アルゴリズム",
    "text": "次の関数 f を実行したときの戻り値はどれか。",
    "program": "○整数型: f()\n  整数型: r ← 1\n  整数型: i\n  for (i を 1 から 5 まで 1 ずつ増やす)\n    r ← r × 3\n  endfor\n  return r",
    "choices": [
@@ -1079,6 +1146,7 @@
   {
    "questionId": "gb_pow_5_4",
    "genre": "アルゴリズム",
+   "subcat": "アルゴリズム",
    "text": "次の関数 f を実行したときの戻り値はどれか。",
    "program": "○整数型: f()\n  整数型: r ← 1\n  整数型: i\n  for (i を 1 から 4 まで 1 ずつ増やす)\n    r ← r × 5\n  endfor\n  return r",
    "choices": [
@@ -1095,6 +1163,7 @@
   {
    "questionId": "gb_pow_2_4",
    "genre": "アルゴリズム",
+   "subcat": "アルゴリズム",
    "text": "次の関数 f を実行したときの戻り値はどれか。",
    "program": "○整数型: f()\n  整数型: r ← 1\n  整数型: i\n  for (i を 1 から 4 まで 1 ずつ増やす)\n    r ← r × 2\n  endfor\n  return r",
    "choices": [
@@ -1111,6 +1180,7 @@
   {
    "questionId": "gb_pow_3_2",
    "genre": "アルゴリズム",
+   "subcat": "アルゴリズム",
    "text": "次の関数 f を実行したときの戻り値はどれか。",
    "program": "○整数型: f()\n  整数型: r ← 1\n  整数型: i\n  for (i を 1 から 2 まで 1 ずつ増やす)\n    r ← r × 3\n  endfor\n  return r",
    "choices": [
@@ -1127,6 +1197,7 @@
   {
    "questionId": "gb_pow_5_5",
    "genre": "アルゴリズム",
+   "subcat": "アルゴリズム",
    "text": "次の関数 f を実行したときの戻り値はどれか。",
    "program": "○整数型: f()\n  整数型: r ← 1\n  整数型: i\n  for (i を 1 から 5 まで 1 ずつ増やす)\n    r ← r × 5\n  endfor\n  return r",
    "choices": [
@@ -1143,6 +1214,7 @@
   {
    "questionId": "gb_pow_2_5",
    "genre": "アルゴリズム",
+   "subcat": "アルゴリズム",
    "text": "次の関数 f を実行したときの戻り値はどれか。",
    "program": "○整数型: f()\n  整数型: r ← 1\n  整数型: i\n  for (i を 1 から 5 まで 1 ずつ増やす)\n    r ← r × 2\n  endfor\n  return r",
    "choices": [
@@ -1159,6 +1231,7 @@
   {
    "questionId": "gb_pow_5_3",
    "genre": "アルゴリズム",
+   "subcat": "アルゴリズム",
    "text": "次の関数 f を実行したときの戻り値はどれか。",
    "program": "○整数型: f()\n  整数型: r ← 1\n  整数型: i\n  for (i を 1 から 3 まで 1 ずつ増やす)\n    r ← r × 5\n  endfor\n  return r",
    "choices": [
@@ -1175,6 +1248,7 @@
   {
    "questionId": "gb_pow_2_2",
    "genre": "アルゴリズム",
+   "subcat": "アルゴリズム",
    "text": "次の関数 f を実行したときの戻り値はどれか。",
    "program": "○整数型: f()\n  整数型: r ← 1\n  整数型: i\n  for (i を 1 から 2 まで 1 ずつ増やす)\n    r ← r × 2\n  endfor\n  return r",
    "choices": [
@@ -1191,6 +1265,7 @@
   {
    "questionId": "gb_gcd_48_56",
    "genre": "アルゴリズム",
+   "subcat": "アルゴリズム",
    "text": "次の関数 f を実行したときの戻り値はどれか。",
    "program": "○整数型: f()\n  整数型: a ← 48\n  整数型: b ← 56\n  while (b ≠ 0)\n    整数型: t ← a mod b\n    a ← b\n    b ← t\n  endwhile\n  return a",
    "choices": [
@@ -1207,6 +1282,7 @@
   {
    "questionId": "gb_gcd_12_42",
    "genre": "アルゴリズム",
+   "subcat": "アルゴリズム",
    "text": "次の関数 f を実行したときの戻り値はどれか。",
    "program": "○整数型: f()\n  整数型: a ← 12\n  整数型: b ← 42\n  while (b ≠ 0)\n    整数型: t ← a mod b\n    a ← b\n    b ← t\n  endwhile\n  return a",
    "choices": [
@@ -1223,6 +1299,7 @@
   {
    "questionId": "gb_gcd_18_45",
    "genre": "アルゴリズム",
+   "subcat": "アルゴリズム",
    "text": "次の関数 f を実行したときの戻り値はどれか。",
    "program": "○整数型: f()\n  整数型: a ← 18\n  整数型: b ← 45\n  while (b ≠ 0)\n    整数型: t ← a mod b\n    a ← b\n    b ← t\n  endwhile\n  return a",
    "choices": [
@@ -1239,6 +1316,7 @@
   {
    "questionId": "gb_gcd_18_16",
    "genre": "アルゴリズム",
+   "subcat": "アルゴリズム",
    "text": "次の関数 f を実行したときの戻り値はどれか。",
    "program": "○整数型: f()\n  整数型: a ← 18\n  整数型: b ← 16\n  while (b ≠ 0)\n    整数型: t ← a mod b\n    a ← b\n    b ← t\n  endwhile\n  return a",
    "choices": [
@@ -1255,6 +1333,7 @@
   {
    "questionId": "gb_gcd_36_45",
    "genre": "アルゴリズム",
+   "subcat": "アルゴリズム",
    "text": "次の関数 f を実行したときの戻り値はどれか。",
    "program": "○整数型: f()\n  整数型: a ← 36\n  整数型: b ← 45\n  while (b ≠ 0)\n    整数型: t ← a mod b\n    a ← b\n    b ← t\n  endwhile\n  return a",
    "choices": [
@@ -1271,6 +1350,7 @@
   {
    "questionId": "gb_gcd_60_56",
    "genre": "アルゴリズム",
+   "subcat": "アルゴリズム",
    "text": "次の関数 f を実行したときの戻り値はどれか。",
    "program": "○整数型: f()\n  整数型: a ← 60\n  整数型: b ← 56\n  while (b ≠ 0)\n    整数型: t ← a mod b\n    a ← b\n    b ← t\n  endwhile\n  return a",
    "choices": [
@@ -1287,6 +1367,7 @@
   {
    "questionId": "gb_gcd_84_28",
    "genre": "アルゴリズム",
+   "subcat": "アルゴリズム",
    "text": "次の関数 f を実行したときの戻り値はどれか。",
    "program": "○整数型: f()\n  整数型: a ← 84\n  整数型: b ← 28\n  while (b ≠ 0)\n    整数型: t ← a mod b\n    a ← b\n    b ← t\n  endwhile\n  return a",
    "choices": [
@@ -1303,6 +1384,7 @@
   {
    "questionId": "gb_gcd_24_28",
    "genre": "アルゴリズム",
+   "subcat": "アルゴリズム",
    "text": "次の関数 f を実行したときの戻り値はどれか。",
    "program": "○整数型: f()\n  整数型: a ← 24\n  整数型: b ← 28\n  while (b ≠ 0)\n    整数型: t ← a mod b\n    a ← b\n    b ← t\n  endwhile\n  return a",
    "choices": [
@@ -1319,6 +1401,7 @@
   {
    "questionId": "gb_gcd_84_15",
    "genre": "アルゴリズム",
+   "subcat": "アルゴリズム",
    "text": "次の関数 f を実行したときの戻り値はどれか。",
    "program": "○整数型: f()\n  整数型: a ← 84\n  整数型: b ← 15\n  while (b ≠ 0)\n    整数型: t ← a mod b\n    a ← b\n    b ← t\n  endwhile\n  return a",
    "choices": [
@@ -1335,6 +1418,7 @@
   {
    "questionId": "gb_gcd_100_28",
    "genre": "アルゴリズム",
+   "subcat": "アルゴリズム",
    "text": "次の関数 f を実行したときの戻り値はどれか。",
    "program": "○整数型: f()\n  整数型: a ← 100\n  整数型: b ← 28\n  while (b ≠ 0)\n    整数型: t ← a mod b\n    a ← b\n    b ← t\n  endwhile\n  return a",
    "choices": [
@@ -1351,6 +1435,7 @@
   {
    "questionId": "gb_gcd_100_8",
    "genre": "アルゴリズム",
+   "subcat": "アルゴリズム",
    "text": "次の関数 f を実行したときの戻り値はどれか。",
    "program": "○整数型: f()\n  整数型: a ← 100\n  整数型: b ← 8\n  while (b ≠ 0)\n    整数型: t ← a mod b\n    a ← b\n    b ← t\n  endwhile\n  return a",
    "choices": [
@@ -1367,6 +1452,7 @@
   {
    "questionId": "gb_gcd_100_20",
    "genre": "アルゴリズム",
+   "subcat": "アルゴリズム",
    "text": "次の関数 f を実行したときの戻り値はどれか。",
    "program": "○整数型: f()\n  整数型: a ← 100\n  整数型: b ← 20\n  while (b ≠ 0)\n    整数型: t ← a mod b\n    a ← b\n    b ← t\n  endwhile\n  return a",
    "choices": [
@@ -1383,6 +1469,7 @@
   {
    "questionId": "gb_gcd_48_42",
    "genre": "アルゴリズム",
+   "subcat": "アルゴリズム",
    "text": "次の関数 f を実行したときの戻り値はどれか。",
    "program": "○整数型: f()\n  整数型: a ← 48\n  整数型: b ← 42\n  while (b ≠ 0)\n    整数型: t ← a mod b\n    a ← b\n    b ← t\n  endwhile\n  return a",
    "choices": [
@@ -1399,6 +1486,7 @@
   {
    "questionId": "gb_gcd_24_8",
    "genre": "アルゴリズム",
+   "subcat": "アルゴリズム",
    "text": "次の関数 f を実行したときの戻り値はどれか。",
    "program": "○整数型: f()\n  整数型: a ← 24\n  整数型: b ← 8\n  while (b ≠ 0)\n    整数型: t ← a mod b\n    a ← b\n    b ← t\n  endwhile\n  return a",
    "choices": [
@@ -1415,6 +1503,7 @@
   {
    "questionId": "gb_cgt_8_15-2-10-7-4",
    "genre": "アルゴリズム",
+   "subcat": "アルゴリズム",
    "text": "次の関数 f を実行したときの戻り値はどれか。",
    "program": "○整数型: f()\n  整数型の配列: A ← {15, 2, 10, 7, 4}\n  整数型: count ← 0\n  整数型: i\n  for (i を 1 から A の要素数 まで 1 ずつ増やす)\n    if (A[i] > 8)\n      count ← count + 1\n    endif\n  endfor\n  return count",
    "choices": [
@@ -1431,6 +1520,7 @@
   {
    "questionId": "gb_cgt_12_15-2-16-18-12-15",
    "genre": "アルゴリズム",
+   "subcat": "アルゴリズム",
    "text": "次の関数 f を実行したときの戻り値はどれか。",
    "program": "○整数型: f()\n  整数型の配列: A ← {15, 2, 16, 18, 12, 15}\n  整数型: count ← 0\n  整数型: i\n  for (i を 1 から A の要素数 まで 1 ずつ増やす)\n    if (A[i] > 12)\n      count ← count + 1\n    endif\n  endfor\n  return count",
    "choices": [
@@ -1447,6 +1537,7 @@
   {
    "questionId": "gb_cgt_10_1-8-14-2-17-3-11",
    "genre": "アルゴリズム",
+   "subcat": "アルゴリズム",
    "text": "次の関数 f を実行したときの戻り値はどれか。",
    "program": "○整数型: f()\n  整数型の配列: A ← {1, 8, 14, 2, 17, 3, 11}\n  整数型: count ← 0\n  整数型: i\n  for (i を 1 から A の要素数 まで 1 ずつ増やす)\n    if (A[i] > 10)\n      count ← count + 1\n    endif\n  endfor\n  return count",
    "choices": [
@@ -1463,6 +1554,7 @@
   {
    "questionId": "gb_cgt_10_18-14-17-11-1",
    "genre": "アルゴリズム",
+   "subcat": "アルゴリズム",
    "text": "次の関数 f を実行したときの戻り値はどれか。",
    "program": "○整数型: f()\n  整数型の配列: A ← {18, 14, 17, 11, 1}\n  整数型: count ← 0\n  整数型: i\n  for (i を 1 から A の要素数 まで 1 ずつ増やす)\n    if (A[i] > 10)\n      count ← count + 1\n    endif\n  endfor\n  return count",
    "choices": [
@@ -1479,6 +1571,7 @@
   {
    "questionId": "gb_cgt_5_12-9-16-15-2",
    "genre": "アルゴリズム",
+   "subcat": "アルゴリズム",
    "text": "次の関数 f を実行したときの戻り値はどれか。",
    "program": "○整数型: f()\n  整数型の配列: A ← {12, 9, 16, 15, 2}\n  整数型: count ← 0\n  整数型: i\n  for (i を 1 から A の要素数 まで 1 ずつ増やす)\n    if (A[i] > 5)\n      count ← count + 1\n    endif\n  endfor\n  return count",
    "choices": [
@@ -1495,6 +1588,7 @@
   {
    "questionId": "gb_cgt_10_12-9-10-12-13-15",
    "genre": "アルゴリズム",
+   "subcat": "アルゴリズム",
    "text": "次の関数 f を実行したときの戻り値はどれか。",
    "program": "○整数型: f()\n  整数型の配列: A ← {12, 9, 10, 12, 13, 15}\n  整数型: count ← 0\n  整数型: i\n  for (i を 1 から A の要素数 まで 1 ずつ増やす)\n    if (A[i] > 10)\n      count ← count + 1\n    endif\n  endfor\n  return count",
    "choices": [
@@ -1511,6 +1605,7 @@
   {
    "questionId": "gb_cgt_8_14-8-9-2-7-4",
    "genre": "アルゴリズム",
+   "subcat": "アルゴリズム",
    "text": "次の関数 f を実行したときの戻り値はどれか。",
    "program": "○整数型: f()\n  整数型の配列: A ← {14, 8, 9, 2, 7, 4}\n  整数型: count ← 0\n  整数型: i\n  for (i を 1 から A の要素数 まで 1 ずつ増やす)\n    if (A[i] > 8)\n      count ← count + 1\n    endif\n  endfor\n  return count",
    "choices": [
@@ -1527,6 +1622,7 @@
   {
    "questionId": "gb_cgt_12_2-13-5-12-2",
    "genre": "アルゴリズム",
+   "subcat": "アルゴリズム",
    "text": "次の関数 f を実行したときの戻り値はどれか。",
    "program": "○整数型: f()\n  整数型の配列: A ← {2, 13, 5, 12, 2}\n  整数型: count ← 0\n  整数型: i\n  for (i を 1 から A の要素数 まで 1 ずつ増やす)\n    if (A[i] > 12)\n      count ← count + 1\n    endif\n  endfor\n  return count",
    "choices": [
@@ -1543,6 +1639,7 @@
   {
    "questionId": "gb_cgt_5_5-16-17-20-13",
    "genre": "アルゴリズム",
+   "subcat": "アルゴリズム",
    "text": "次の関数 f を実行したときの戻り値はどれか。",
    "program": "○整数型: f()\n  整数型の配列: A ← {5, 16, 17, 20, 13}\n  整数型: count ← 0\n  整数型: i\n  for (i を 1 から A の要素数 まで 1 ずつ増やす)\n    if (A[i] > 5)\n      count ← count + 1\n    endif\n  endfor\n  return count",
    "choices": [
@@ -1559,6 +1656,7 @@
   {
    "questionId": "gb_cgt_8_10-5-13-15-20",
    "genre": "アルゴリズム",
+   "subcat": "アルゴリズム",
    "text": "次の関数 f を実行したときの戻り値はどれか。",
    "program": "○整数型: f()\n  整数型の配列: A ← {10, 5, 13, 15, 20}\n  整数型: count ← 0\n  整数型: i\n  for (i を 1 から A の要素数 まで 1 ずつ増やす)\n    if (A[i] > 8)\n      count ← count + 1\n    endif\n  endfor\n  return count",
    "choices": [
@@ -1575,6 +1673,7 @@
   {
    "questionId": "gb_cgt_8_11-20-10-10-8",
    "genre": "アルゴリズム",
+   "subcat": "アルゴリズム",
    "text": "次の関数 f を実行したときの戻り値はどれか。",
    "program": "○整数型: f()\n  整数型の配列: A ← {11, 20, 10, 10, 8}\n  整数型: count ← 0\n  整数型: i\n  for (i を 1 から A の要素数 まで 1 ずつ増やす)\n    if (A[i] > 8)\n      count ← count + 1\n    endif\n  endfor\n  return count",
    "choices": [
@@ -1591,6 +1690,7 @@
   {
    "questionId": "gb_cgt_8_9-2-9-16-18",
    "genre": "アルゴリズム",
+   "subcat": "アルゴリズム",
    "text": "次の関数 f を実行したときの戻り値はどれか。",
    "program": "○整数型: f()\n  整数型の配列: A ← {9, 2, 9, 16, 18}\n  整数型: count ← 0\n  整数型: i\n  for (i を 1 から A の要素数 まで 1 ずつ増やす)\n    if (A[i] > 8)\n      count ← count + 1\n    endif\n  endfor\n  return count",
    "choices": [
@@ -1607,6 +1707,7 @@
   {
    "questionId": "gb_cgt_12_2-14-3-4-10-7-11",
    "genre": "アルゴリズム",
+   "subcat": "アルゴリズム",
    "text": "次の関数 f を実行したときの戻り値はどれか。",
    "program": "○整数型: f()\n  整数型の配列: A ← {2, 14, 3, 4, 10, 7, 11}\n  整数型: count ← 0\n  整数型: i\n  for (i を 1 から A の要素数 まで 1 ずつ増やす)\n    if (A[i] > 12)\n      count ← count + 1\n    endif\n  endfor\n  return count",
    "choices": [
@@ -1623,6 +1724,7 @@
   {
    "questionId": "gb_cgt_8_1-15-10-11-15-1",
    "genre": "アルゴリズム",
+   "subcat": "アルゴリズム",
    "text": "次の関数 f を実行したときの戻り値はどれか。",
    "program": "○整数型: f()\n  整数型の配列: A ← {1, 15, 10, 11, 15, 1}\n  整数型: count ← 0\n  整数型: i\n  for (i を 1 から A の要素数 まで 1 ずつ増やす)\n    if (A[i] > 8)\n      count ← count + 1\n    endif\n  endfor\n  return count",
    "choices": [

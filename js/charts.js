@@ -7,8 +7,10 @@ const Charts = (() => {
 
   // レーダーチャート: axes=[{label,value(0..1),color}]
   function radar(axes, size = 260) {
-    const cx = size / 2, cy = size / 2, r = size / 2 - 34;
     const n = axes.length;
+    // 軸が多い(=ラベルが多い)ほど外周の文字用マージンを広めに取り、はみ出しを防ぐ
+    const margin = n > 6 ? 54 : 34;
+    const cx = size / 2, cy = size / 2, r = size / 2 - margin;
     const pt = (i, rad) => {
       const ang = -Math.PI / 2 + (2 * Math.PI * i) / n;
       return [cx + rad * Math.cos(ang), cy + rad * Math.sin(ang)];
@@ -35,7 +37,7 @@ const Charts = (() => {
       const [x, y] = pt(i, r * Math.max(0.02, a.value));
       g += `<circle cx="${x.toFixed(1)}" cy="${y.toFixed(1)}" r="3" fill="var(--accent)"/>`;
     });
-    return `<svg viewBox="0 0 ${size} ${size}" xmlns="${NS}">${g}</svg>`;
+    return `<svg viewBox="0 0 ${size} ${size}" xmlns="${NS}" style="overflow:visible">${g}</svg>`;
   }
 
   // 横棒グラフ: items=[{label,value(0..1),color,note}]

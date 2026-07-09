@@ -32,19 +32,13 @@ body {
   max-width: 640px;
   margin: 0 auto;
   min-height: 100vh;
+  padding-top: env(safe-area-inset-top);
   padding-bottom: calc(var(--tabbar-h) + env(safe-area-inset-bottom));
 }
 .view { padding: 16px 16px 24px; display: none; animation: fade .25s ease; }
 .view.active { display: block; }
 @keyframes fade { from { opacity: 0; transform: translateY(6px);} to { opacity: 1; transform: none; } }
 
-header.app-head {
-  padding: calc(env(safe-area-inset-top) + 14px) 16px 12px;
-  position: sticky; top: 0; z-index: 5;
-  background: linear-gradient(180deg, var(--bg) 70%, rgba(15,20,32,0));
-}
-header.app-head h1 { font-size: 20px; margin: 0; letter-spacing: .5px; }
-header.app-head .sub { color: var(--text-dim); font-size: 12px; margin-top: 2px; }
 
 /* ---------- tab bar ---------- */
 nav.tabbar {
@@ -188,13 +182,8 @@ pre.pseudocode {
 
 /* ---------- settings ---------- */
 label.field { display: block; font-size: 13px; color: var(--text-dim); margin: 12px 0 6px; }
-input.inp, select.inp {
-  width: 100%; font-family: inherit; font-size: 15px; padding: 12px;
-  border-radius: 10px; border: 1px solid var(--border); background: var(--bg-elev); color: var(--text);
-}
 .empty { text-align: center; color: var(--text-dim); padding: 40px 10px; }
 .empty .big { font-size: 40px; margin-bottom: 8px; }
-.ai-out { font-size: 14px; background: rgba(124,92,255,.1); border: 1px solid var(--border); border-radius: 10px; padding: 12px; margin-top: 10px; white-space: pre-wrap; }
 .toast {
   position: fixed; bottom: calc(var(--tabbar-h) + 20px); left: 50%; transform: translateX(-50%);
   background: var(--bg-card); border: 1px solid var(--border); color: var(--text);
@@ -202,5 +191,3 @@ input.inp, select.inp {
   transition: opacity .3s; pointer-events: none; max-width: 90%;
 }
 .toast.show { opacity: 1; }
-.spin { display: inline-block; width: 16px; height: 16px; border: 2px solid var(--border); border-top-color: var(--accent); border-radius: 50%; animation: sp .7s linear infinite; vertical-align: middle; }
-@keyframes sp { to { transform: rotate(360deg); } }

@@ -68,6 +68,15 @@ const Data = (() => {
     get questions() { return questions; },
     wordById: (id) => wordById[id],
     questionById: (id) => questionById[id],
+    // 分野別正答率レーダー用の細分化サブカテゴリ。問題自体にsubcatがあればそれを、
+    // なければ最初の関連語彙(relatedWordIds[0])のsubcatを使う。
+    subcatOf: (q) => {
+      if (!q) return null;
+      if (q.subcat) return q.subcat;
+      const id = (q.relatedWordIds || [])[0];
+      const w = id && wordById[id];
+      return (w && w.subcat) || null;
+    },
     wordsByCategory: (cat) => words.filter(x => x.category === cat),
     // 科目A(午前系)のみ。分野で絞り込み
     questionsByCategory: (cat) => questions.filter(x => x.subject !== 'B' && (cat === '全分野' || x.category === cat)),
