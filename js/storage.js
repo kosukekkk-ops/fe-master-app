@@ -44,6 +44,30 @@ const Store = (() => {
     },
     exportAll() {
       return { qualification: QUAL, log: read('log', []), weak: read('weak', {}), flash: read('flash', {}) };
+    },
+    // 書き出したJSONを取り込んで、今の端末のデータへマージする(上書きではなく合算)。
+    // 別のURL/ブラウザで学習していた履歴を引き継ぐための機能。
+    importMerge(data) {
+      const log = read('log', []).concat(Array.isArray(data.log) ? data.log : []);
+      log.sort((a, b) => (a.ts || '').localeCompare(b.ts || ''));
+      write('log', log);
+
+      const weak = read('weak', {});
+      Object.entries(data.weak || {}).forEach(([id, e]) => {
+        const cur = weak[id] || { wrongCount: 0, sourceQuestionIds: [], ai: {} };
+        cur.wrongCount = (cur.wrongCount || 0) + (e.wrongCount || 0);
+        cur.sourceQuestionIds = Array.from(new Set([...(cur.sourceQuestionIds || []), ...(e.sourceQuestionIds || [])]));
+        cur.ai = { ...(e.ai || {}), ...(cur.ai || {}) };
+        cur.lastWrongAt = [cur.lastWrongAt, e.lastWrongAt].filter(Boolean).sort().pop();
+        weak[id] = cur;
+      });
+      write('weak', weak);
+
+      const flash = read('flash', {});
+      Object.entries(data.flash || {}).forEach(([k, v]) => { if (!flash[k]) flash[k] = v; });
+      write('flash', flash);
+
+      return { logCount: log.length, weakCount: Object.keys(weak).length };
     }
   };
 })();

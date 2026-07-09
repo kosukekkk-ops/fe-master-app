@@ -457,8 +457,11 @@
       </div>
       <div class="card">
         <h2>データ管理</h2>
-        <p class="muted" style="font-size:13px">学習ログ・苦手単語帳はブラウザ(localStorage)に保存され、次回も引き継がれます。</p>
+        <p class="muted" style="font-size:13px">学習ログ・苦手単語帳はブラウザ(localStorage)に保存され、次回も引き継がれます。別のURL/ブラウザで学習していた履歴は、書き出したJSONをこの端末で読み込むと合算されます。</p>
         <button class="btn secondary" id="set-export">学習データを書き出す(JSON)</button>
+        <div style="height:10px"></div>
+        <input type="file" id="set-import-file" accept="application/json" style="display:none">
+        <button class="btn secondary" id="set-import">学習データを読み込む(JSON)</button>
         <div style="height:10px"></div>
         <button class="btn ghost" id="set-reset" style="color:var(--ng);border-color:var(--ng)">学習データを全消去</button>
       </div>
@@ -479,6 +482,20 @@
       const a = document.createElement('a');
       a.href = URL.createObjectURL(blob); a.download = `fe-learning-${today()}.json`; a.click();
       URL.revokeObjectURL(a.href);
+    };
+    $('#set-import').onclick = () => $('#set-import-file').click();
+    $('#set-import-file').onchange = async (e) => {
+      const file = e.target.files[0];
+      if (!file) return;
+      try {
+        const data = JSON.parse(await file.text());
+        const { logCount, weakCount } = Store.importMerge(data);
+        toast(`読み込みました(解答履歴 ${logCount}件 / 苦手単語 ${weakCount}語)`);
+        renderSettings();
+      } catch (err) {
+        toast('読み込みに失敗しました: ' + err.message);
+      }
+      e.target.value = '';
     };
     $('#set-reset').onclick = () => {
       if (confirm('学習ログと苦手単語帳をすべて消去します。よろしいですか?')) {
