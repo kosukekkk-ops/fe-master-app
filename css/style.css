@@ -144,8 +144,10 @@ pre.pseudocode {
 .feedback .verdict { font-weight: 700; font-size: 16px; margin-bottom: 6px; }
 .feedback.ok .verdict { color: var(--ok); }
 .feedback.ng .verdict { color: var(--ng); }
+.feedback.skip .verdict { color: var(--accent-2); }
 .feedback .exp { font-size: 14px; color: var(--text); }
 .feedback .added { font-size: 13px; color: var(--warn); margin-top: 10px; cursor: pointer; text-decoration: underline; }
+.giveup-row { text-align: center; margin-top: 4px; }
 .progress-bar { height: 6px; background: var(--bg-elev); border-radius: 999px; overflow: hidden; margin-bottom: 14px; }
 .progress-bar > span { display: block; height: 100%; background: var(--accent); transition: width .3s; }
 

@@ -42,11 +42,39 @@ const CATS = ['テクノロジ', 'マネジメント', 'ストラテジ'];
 const byCat = {};
 words.forEach(w => { (byCat[w.category] = byCat[w.category] || []).push(w); });
 
-// wにとってのダミー候補(自分以外)。同分野を優先し、足りなければ全体から補う。
+// 文字bigramのJaccard類似度。分野(3分類)だけでは話題が近い保証がないため、
+// meaning本文の類似度で「紛らわしい(=学習効果の高い)」ダミーを選ぶために使う。
+function bigrams(s) {
+  const arr = Array.from(String(s || ''));
+  const set = new Set();
+  for (let i = 0; i < arr.length - 1; i++) set.add(arr[i] + arr[i + 1]);
+  if (!set.size && arr.length) set.add(arr[0]);
+  return set;
+}
+function jaccard(a, b) {
+  if (!a.size || !b.size) return 0;
+  let inter = 0;
+  for (const x of a) if (b.has(x)) inter++;
+  return inter / (a.size + b.size - inter);
+}
+const gramsCache = new Map();
+function gramsOf(w) {
+  let g = gramsCache.get(w.wordId);
+  if (!g) { g = bigrams(w.meaning); gramsCache.set(w.wordId, g); }
+  return g;
+}
+
+// wにとってのダミー候補(自分以外)。同分野の中でmeaningが近い語を優先し、
+// 分野が同じでも話題が全く違う(=簡単すぎる)誤答になるのを防ぐ。同分野で足りなければ全体から補う。
 function distractorPool(w) {
+  const wGrams = gramsOf(w);
+  const bySimilarity = (list) => shuffle(list)
+    .map(x => ({ x, sim: jaccard(wGrams, gramsOf(x)) }))
+    .sort((a, b) => b.sim - a.sim)
+    .map(o => o.x);
   const same = (byCat[w.category] || []).filter(x => x.wordId !== w.wordId);
   const others = words.filter(x => x.wordId !== w.wordId && x.category !== w.category);
-  return shuffle(same).concat(shuffle(others));
+  return bySimilarity(same).concat(bySimilarity(others));
 }
 
 // 3つのダミーを、指定フィールドの値が正解と重複しないように選ぶ

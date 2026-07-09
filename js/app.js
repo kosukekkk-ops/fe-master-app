@@ -107,9 +107,11 @@
       <div class="choices">
         ${choices.map((c, i) => `<button class="choice" data-i="${i}"><span class="mark">${MARKS[i]}</span><span class="ctext">${esc(c)}</span></button>`).join('')}
       </div>
+      <div class="giveup-row"><button class="btn ghost small" id="q-giveup">🤔 わからない(解説を見る)</button></div>
       <div id="quiz-foot"></div>
     `;
     $('#view-quiz').querySelectorAll('.choice').forEach(b => b.onclick = () => answer(parseInt(b.dataset.i, 10)));
+    $('#q-giveup').onclick = giveUp;
   }
 
   function answer(pos) {
@@ -130,10 +132,34 @@
       if (i === pos && !correct) b.classList.add('wrong');
     });
 
+    renderQuizFeedback({ verdictText: correct ? '⭕ 正解' : '❌ 不正解', cls: correct ? 'ok' : 'ng', addedNote });
+  }
+
+  // 「わからない」で解説だけ確認する場合も、誤答と同じく苦手単語帳へ登録する
+  function giveUp() {
+    if (quiz.answered) return;
+    quiz.answered = true;
+    const { q, correctPos } = quiz.current;
+    quiz.sessionN++;
+
+    Store.addLog({ q: q.questionId, chosen: null, correct: false, gaveUp: true, ts: new Date().toISOString() });
+    const addedNote = registerWeakWords(q);
+
+    document.querySelectorAll('.choice').forEach((b, i) => {
+      b.classList.add('disabled');
+      if (i === correctPos) b.classList.add('correct');
+    });
+
+    renderQuizFeedback({ verdictText: '🤔 解説を確認しました', cls: 'skip', addedNote });
+  }
+
+  function renderQuizFeedback({ verdictText, cls, addedNote }) {
+    const { q } = quiz.current;
+    const gu = $('#q-giveup'); if (gu) gu.style.display = 'none';
     const last = quiz.idx >= quiz.pool.length - 1;
     $('#quiz-foot').innerHTML = `
-      <div class="feedback ${correct ? 'ok' : 'ng'}">
-        <div class="verdict">${correct ? '⭕ 正解' : '❌ 不正解'}</div>
+      <div class="feedback ${cls}">
+        <div class="verdict">${verdictText}</div>
         <div class="exp">${esc(q.explanation || '')}</div>
         ${q.source ? `<div class="muted" style="font-size:12px;margin-top:8px">出典: ${esc(q.source)}</div>` : ''}
         ${addedNote ? `<div class="added" id="added-note">📝 ${addedNote}</div>` : ''}
