@@ -132,7 +132,10 @@
       if (i === pos && !correct) b.classList.add('wrong');
     });
 
-    renderQuizFeedback({ verdictText: correct ? '⭕ 正解' : '❌ 不正解', cls: correct ? 'ok' : 'ng', addedNote });
+    renderQuizFeedback({
+      verdictText: correct ? '⭕ 正解' : '❌ 不正解', cls: correct ? 'ok' : 'ng', addedNote,
+      offerManualRegister: correct && (q.relatedWordIds || []).length > 0
+    });
   }
 
   // 「わからない」で解説だけ確認する場合も、誤答と同じく苦手単語帳へ登録する
@@ -153,7 +156,7 @@
     renderQuizFeedback({ verdictText: '🤔 解説を確認しました', cls: 'skip', addedNote });
   }
 
-  function renderQuizFeedback({ verdictText, cls, addedNote }) {
+  function renderQuizFeedback({ verdictText, cls, addedNote, offerManualRegister }) {
     const { q } = quiz.current;
     const gu = $('#q-giveup'); if (gu) gu.style.display = 'none';
     const last = quiz.idx >= quiz.pool.length - 1;
@@ -163,6 +166,7 @@
         <div class="exp">${esc(q.explanation || '')}</div>
         ${q.source ? `<div class="muted" style="font-size:12px;margin-top:8px">出典: ${esc(q.source)}</div>` : ''}
         ${addedNote ? `<div class="added" id="added-note">📝 ${addedNote}</div>` : ''}
+        ${offerManualRegister ? `<button class="btn ghost small" id="manual-register" style="margin-top:10px">📝 念のため苦手単語帳に登録</button>` : ''}
       </div>
       <div style="height:14px"></div>
       <button class="btn" id="q-next">${last ? '結果を見る' : '次の問題へ ▶'}</button>
@@ -170,6 +174,13 @@
     $('#q-next').onclick = () => { if (last) finishQuiz(); else { quiz.idx++; showQuestion(); window.scrollTo(0, 0); } };
     const noteEl = $('#added-note');
     if (noteEl) noteEl.onclick = () => go('flash');
+    const regBtn = $('#manual-register');
+    if (regBtn) regBtn.onclick = () => {
+      const note = registerWeakWords(q);
+      regBtn.outerHTML = note ? `<div class="added" id="added-note">📝 ${note}</div>` : '';
+      const added = $('#added-note');
+      if (added) added.onclick = () => go('flash');
+    };
   }
 
   // ★コア機能: 不正解の問題に紐づく relatedWordIds を苦手単語帳へ自動登録
