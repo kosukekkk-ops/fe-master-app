@@ -40,33 +40,144 @@
   }
 
   /* ================= ホーム ================= */
+  const DAILY_GOAL = 20; // 1日の目標問題数(達成度バナーの基準)
+
+  // 時間帯であいさつを出し分ける
+  function greeting() {
+    const h = new Date().getHours();
+    if (h >= 5 && h < 11) return { text: 'おはようございます', emoji: '☀️' };
+    if (h >= 11 && h < 18) return { text: 'こんにちは', emoji: '🙌' };
+    return { text: 'こんばんは', emoji: '👋' };
+  }
+
+  // 連続学習日数。今日または昨日に学習していれば継続中とみなし、連続する日を数える。
+  function studyStreak(byDay) {
+    const set = new Set(Object.keys(byDay));
+    if (!set.size) return 0;
+    const iso = (dt) => dt.toISOString().slice(0, 10);
+    const d = new Date(today() + 'T00:00:00Z');
+    if (!set.has(iso(d))) {
+      d.setUTCDate(d.getUTCDate() - 1);
+      if (!set.has(iso(d))) return 0; // 今日も昨日も未学習=途切れている
+    }
+    let streak = 0;
+    while (set.has(iso(d))) { streak++; d.setUTCDate(d.getUTCDate() - 1); }
+    return streak;
+  }
+
+  // 円形プログレスリング(SVG)。pct=0..1
+  function ring(pct, color, center) {
+    const size = 56, stroke = 6, r = (size - stroke) / 2, c = 2 * Math.PI * r;
+    const off = c * (1 - Math.max(0, Math.min(1, pct)));
+    return `<div class="ringwrap">
+      <svg width="${size}" height="${size}" viewBox="0 0 ${size} ${size}">
+        <circle cx="${size/2}" cy="${size/2}" r="${r}" fill="none" stroke="var(--bg-elev)" stroke-width="${stroke}"/>
+        <circle cx="${size/2}" cy="${size/2}" r="${r}" fill="none" stroke="${color}" stroke-width="${stroke}"
+          stroke-linecap="round" stroke-dasharray="${c.toFixed(1)}" stroke-dashoffset="${off.toFixed(1)}"
+          transform="rotate(-90 ${size/2} ${size/2})"/>
+      </svg>
+      <span class="ringc" style="color:${color}">${center}</span>
+    </div>`;
+  }
+
+  const ICON = {
+    list: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><line x1="9" y1="6" x2="20" y2="6"/><line x1="9" y1="12" x2="20" y2="12"/><line x1="9" y1="18" x2="20" y2="18"/><circle cx="4.5" cy="6" r="1.3" fill="currentColor" stroke="none"/><circle cx="4.5" cy="12" r="1.3" fill="currentColor" stroke="none"/><circle cx="4.5" cy="18" r="1.3" fill="currentColor" stroke="none"/></svg>`,
+    trend: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="3 17 9 11 13 15 21 7"/><polyline points="15 7 21 7 21 13"/></svg>`,
+    book: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 4.5A1.5 1.5 0 0 1 5.5 3H19a1 1 0 0 1 1 1v14a1 1 0 0 1-1 1H5.5A1.5 1.5 0 0 0 4 20.5z"/><path d="M4 17.5A1.5 1.5 0 0 1 5.5 16H20"/></svg>`,
+    check: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><polyline points="5 13 10 18 19 6"/></svg>`,
+    target: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="8"/><circle cx="12" cy="12" r="2.5" fill="currentColor" stroke="none"/></svg>`,
+    play: `<svg viewBox="0 0 24 24" fill="currentColor"><path d="M8 5v14l11-7z"/></svg>`,
+    cards: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round"><rect x="3" y="6" width="14" height="12" rx="2"/><path d="M7 6V5a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v11a2 2 0 0 1-2 2h-1"/></svg>`,
+    chevron: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 6 15 12 9 18"/></svg>`
+  };
+
   function renderHome() {
     const s = stats();
     const rate = s.total ? Math.round((s.ok / s.total) * 100) : 0;
     const weak = Store.getWeak();
     const weakCount = Object.keys(weak).length;
     const td = s.byDay[today()] || { ok: 0, n: 0 };
+    const todayRate = td.n ? Math.round(td.ok / td.n * 100) : 0;
+    const streak = studyStreak(s.byDay);
+    const g = greeting();
+
+    // 達成度バナー: 今日の学習量が1日の目標に対しどれだけ進んだか
+    const goalPct = Math.min(100, Math.round(td.n / DAILY_GOAL * 100));
+    let bTitle, bSub;
+    if (td.n === 0) { bTitle = '今日の学習を始めよう！'; bSub = '少しずつでも続けるのが合格への近道です。'; }
+    else if (goalPct < 50) { bTitle = 'いいスタートです！'; bSub = 'この調子で今日の目標を達成しましょう！'; }
+    else if (goalPct < 100) { bTitle = '素晴らしいペースです！'; bSub = 'ゴールはもうすぐそこです！'; }
+    else { bTitle = '今日の目標を達成！🎉'; bSub = '素晴らしい継続力です。'; }
+
     const v = $('#view-home');
     v.innerHTML = `
-      <div class="card">
-        <h2>今日の学習</h2>
-        <div class="stat-grid">
-          <div class="stat"><div class="num">${td.n}</div><div class="lbl">今日解いた問題</div></div>
-          <div class="stat"><div class="num" style="color:${td.n && td.ok/td.n>=0.6?'var(--ok)':'var(--warn)'}">${td.n ? Math.round(td.ok/td.n*100) : 0}%</div><div class="lbl">今日の正答率</div></div>
+      <header class="home-head">
+        <div class="greeting">
+          <h1>${g.text}！<span class="wave">${g.emoji}</span></h1>
+          <div class="sub">今日も一緒に頑張りましょう！</div>
         </div>
-      </div>
-      <div class="card">
-        <h2>累計</h2>
-        <div class="stat-grid">
-          <div class="stat"><div class="num">${s.total}</div><div class="lbl">総解答数</div></div>
-          <div class="stat"><div class="num" style="color:${rate>=60?'var(--ok)':'var(--warn)'}">${rate}%</div><div class="lbl">累計正答率</div></div>
-          <div class="stat"><div class="num" style="color:var(--ng)">${weakCount}</div><div class="lbl">苦手単語</div></div>
-          <div class="stat"><div class="num">${Data.words.length}</div><div class="lbl">収録用語</div></div>
+        <div class="streak">
+          <div class="flame">🔥</div>
+          <div class="streak-txt"><div class="streak-lbl">連続学習日数</div><div class="streak-n">${streak}<span>日</span></div></div>
         </div>
+      </header>
+
+      <section class="panel">
+        <h2 class="panel-h">今日の学習</h2>
+        <div class="today-grid">
+          <div class="mini">
+            ${ring(Math.min(1, td.n / DAILY_GOAL), 'var(--accent)', ICON.check)}
+            <div class="mini-txt"><div class="mini-n">${td.n}<span>問</span></div><div class="mini-lbl">今日解いた問題</div></div>
+          </div>
+          <div class="mini">
+            ${ring(todayRate / 100, 'var(--warn)', ICON.target)}
+            <div class="mini-txt"><div class="mini-n" style="color:var(--warn)">${todayRate}<span>%</span></div><div class="mini-lbl">今日の正答率</div></div>
+          </div>
+        </div>
+      </section>
+
+      <section class="panel">
+        <h2 class="panel-h">累計データ</h2>
+        <div class="cum-grid">
+          <div class="cum">
+            <div class="itile" style="--c:var(--accent)">${ICON.list}</div>
+            <div class="mini-txt"><div class="mini-n">${s.total}<span>問</span></div><div class="mini-lbl">総解答数</div></div>
+          </div>
+          <div class="cum">
+            <div class="itile" style="--c:var(--ok)">${ICON.trend}</div>
+            <div class="mini-txt"><div class="mini-n" style="color:var(--ok)">${rate}<span>%</span></div><div class="mini-lbl">累計正答率</div></div>
+          </div>
+          <div class="cum">
+            <div class="itile" style="--c:var(--ng)"><b>A</b></div>
+            <div class="mini-txt"><div class="mini-n" style="color:var(--ng)">${weakCount}<span>語</span></div><div class="mini-lbl">苦手単語</div></div>
+          </div>
+          <div class="cum">
+            <div class="itile" style="--c:var(--accent-2)">${ICON.book}</div>
+            <div class="mini-txt"><div class="mini-n">${Data.words.length}<span>語</span></div><div class="mini-lbl">収録用語</div></div>
+          </div>
+        </div>
+      </section>
+
+      <div class="banner">
+        <div class="banner-body">
+          <div class="banner-title">${bTitle}</div>
+          <div class="banner-sub">${bSub}</div>
+          <div class="banner-bar"><span style="width:${goalPct}%"></span></div>
+        </div>
+        <div class="banner-goal">${goalPct}%</div>
+        <div class="banner-trophy">🏆</div>
       </div>
-      <button class="btn big-cta" data-go="quiz">▶ 問題演習をはじめる</button>
-      <div style="height:10px"></div>
-      <button class="btn secondary" data-go="flash">📇 単語帳で復習する${weakCount ? `(苦手 ${weakCount} 語あり)` : ''}</button>
+
+      <button class="home-cta primary" data-go="quiz">
+        <span class="cta-ic">${ICON.play}</span>
+        <span class="cta-label">問題演習をはじめる</span>
+        <span class="cta-chev">${ICON.chevron}</span>
+      </button>
+      <button class="home-cta" data-go="flash">
+        <span class="cta-ic sec">${ICON.cards}</span>
+        <span class="cta-label">単語帳で復習する${weakCount ? `(苦手 ${weakCount} 語あり)` : ''}</span>
+        <span class="cta-chev">${ICON.chevron}</span>
+      </button>
     `;
     v.querySelectorAll('[data-go]').forEach(b => b.onclick = () => go(b.dataset.go));
   }
