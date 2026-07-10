@@ -1,0 +1,32 @@
+{
+  "name": "fe-master-app",
+  "version": "1.0.0",
+  "description": "基本情報技術者試験(FE)対策アプリ",
+  "main": "server.js",
+  "directories": {
+    "doc": "docs"
+  },
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "start": "node server.js"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/kosukekkk-ops/fe-master-app.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "type": "commonjs",
+  "bugs": {
+    "url": "https://github.com/kosukekkk-ops/fe-master-app/issues"
+  },
+  "homepage": "https://github.com/kosukekkk-ops/fe-master-app#readme",
+  "private": "true",
+  "dependencies": {
+    "@capacitor/android": "^8.4.1",
+    "@capacitor/cli": "^8.4.1",
+    "@capacitor/core": "^8.4.1",
+    "@capacitor/ios": "^8.4.1"
+  }
+}

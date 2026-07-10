@@ -496,7 +496,9 @@
     go('home');
     // Service Worker(オフライン対応)。新しいSWが有効化されたら自動でリロードして
     // ホーム画面のアイコンを削除・再追加しなくても常に最新版が表示されるようにする。
-    if ('serviceWorker' in navigator) {
+    // Capacitorネイティブアプリではアセットが端末内にあるためSW不要(iOSのWKWebViewでは動作もしない)。
+    const isNative = !!(window.Capacitor && window.Capacitor.isNativePlatform && window.Capacitor.isNativePlatform());
+    if (!isNative && 'serviceWorker' in navigator) {
       navigator.serviceWorker.register('sw.js').then(reg => reg.update().catch(() => {})).catch(() => {});
       let reloading = false;
       navigator.serviceWorker.addEventListener('controllerchange', () => {

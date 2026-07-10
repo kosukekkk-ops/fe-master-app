@@ -3,14 +3,13 @@
  * 単語帳の閲覧・復習・問題演習・分析ができるようにする。
  * (Anthropic APIへの通信はキャッシュせず常にネットワークへ)
  */
-const CACHE = 'fe-app-v20';
+const CACHE = 'fe-app-v21';
 const ASSETS = [
   './',
   './index.html',
   './css/style.css',
   './js/storage.js',
   './js/data.js',
-  './js/ai.js',
   './js/charts.js',
   './js/app.js',
   './manifest.webmanifest',

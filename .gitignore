@@ -1,0 +1,15 @@
+node_modules/
+
+# Capacitorがdocs/からコピーする生成物(cap syncで再生成される)
+android/app/src/main/assets/public/
+ios/App/App/public/
+
+# ネイティブビルド出力
+android/.gradle/
+android/build/
+android/app/build/
+android/local.properties
+ios/App/build/
+ios/App/Pods/
+ios/App/output/
+ios/DerivedData/
