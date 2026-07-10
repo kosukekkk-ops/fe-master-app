@@ -1,0 +1,60 @@
+# codemagic.yaml — Capacitor iOS アプリをクラウド(Mac不要)でビルドし、
+# App Store Connect(TestFlight/審査提出)へアップロードする設定。
+#
+# 【あなたがCodemagic側で1回だけ行う準備】
+#   1. https://codemagic.io にGitHubアカウントで登録し、このリポジトリを連携
+#   2. Apple Developer承認後、App Store Connectで「App Store Connect API キー」を作成
+#      (Users and Access → Integrations → App Store Connect API → 「+」でキー発行、
+#       Access は "App Manager" 以上)。発行される .p8 ファイル・Key ID・Issuer ID を控える
+#   3. Codemagic の Teams → (自分) → Integrations → Developer Portal で
+#      上記APIキーを登録し、統合名を「codemagic」にする(下の app_store_connect と一致させる)
+#   4. App Store Connect 側で、Bundle ID io.github.kosukekkkops.femaster の
+#      アプリレコードを1つ作成しておく(名前:FE対策)
+#
+# 準備が済んだら Codemagic 上でこのワークフローを実行するだけでビルド〜TestFlight配信まで走る。
+
+workflows:
+  ios-release:
+    name: iOS Release (App Store)
+    instance_type: mac_mini_m2       # クラウド上の実機Mac(無料枠 月500分)
+    max_build_duration: 60
+    integrations:
+      app_store_connect: codemagic   # ↑手順3で登録した統合名
+    environment:
+      ios_signing:
+        distribution_type: app_store
+        bundle_identifier: io.github.kosukekkkops.femaster
+      vars:
+        BUNDLE_ID: "io.github.kosukekkkops.femaster"
+        XCODE_PROJECT: "ios/App/App.xcodeproj"
+        XCODE_SCHEME: "App"
+        APP_STORE_APPLE_ID: 0000000000   # App Store Connectでアプリ作成後、その数値IDに置き換える
+      node: 20
+      xcode: latest
+      cocoapods: default
+    scripts:
+      - name: Install npm dependencies
+        script: npm ci
+      - name: Sync Capacitor iOS (docs/ → ネイティブへコピー)
+        script: npx cap sync ios
+      - name: Set up code signing settings on Xcode project
+        script: xcode-project use-profiles
+      - name: Increment build number
+        script: |
+          # App Store Connect 上の最新ビルド番号+1を採番(重複アップロード防止)
+          LATEST=$(app-store-connect get-latest-app-store-build-number "$APP_STORE_APPLE_ID" 2>/dev/null || echo "0")
+          cd ios/App
+          agvtool new-version -all $(($LATEST + 1))
+      - name: Build ipa for distribution
+        script: |
+          xcode-project build-ipa \
+            --project "$CM_BUILD_DIR/$XCODE_PROJECT" \
+            --scheme "$XCODE_SCHEME"
+    artifacts:
+      - build/ios/ipa/*.ipa
+      - /tmp/xcodebuild_logs/*.log
+    publishing:
+      app_store_connect:
+        auth: integration
+        submit_to_testflight: true     # まずTestFlight(自分の端末で最終確認)へ
+        # submit_to_app_store: true    # 審査に出す準備ができたらこの行を有効化
