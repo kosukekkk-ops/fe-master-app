@@ -1,7 +1,7 @@
 {
  "qualification": "FE",
  "version": 1,
- "generatedAt": "2026-07-09",
+ "generatedAt": "2026-07-10",
  "note": "FE科目Aの計算問題を自動生成(tools/generate_calc_questions.js)。正答はコード計算で保証、ダミーは典型的な計算ミス値。",
  "questions": [
   {

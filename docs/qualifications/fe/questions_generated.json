@@ -1,7 +1,7 @@
 {
  "qualification": "FE",
  "version": 1,
- "generatedAt": "2026-07-09",
+ "generatedAt": "2026-07-10",
  "note": "words.json から自動生成した問題(tools/generate_questions.js)。正解=対象用語の定義/例え、ダミー=同分野優先の別用語。辞書を増やして再実行すると問題も増える。",
  "questions": [
   {

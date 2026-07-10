@@ -1,7 +1,7 @@
 {
  "qualification": "FE",
  "version": 1,
- "generatedAt": "2026-07-09",
+ "generatedAt": "2026-07-10",
  "note": "科目B(アルゴリズム)のトレース問題を自動生成(tools/generate_b_questions.js)。擬似言語を生成し戻り値をコードで計算して正答を保証。",
  "questions": [
   {
