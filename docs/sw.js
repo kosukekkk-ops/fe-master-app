@@ -3,7 +3,7 @@
  * 単語帳の閲覧・復習・問題演習・分析ができるようにする。
  * (Anthropic APIへの通信はキャッシュせず常にネットワークへ)
  */
-const CACHE = 'fe-app-v21';
+const CACHE = 'fe-app-v22';
 const ASSETS = [
   './',
   './index.html',
