@@ -190,7 +190,9 @@
   }
 
   /* ================= 問題演習 ================= */
-  const quiz = { pool: [], idx: 0, cat: '全分野', subject: 'A', current: null, answered: false, sessionOk: 0, sessionN: 0 };
+  // built[]=各indexのシャッフル済み問題(前後移動で選択肢がぶれないようキャッシュ)
+  // answers[]=各indexの回答状態(null=未回答 / {pos,correct,gaveUp,...})。前の問題へ戻れるようにするための保持。
+  const quiz = { pool: [], idx: 0, cat: '全分野', subject: 'A', built: [], answers: [], sessionOk: 0, sessionN: 0 };
 
   function buildQuestion(q) {
     // 選択肢を実行時シャッフルし、正解位置が固定にならないようにする
@@ -208,6 +210,8 @@
     let pool = shuffle(subject === 'B' ? Data.questionsBySubjectB(key) : Data.questionsByCategory(key));
     if (qstate.limit > 0) pool = pool.slice(0, qstate.limit); // 出題数の上限(0=すべて)
     quiz.pool = pool;
+    quiz.built = new Array(pool.length).fill(null);
+    quiz.answers = new Array(pool.length).fill(null);
     quiz.idx = 0; quiz.sessionOk = 0; quiz.sessionN = 0;
     if (!quiz.pool.length) { toast('この条件の問題がありません'); return; }
     showQuestion();
@@ -215,34 +219,64 @@
 
   const MARKS = ['ア', 'イ', 'ウ', 'エ', 'オ', 'カ', 'キ', 'ク', 'ケ', 'コ'];
 
+  // シャッフル済み問題をindex単位でキャッシュ(前後移動で選択肢の並びを固定)
+  function builtAt(idx) {
+    if (!quiz.built[idx]) quiz.built[idx] = buildQuestion(quiz.pool[idx]);
+    return quiz.built[idx];
+  }
+
   function showQuestion() {
-    quiz.answered = false;
-    quiz.current = buildQuestion(quiz.pool[quiz.idx]);
-    const { q, choices } = quiz.current;
-    const pct = Math.round((quiz.idx / quiz.pool.length) * 100);
+    const idx = quiz.idx;
+    const { q, choices, correctPos } = builtAt(idx);
+    const ans = quiz.answers[idx];      // null=未回答
+    const answered = !!ans;
+    const last = idx >= quiz.pool.length - 1;
+    const pct = Math.round(((idx + 1) / quiz.pool.length) * 100);
     const pill = q.subject === 'B'
       ? `<span class="pill strat">科目B・${esc(q.genre || 'アルゴリズム')}</span>`
       : `<span class="pill ${CAT_CLASS[q.category]}">${q.category}</span>`;
-    $('#view-quiz').innerHTML = `
-      <div class="progress-bar"><span style="width:${pct}%"></span></div>
-      <div class="q-progress"><span>${quiz.idx + 1} / ${quiz.pool.length} 問</span>${pill}</div>
-      <div class="q-text">${esc(q.text)}</div>
-      ${q.bodyHtml ? `<div class="qbody">${q.bodyHtml}</div>` : ''}
-      ${q.program ? `<pre class="pseudocode">${esc(q.program)}</pre>` : ''}
-      <div class="choices">
-        ${choices.map((c, i) => `<button class="choice" data-i="${i}"><span class="mark">${MARKS[i]}</span><span class="ctext">${esc(c)}</span></button>`).join('')}
+    const v = $('#view-quiz');
+    v.classList.add('qmode');
+    v.innerHTML = `
+      <div class="quiz-scroll">
+        <div class="progress-bar"><span style="width:${pct}%"></span></div>
+        <div class="q-progress"><span>${idx + 1} / ${quiz.pool.length} 問</span>${pill}</div>
+        <div class="q-text">${esc(q.text)}</div>
+        ${q.bodyHtml ? `<div class="qbody">${q.bodyHtml}</div>` : ''}
+        ${q.program ? `<pre class="pseudocode">${esc(q.program)}</pre>` : ''}
+        <div class="choices">
+          ${choices.map((c, i) => {
+            let cls = 'choice';
+            if (answered) {
+              cls += ' disabled';
+              if (i === correctPos) cls += ' correct';
+              if (ans.pos === i && !ans.correct) cls += ' wrong';
+            }
+            return `<button class="${cls}" data-i="${i}"><span class="mark">${MARKS[i]}</span><span class="ctext">${esc(c)}</span></button>`;
+          }).join('')}
+        </div>
+        ${answered ? '' : `<div class="giveup-row"><button class="btn ghost small" id="q-giveup">🤔 わからない(解説を見る)</button></div>`}
+        <div id="quiz-foot"></div>
       </div>
-      <div class="giveup-row"><button class="btn ghost small" id="q-giveup">🤔 わからない(解説を見る)</button></div>
-      <div id="quiz-foot"></div>
+      <div class="quiz-nav">
+        <button class="qnav prev" id="q-prev" ${idx === 0 ? 'disabled' : ''}>◀ 前の問題</button>
+        <button class="qnav next" id="q-next">${last ? '結果を見る' : '次の問題 ▶'}</button>
+      </div>
     `;
-    $('#view-quiz').querySelectorAll('.choice').forEach(b => b.onclick = () => answer(parseInt(b.dataset.i, 10)));
-    $('#q-giveup').onclick = giveUp;
+    if (!answered) {
+      v.querySelectorAll('.choice').forEach(b => b.onclick = () => answer(parseInt(b.dataset.i, 10)));
+      $('#q-giveup').onclick = giveUp;
+    } else {
+      renderQuizFeedback(ans);
+    }
+    $('#q-prev').onclick = () => { if (quiz.idx > 0) { quiz.idx--; showQuestion(); window.scrollTo(0, 0); } };
+    $('#q-next').onclick = () => { if (last) finishQuiz(); else { quiz.idx++; showQuestion(); window.scrollTo(0, 0); } };
   }
 
   function answer(pos) {
-    if (quiz.answered) return;
-    quiz.answered = true;
-    const { q, correctPos } = quiz.current;
+    const idx = quiz.idx;
+    if (quiz.answers[idx]) return;      // 回答済みなら無視
+    const { q, correctPos } = builtAt(idx);
     const correct = pos === correctPos;
     quiz.sessionN++; if (correct) quiz.sessionOk++;
 
@@ -251,57 +285,50 @@
     let addedNote = '';
     if (!correct) addedNote = registerWeakWords(q);
 
-    document.querySelectorAll('.choice').forEach((b, i) => {
-      b.classList.add('disabled');
-      if (i === correctPos) b.classList.add('correct');
-      if (i === pos && !correct) b.classList.add('wrong');
-    });
-
-    renderQuizFeedback({
-      verdictText: correct ? '⭕ 正解' : '❌ 不正解', cls: correct ? 'ok' : 'ng', addedNote,
+    quiz.answers[idx] = {
+      pos, correct, gaveUp: false, addedNote,
+      verdictText: correct ? '⭕ 正解' : '❌ 不正解', cls: correct ? 'ok' : 'ng',
       offerManualRegister: correct && (q.relatedWordIds || []).length > 0
-    });
+    };
+    showQuestion();   // 回答済み表示に再描画
   }
 
   // 「わからない」で解説だけ確認する場合も、誤答と同じく苦手単語帳へ登録する
   function giveUp() {
-    if (quiz.answered) return;
-    quiz.answered = true;
-    const { q, correctPos } = quiz.current;
+    const idx = quiz.idx;
+    if (quiz.answers[idx]) return;
+    const { q } = builtAt(idx);
     quiz.sessionN++;
 
     Store.addLog({ q: q.questionId, chosen: null, correct: false, gaveUp: true, ts: new Date().toISOString() });
     const addedNote = registerWeakWords(q);
 
-    document.querySelectorAll('.choice').forEach((b, i) => {
-      b.classList.add('disabled');
-      if (i === correctPos) b.classList.add('correct');
-    });
-
-    renderQuizFeedback({ verdictText: '🤔 解説を確認しました', cls: 'skip', addedNote });
+    quiz.answers[idx] = {
+      pos: null, correct: false, gaveUp: true, addedNote,
+      verdictText: '🤔 解説を確認しました', cls: 'skip', offerManualRegister: false
+    };
+    showQuestion();
   }
 
-  function renderQuizFeedback({ verdictText, cls, addedNote, offerManualRegister }) {
-    const { q } = quiz.current;
-    const gu = $('#q-giveup'); if (gu) gu.style.display = 'none';
-    const last = quiz.idx >= quiz.pool.length - 1;
+  // 回答済み問題のフィードバック(解説・出典・苦手登録)を #quiz-foot に描画。
+  // 「次の問題」への進行は下部ナビが担うため、ここには進行ボタンを置かない。
+  function renderQuizFeedback(ans) {
+    const { q } = builtAt(quiz.idx);
     $('#quiz-foot').innerHTML = `
-      <div class="feedback ${cls}">
-        <div class="verdict">${verdictText}</div>
+      <div class="feedback ${ans.cls}">
+        <div class="verdict">${ans.verdictText}</div>
         <div class="exp">${esc(q.explanation || '')}</div>
         ${q.source ? `<div class="muted" style="font-size:12px;margin-top:8px">出典: ${esc(q.source)}</div>` : ''}
-        ${addedNote ? `<div class="added" id="added-note">📝 ${addedNote}</div>` : ''}
-        ${offerManualRegister ? `<button class="btn ghost small" id="manual-register" style="margin-top:10px">📝 念のため苦手単語帳に登録</button>` : ''}
+        ${ans.addedNote ? `<div class="added" id="added-note">📝 ${ans.addedNote}</div>` : ''}
+        ${ans.offerManualRegister ? `<button class="btn ghost small" id="manual-register" style="margin-top:10px">📝 念のため苦手単語帳に登録</button>` : ''}
       </div>
-      <div style="height:14px"></div>
-      <button class="btn" id="q-next">${last ? '結果を見る' : '次の問題へ ▶'}</button>
     `;
-    $('#q-next').onclick = () => { if (last) finishQuiz(); else { quiz.idx++; showQuestion(); window.scrollTo(0, 0); } };
     const noteEl = $('#added-note');
     if (noteEl) noteEl.onclick = () => go('flash');
     const regBtn = $('#manual-register');
     if (regBtn) regBtn.onclick = () => {
       const note = registerWeakWords(q);
+      ans.addedNote = note; ans.offerManualRegister = false;   // 保持して再訪時も反映
       regBtn.outerHTML = note ? `<div class="added" id="added-note">📝 ${note}</div>` : '';
       const added = $('#added-note');
       if (added) added.onclick = () => go('flash');
@@ -329,6 +356,7 @@
   }
 
   function finishQuiz() {
+    $('#view-quiz').classList.remove('qmode');
     const rate = quiz.sessionN ? Math.round((quiz.sessionOk / quiz.sessionN) * 100) : 0;
     $('#view-quiz').innerHTML = `
       <div class="card center">
@@ -362,6 +390,7 @@
 
   function renderQuizStart() {
     const v = $('#view-quiz');
+    v.classList.remove('qmode');
     const bCount = Data.subjectBCount;
     const isA = qstate.subject === 'A';
     const ranges = isA ? RANGES_A : RANGES_B;
