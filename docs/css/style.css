@@ -312,17 +312,21 @@ pre.pseudocode {
 }
 .flash.flipped { transform: rotateY(180deg); }
 .flash-face {
-  position: absolute; inset: 0; backface-visibility: hidden; -webkit-backface-visibility: hidden;
+  backface-visibility: hidden; -webkit-backface-visibility: hidden;
   border-radius: 18px; border: 1px solid var(--border); background: var(--bg-card);
   padding: 26px 22px; display: flex; flex-direction: column; justify-content: center; align-items: center;
 }
-.flash-face.back { transform: rotateY(180deg); background: var(--bg-elev); justify-content: flex-start; overflow-y: auto; }
+/* 表面は絶対配置でオーバーレイ、裏面は通常フローで高さを決める(裏面の全文が隠れずに表示される) */
+.flash-face.front { position: absolute; inset: 0; }
+.flash-face.back { position: relative; min-height: 300px; transform: rotateY(180deg); background: var(--bg-elev); justify-content: flex-start; }
 .flash-face .word { font-size: 30px; font-weight: 700; }
 .flash-face .reading { color: var(--text-dim); font-size: 13px; margin-top: 8px; }
 .flash-face .hint { color: var(--text-dim); font-size: 12px; margin-top: 20px; }
 .flash-face .meaning { font-size: 15px; margin: 6px 0 14px; text-align: left; }
-.flash-face .analogy-lbl { font-size: 12px; color: var(--accent); font-weight: 700; align-self: flex-start; }
+.flash-face .analogy-lbl { font-size: 12px; color: var(--accent); font-weight: 700; align-self: flex-start; margin-top: 8px; }
 .flash-face .analogy { font-size: 14px; text-align: left; color: var(--text); background: rgba(79,157,255,.08); border-radius: 10px; padding: 10px 12px; margin-top: 4px; }
+.flash-face .exam-lbl { font-size: 12px; color: var(--warn); font-weight: 700; align-self: flex-start; margin-top: 12px; }
+.flash-face .exam-note { font-size: 13px; text-align: left; color: var(--text); background: rgba(251,191,36,.08); border: 1px solid rgba(251,191,36,.18); border-radius: 10px; padding: 10px 12px; margin-top: 4px; }
 .flash-face .wrongcount { font-size: 12px; color: var(--ng); align-self: flex-start; margin-top: 12px; }
 .flash-face .word-cat { margin-top: 12px; }
 

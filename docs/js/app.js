@@ -526,6 +526,13 @@
     };
   }
 
+  // 単語帳の「試験ではこう出る」文。FE科目Aは意味・特徴を問う4択が基本。
+  function examHint(w) {
+    let s = `「${w.word}の説明として最も適切なものはどれか」のように意味や特徴を問う4択、または説明文から用語名を選ぶ形式で出題されます。`;
+    if (w.analogy) s += '例え話は覚えるための補助です。本番では上の「意味」のような技術的な説明で問われます。';
+    return s;
+  }
+
   function showCard() {
     const area = $('#flash-area');
     if (flash.idx >= flash.deck.length) {
@@ -539,19 +546,21 @@
     const pct = Math.round((flash.idx / flash.deck.length) * 100);
     const wc = w._weak ? `<div class="wrongcount">間違えた回数: ${w._weak.wrongCount} 回</div>` : '';
     const isKnown = !!Store.getKnown()[w.wordId];
+    // 演習と同じ充実版の説明(word_details.js)。未収録なら簡易meaningへフォールバック
+    const detailText = (window.WORD_DETAILS && window.WORD_DETAILS[w.wordId]) || w.meaning;
     area.innerHTML = `
       <div class="q-progress"><span>${flash.idx + 1} / ${flash.deck.length}</span><span class="pill ${CAT_CLASS[w.category]}">${w.category}</span></div>
       <div class="progress-bar"><span style="width:${pct}%"></span></div>
       <div class="flash-wrap"><div class="flash" id="card">
         <div class="flash-face front">
           <div class="word">${esc(w.word)}</div>
-          <div class="reading">${esc(w.reading || '')}</div>
           <div class="hint">タップで意味を表示</div>
         </div>
         <div class="flash-face back">
-          <div class="meaning">${esc(w.meaning)}</div>
-          <div class="analogy-lbl">💡 例え話</div>
-          <div class="analogy">${esc(w.analogy || '')}</div>
+          <div class="meaning">${esc(detailText)}</div>
+          ${w.analogy ? `<div class="analogy-lbl">💡 例え話</div><div class="analogy">${esc(w.analogy)}</div>` : ''}
+          <div class="exam-lbl">📝 試験ではこう出る</div>
+          <div class="exam-note">${esc(examHint(w))}</div>
           ${wc}
           <div class="word-cat"><span class="pill ${CAT_CLASS[w.category]}">${w.category}</span></div>
         </div>

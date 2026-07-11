@@ -18,7 +18,7 @@
 const fs = require('fs');
 const path = require('path');
 const ROOT = path.resolve(__dirname, '..', 'docs');
-const DETAILS = require('./word_details.js');
+const DETAILS = require('../docs/js/word_details.js');
 
 // 再現性のあるシード付き乱数
 function mulberry32(seed) {

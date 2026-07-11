@@ -17,7 +17,7 @@ const path = require('path');
 
 const ROOT = path.resolve(__dirname, '..', 'docs');
 const WORDS = JSON.parse(fs.readFileSync(path.join(ROOT, 'qualifications/fe/words.json'), 'utf8'));
-const DETAILS = require('./word_details.js');
+const DETAILS = require('../docs/js/word_details.js');
 
 // 演習の解説専用の詳しい説明文(未収録ならmeaningにフォールバック)
 function detail(w) { return DETAILS[w.wordId] || w.meaning; }
