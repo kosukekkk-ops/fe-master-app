@@ -629,26 +629,54 @@
   }
 
   /* ================= 設定 ================= */
+  // 利用規約・プライバシーポリシーをアプリ内の全画面ビューアで表示(オフラインでも読める)
+  function openLegal(kind) {
+    const html = window.LEGAL ? window.LEGAL[kind] : null;
+    if (!html) { toast('文書を読み込めませんでした'); return; }
+    const overlay = document.createElement('div');
+    overlay.className = 'legal-overlay';
+    overlay.innerHTML = `
+      <div class="legal-sheet">
+        <div class="legal-head"><button class="legal-close">✕ 閉じる</button></div>
+        <div class="legal-body">${html}</div>
+      </div>`;
+    document.body.appendChild(overlay);
+    overlay.querySelector('.legal-close').onclick = () => overlay.remove();
+    overlay.onclick = (e) => { if (e.target === overlay) overlay.remove(); };
+  }
+
   function renderSettings() {
     const v = $('#view-settings');
     v.innerHTML = `
-      <div class="card">
-        <h2>データ管理</h2>
-        <p class="muted" style="font-size:13px">学習ログ・苦手単語帳はブラウザ(localStorage)に保存され、次回も引き継がれます。別のURL/ブラウザで学習していた履歴は、書き出したJSONをこの端末で読み込むと合算されます。</p>
+      <section class="panel">
+        <div class="panel-head"><div class="itile sm" style="--c:var(--accent)">${ICON.list}</div><h2 class="panel-h">データ管理</h2></div>
+        <p class="panel-note" style="margin-bottom:12px">学習ログ・苦手単語帳は端末内に保存され、次回も引き継がれます。別のURL/ブラウザで学習していた履歴は、書き出したJSONをこの端末で読み込むと合算されます。</p>
         <button class="btn secondary" id="set-export">学習データを書き出す(JSON)</button>
         <div style="height:10px"></div>
         <input type="file" id="set-import-file" accept="application/json" style="display:none">
         <button class="btn secondary" id="set-import">学習データを読み込む(JSON)</button>
         <div style="height:10px"></div>
         <button class="btn ghost" id="set-reset" style="color:var(--ng);border-color:var(--ng)">学習データを全消去</button>
-      </div>
-      <div class="card">
-        <h2>このアプリについて</h2>
-        <p class="muted" style="font-size:13px">基本情報技術者試験(FE)対策アプリ v1 / 資格: ${Store.QUAL}<br>
-        収録: 用語 ${Data.words.length} 語・問題 ${Data.questions.length} 問<br>
-        オフライン対応(単語帳・演習・分析は通信不要)。ホーム画面に追加してPWAとして利用できます。</p>
-      </div>
+      </section>
+      <section class="panel">
+        <div class="panel-head"><div class="itile sm" style="--c:var(--accent-2)">${ICON.shield}</div><h2 class="panel-h">サポート</h2></div>
+        <button class="setting-row" data-legal="terms"><span>利用規約</span><span class="cta-chev">${ICON.chevron}</span></button>
+        <button class="setting-row" data-legal="privacy"><span>プライバシーポリシー</span><span class="cta-chev">${ICON.chevron}</span></button>
+        <button class="setting-row" id="set-contact"><span>お問い合わせ(GitHub)</span><span class="cta-chev">${ICON.chevron}</span></button>
+      </section>
+      <section class="panel">
+        <div class="panel-head"><div class="itile sm" style="--c:var(--ok)">${ICON.book}</div><h2 class="panel-h">このアプリについて</h2></div>
+        <div class="about-rows">
+          <div class="about-row"><span>アプリ名</span><span>基本情報技術者 FE対策</span></div>
+          <div class="about-row"><span>バージョン</span><span>1.0.0</span></div>
+          <div class="about-row"><span>収録用語</span><span>${Data.words.length} 語</span></div>
+          <div class="about-row"><span>収録問題</span><span>${Data.questions.length.toLocaleString()} 問</span></div>
+        </div>
+        <p class="panel-note" style="margin-top:12px">主要機能はオフラインで動作します。本アプリは個人開発の学習教材であり、試験実施団体(IPA)とは関係ありません。「基本情報技術者試験」はIPAの登録商標または名称です。</p>
+      </section>
     `;
+    v.querySelectorAll('[data-legal]').forEach(b => b.onclick = () => openLegal(b.dataset.legal));
+    $('#set-contact').onclick = () => window.open('https://github.com/kosukekkk-ops/fe-master-app', '_blank');
     $('#set-export').onclick = () => {
       const blob = new Blob([JSON.stringify(Store.exportAll(), null, 2)], { type: 'application/json' });
       const a = document.createElement('a');

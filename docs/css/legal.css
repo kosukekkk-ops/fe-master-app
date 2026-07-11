@@ -1,0 +1,19 @@
+/* legal.css — 利用規約・プライバシーポリシーの公開ページ用スタイル(アプリ本体とトーンを合わせる) */
+:root {
+  --bg: #0f1420; --bg-elev: #1a2030; --border: #2e3854;
+  --text: #e8ecf4; --text-dim: #9aa6c0; --accent: #4f9dff;
+}
+* { box-sizing: border-box; }
+body {
+  margin: 0; background: var(--bg); color: var(--text);
+  font-family: -apple-system, BlinkMacSystemFont, "Hiragino Sans", "Noto Sans JP", sans-serif;
+  line-height: 1.8; -webkit-font-smoothing: antialiased;
+}
+main { max-width: 640px; margin: 0 auto; padding: 32px 20px 60px; }
+h1 { font-size: 24px; margin: 0 0 4px; }
+h2 { font-size: 16px; margin: 28px 0 8px; color: var(--accent); }
+p, li { font-size: 14px; }
+p.date { color: var(--text-dim); font-size: 12px; margin: 0 0 24px; }
+ol { padding-left: 1.4em; }
+li { margin: 6px 0; }
+.mono { font-family: Consolas, monospace; background: var(--bg-elev); border: 1px solid var(--border); border-radius: 6px; padding: 1px 6px; font-size: 13px; }
