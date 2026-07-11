@@ -88,7 +88,14 @@
     target: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="8"/><circle cx="12" cy="12" r="2.5" fill="currentColor" stroke="none"/></svg>`,
     play: `<svg viewBox="0 0 24 24" fill="currentColor"><path d="M8 5v14l11-7z"/></svg>`,
     cards: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round"><rect x="3" y="6" width="14" height="12" rx="2"/><path d="M7 6V5a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v11a2 2 0 0 1-2 2h-1"/></svg>`,
-    chevron: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 6 15 12 9 18"/></svg>`
+    chevron: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 6 15 12 9 18"/></svg>`,
+    code: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="8 8 4 12 8 16"/><polyline points="16 8 20 12 16 16"/><line x1="14" y1="5" x2="10" y2="19"/></svg>`,
+    briefcase: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round"><rect x="3" y="7" width="18" height="13" rx="2"/><path d="M8 7V5a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/></svg>`,
+    bars: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"><line x1="6" y1="20" x2="6" y2="13"/><line x1="12" y1="20" x2="12" y2="5"/><line x1="18" y1="20" x2="18" y2="15"/></svg>`,
+    shield: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round"><path d="M12 3l7 3v5c0 4.5-3 7.6-7 9-4-1.4-7-4.5-7-9V6z"/></svg>`,
+    layers: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round"><polygon points="12 3 21 8 12 13 3 8"/><polyline points="3 12.5 12 17.5 21 12.5"/></svg>`,
+    edit: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 20h9"/><path d="M16.5 3.5a2 2 0 0 1 3 3L8 18l-4 1 1-4z"/></svg>`,
+    back: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><polyline points="15 18 9 12 15 6"/></svg>`
   };
 
   function renderHome() {
@@ -198,7 +205,9 @@
   function startQuiz(subject, key) {
     quiz.subject = subject;
     quiz.cat = key;
-    quiz.pool = shuffle(subject === 'B' ? Data.questionsBySubjectB(key) : Data.questionsByCategory(key));
+    let pool = shuffle(subject === 'B' ? Data.questionsBySubjectB(key) : Data.questionsByCategory(key));
+    if (qstate.limit > 0) pool = pool.slice(0, qstate.limit); // 出題数の上限(0=すべて)
+    quiz.pool = pool;
     quiz.idx = 0; quiz.sessionOk = 0; quiz.sessionN = 0;
     if (!quiz.pool.length) { toast('この条件の問題がありません'); return; }
     showQuestion();
@@ -336,42 +345,93 @@
   }
 
   // 演習開始画面。科目A(分野別4択)/科目B(アルゴリズム・セキュリティ)を切り替える
-  const qstate = { subject: 'A', aKey: '全分野', bKey: '全部' };
+  const qstate = { subject: 'A', aKey: '全分野', bKey: '全部', limit: 0, optsOpen: false };
+  // 出題範囲タイルのアイコンと色(モックアップに合わせた配色)
+  const RANGES_A = [
+    { key: '全分野', icon: ICON.list, color: 'var(--accent)' },
+    { key: 'テクノロジ', icon: ICON.code, color: 'var(--ok)' },
+    { key: 'マネジメント', icon: ICON.briefcase, color: '#fb923c' },
+    { key: 'ストラテジ', icon: ICON.bars, color: 'var(--warn)' }
+  ];
+  const RANGES_B = [
+    { key: '全部', icon: ICON.layers, color: 'var(--accent)' },
+    { key: 'アルゴリズム', icon: ICON.code, color: 'var(--ok)' },
+    { key: 'セキュリティ', icon: ICON.shield, color: 'var(--ng)' }
+  ];
+  const LIMITS = [{ n: 10, l: '10問' }, { n: 20, l: '20問' }, { n: 50, l: '50問' }, { n: 0, l: 'すべて' }];
+
   function renderQuizStart() {
     const v = $('#view-quiz');
-    const cats = ['全分野', ...CATS];
-    const bGenres = ['全部', 'アルゴリズム', 'セキュリティ'];
     const bCount = Data.subjectBCount;
-    const aRow = `
-      <div class="chips" id="quiz-cats">
-        ${cats.map(c => `<div class="chip ${qstate.aKey === c ? 'active' : ''}" data-cat="${esc(c)}">${esc(c)}${c === '全分野' ? '' : `<span style="opacity:.7">(${Data.questionsByCategory(c).length})</span>`}</div>`).join('')}
-      </div>`;
-    const bRow = `
-      <div class="chips" id="quiz-bgenres">
-        ${bGenres.map(g => `<div class="chip ${qstate.bKey === g ? 'active' : ''}" data-genre="${esc(g)}">${esc(g)}<span style="opacity:.7">(${Data.questionsBySubjectB(g).length})</span></div>`).join('')}
-      </div>`;
+    const isA = qstate.subject === 'A';
+    const ranges = isA ? RANGES_A : RANGES_B;
+    const activeKey = isA ? qstate.aKey : qstate.bKey;
+    const countOf = (k) => isA ? Data.questionsByCategory(k).length : Data.questionsBySubjectB(k).length;
+
+    const tiles = ranges.map(r => `
+      <button class="range-tile ${activeKey === r.key ? 'active' : ''}" data-range="${esc(r.key)}">
+        <div class="itile sm" style="--c:${r.color}">${r.icon}</div>
+        <div class="range-txt"><div class="range-name">${esc(r.key)}</div><div class="range-count">${countOf(r.key).toLocaleString()}<span>問</span></div></div>
+        <span class="range-chev">${ICON.chevron}</span>
+      </button>`).join('');
+
     v.innerHTML = `
-      <div class="card">
-        <h2>問題演習</h2>
-        <div class="chips" id="quiz-subject">
-          <div class="chip ${qstate.subject === 'A' ? 'active' : ''}" data-subject="A">科目A</div>
-          <div class="chip ${qstate.subject === 'B' ? 'active' : ''}" data-subject="B">科目B(アルゴリズム/セキュリティ)${bCount ? ` (${bCount})` : ''}</div>
+      <button class="back-btn" data-go="home">${ICON.back}</button>
+      <div class="qstart-top">
+        <div class="qstart-title">
+          <h1>演習をはじめる前に <span>🚀</span></h1>
+          <div class="sub">出題範囲と形式を確認して、演習を開始しましょう！</div>
         </div>
-        <p class="muted" style="font-size:13px">${qstate.subject === 'A' ? '4択形式。間違えると重要単語が自動で苦手単語帳に貯まります。' : '擬似言語プログラムを読み解く形式(選択肢はア〜コ)。'}</p>
-        ${qstate.subject === 'A' ? aRow : bRow}
-        <button class="btn" id="quiz-start">▶ 開始</button>
+        <div class="goal-chip">
+          <div class="goal-lbl">🎯 目標</div>
+          <div class="goal-val">苦手を克服</div>
+        </div>
+      </div>
+
+      <section class="panel">
+        <div class="panel-head"><div class="itile sm" style="--c:var(--accent)">${ICON.list}</div><h2 class="panel-h">問題演習</h2></div>
+        <div class="subj-pills">
+          <button class="subj-pill ${isA ? 'active' : ''}" data-subject="A">科目A</button>
+          <button class="subj-pill ${!isA ? 'active' : ''}" data-subject="B">科目B(アルゴリズム/セキュリティ)${bCount ? ` (${bCount})` : ''}</button>
+        </div>
+        <p class="panel-note">${isA ? '4択形式。間違えると重要単語が自動で苦手単語帳に貯まります。' : '擬似言語プログラムを読み解く形式(選択肢はア〜コ)。'}</p>
+      </section>
+
+      <section class="panel">
+        <div class="panel-head"><div class="itile sm" style="--c:var(--accent-2)">${ICON.layers}</div><h2 class="panel-h">出題範囲</h2></div>
+        <div class="range-grid">${tiles}</div>
+      </section>
+
+      <button class="home-cta primary center" id="quiz-start">
+        <span class="cta-ic">${ICON.play}</span>
+        <span class="cta-label">演習を開始する</span>
+      </button>
+
+      <button class="home-cta" id="quiz-opts-toggle" aria-expanded="${qstate.optsOpen}">
+        <span class="cta-ic sec">${ICON.edit}</span>
+        <span class="cta-label">演習設定を確認・変更する</span>
+        <span class="cta-chev" style="transform:rotate(${qstate.optsOpen ? 90 : 0}deg)">${ICON.chevron}</span>
+      </button>
+      <div class="qopts" ${qstate.optsOpen ? '' : 'hidden'}>
+        <div class="qopts-h">1回の出題数</div>
+        <div class="chips">
+          ${LIMITS.map(o => `<div class="chip ${qstate.limit === o.n ? 'active' : ''}" data-limit="${o.n}">${o.l}</div>`).join('')}
+        </div>
       </div>
     `;
-    v.querySelectorAll('#quiz-subject .chip').forEach(ch => ch.onclick = () => { qstate.subject = ch.dataset.subject; renderQuizStart(); });
-    v.querySelectorAll('#quiz-cats .chip').forEach(ch => ch.onclick = () => {
-      v.querySelectorAll('#quiz-cats .chip').forEach(x => x.classList.remove('active'));
-      ch.classList.add('active'); qstate.aKey = ch.dataset.cat;
+
+    v.querySelectorAll('[data-go]').forEach(b => b.onclick = () => go(b.dataset.go));
+    v.querySelectorAll('.subj-pill').forEach(b => b.onclick = () => { qstate.subject = b.dataset.subject; renderQuizStart(); });
+    v.querySelectorAll('.range-tile').forEach(b => b.onclick = () => {
+      if (isA) qstate.aKey = b.dataset.range; else qstate.bKey = b.dataset.range;
+      renderQuizStart();
     });
-    v.querySelectorAll('#quiz-bgenres .chip').forEach(ch => ch.onclick = () => {
-      v.querySelectorAll('#quiz-bgenres .chip').forEach(x => x.classList.remove('active'));
-      ch.classList.add('active'); qstate.bKey = ch.dataset.genre;
+    $('#quiz-start').onclick = () => isA ? startQuiz('A', qstate.aKey) : startQuiz('B', qstate.bKey);
+    $('#quiz-opts-toggle').onclick = () => { qstate.optsOpen = !qstate.optsOpen; renderQuizStart(); };
+    v.querySelectorAll('.qopts .chip').forEach(ch => ch.onclick = () => {
+      qstate.limit = parseInt(ch.dataset.limit, 10);
+      v.querySelectorAll('.qopts .chip').forEach(x => x.classList.toggle('active', x === ch));
     });
-    $('#quiz-start').onclick = () => qstate.subject === 'B' ? startQuiz('B', qstate.bKey) : startQuiz('A', qstate.aKey);
   }
 
   /* ================= 単語帳(フラッシュカード) ================= */
