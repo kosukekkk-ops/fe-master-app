@@ -20,6 +20,20 @@
     toastTimer = setTimeout(() => t.classList.remove('show'), 2200);
   }
 
+  /* ---------- 外観テーマ(system | light | dark) ---------- */
+  const lightMedia = window.matchMedia ? matchMedia('(prefers-color-scheme: light)') : null;
+  function applyTheme(pref) {
+    const light = pref === 'light' || (pref === 'system' && lightMedia && lightMedia.matches);
+    if (light) document.documentElement.setAttribute('data-theme', 'light');
+    else document.documentElement.removeAttribute('data-theme');
+    // ステータスバー等の色をテーマに追随させる
+    const meta = document.querySelector('meta[name="theme-color"]');
+    if (meta) meta.content = light ? '#eef1f6' : '#0f1420';
+  }
+  if (lightMedia && lightMedia.addEventListener) {
+    lightMedia.addEventListener('change', () => { if (Store.getTheme() === 'system') applyTheme('system'); });
+  }
+
   /* ---------- 統計の導出(解答ログが唯一の真実) ---------- */
   function stats() {
     const log = Store.getLog();
@@ -647,7 +661,15 @@
 
   function renderSettings() {
     const v = $('#view-settings');
+    const theme = Store.getTheme();
+    const THEMES = [{ k: 'system', l: '🖥 システム' }, { k: 'light', l: '☀️ ライト' }, { k: 'dark', l: '🌙 ダーク' }];
     v.innerHTML = `
+      <section class="panel">
+        <div class="panel-head"><div class="itile sm" style="--c:var(--warn)">${ICON.target}</div><h2 class="panel-h">外観</h2></div>
+        <div class="chips" id="set-theme" style="margin-bottom:0">
+          ${THEMES.map(t => `<div class="chip ${theme === t.k ? 'active' : ''}" data-theme-opt="${t.k}">${t.l}</div>`).join('')}
+        </div>
+      </section>
       <section class="panel">
         <div class="panel-head"><div class="itile sm" style="--c:var(--accent)">${ICON.list}</div><h2 class="panel-h">データ管理</h2></div>
         <p class="panel-note" style="margin-bottom:12px">学習ログ・苦手単語帳は端末内に保存され、次回も引き継がれます。別のURL/ブラウザで学習していた履歴は、書き出したJSONをこの端末で読み込むと合算されます。</p>
@@ -675,6 +697,12 @@
         <p class="panel-note" style="margin-top:12px">主要機能はオフラインで動作します。本アプリは個人開発の学習教材であり、試験実施団体(IPA)とは関係ありません。「基本情報技術者試験」はIPAの登録商標または名称です。</p>
       </section>
     `;
+    v.querySelectorAll('#set-theme .chip').forEach(ch => ch.onclick = () => {
+      const pref = ch.dataset.themeOpt;
+      Store.setTheme(pref);
+      applyTheme(pref);
+      v.querySelectorAll('#set-theme .chip').forEach(x => x.classList.toggle('active', x === ch));
+    });
     v.querySelectorAll('[data-legal]').forEach(b => b.onclick = () => openLegal(b.dataset.legal));
     $('#set-contact').onclick = () => window.open('https://github.com/kosukekkk-ops/fe-master-app', '_blank');
     $('#set-export').onclick = () => {
@@ -748,6 +776,8 @@
     if (navigator.storage && navigator.storage.persist) {
       navigator.storage.persist().catch(() => {});
     }
+    // 外観テーマ(headのインラインスクリプトで先行適用済み。meta theme-color等をここで同期)
+    applyTheme(Store.getTheme());
   }
 
   if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', init);

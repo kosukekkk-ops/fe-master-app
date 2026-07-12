@@ -3,6 +3,13 @@
   --bg: #0f1420; --bg-elev: #1a2030; --border: #2e3854;
   --text: #e8ecf4; --text-dim: #9aa6c0; --accent: #4f9dff;
 }
+/* 公開ページは端末のシステム設定に追随 */
+@media (prefers-color-scheme: light) {
+  :root {
+    --bg: #eef1f6; --bg-elev: #f3f5fa; --border: #d8dfeb;
+    --text: #1c2434; --text-dim: #5c6b85; --accent: #2f7ae5;
+  }
+}
 * { box-sizing: border-box; }
 body {
   margin: 0; background: var(--bg); color: var(--text);

@@ -4,6 +4,16 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover, maximum-scale=1">
   <meta name="theme-color" content="#0f1420">
+  <script>
+    // 描画前にテーマを適用(ちらつき防止)。設定値: system | light | dark
+    (function () {
+      try {
+        var pref = JSON.parse(localStorage.getItem('feapp:FE:theme') || '"system"');
+        var light = pref === 'light' || (pref === 'system' && matchMedia('(prefers-color-scheme: light)').matches);
+        if (light) document.documentElement.setAttribute('data-theme', 'light');
+      } catch (e) { /* 既定のダークのまま */ }
+    })();
+  </script>
   <meta name="apple-mobile-web-app-capable" content="yes">
   <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
   <meta name="apple-mobile-web-app-title" content="FE対策">

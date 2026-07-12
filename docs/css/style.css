@@ -17,6 +17,28 @@
   --tabbar-h: 62px;
 }
 
+/* ライトテーマ(html[data-theme=light]で有効化。既定はダーク) */
+html[data-theme="light"] {
+  --bg: #eef1f6;
+  --bg-elev: #f3f5fa;
+  --bg-card: #ffffff;
+  --border: #d8dfeb;
+  --text: #1c2434;
+  --text-dim: #5c6b85;
+  --accent: #2f7ae5;
+  --accent-2: #6d4de0;
+  --ok: #0f9d6d;
+  --ng: #dc4444;
+  --warn: #c07c0a;
+  --tech: #2f7ae5;
+  --mgmt: #0f9d6d;
+  --strat: #c07c0a;
+}
+/* ライトでの微調整: 暗色前提のハードコード部分を上書き */
+html[data-theme="light"] pre.pseudocode { background: #f6f8fc; color: #1c2434; }
+html[data-theme="light"] .banner-title, html[data-theme="light"] .banner-sub { color: #fff; }
+html[data-theme="light"] .legal-overlay { background: rgba(30, 40, 60, .45); }
+
 * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
 html, body { margin: 0; padding: 0; }
 body {

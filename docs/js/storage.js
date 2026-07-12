@@ -35,6 +35,10 @@ const Store = (() => {
     getKnown() { return read('known', {}); },
     setKnown(k) { write('known', k); },
 
+    // 外観テーマ: 'system' | 'light' | 'dark'(端末ごとの好みなのでexport/resetの対象外)
+    getTheme() { return read('theme', 'system'); },
+    setTheme(t) { write('theme', t); },
+
     resetAll() {
       ['log', 'weak', 'known'].forEach(k => localStorage.removeItem(ns(k)));
     },
