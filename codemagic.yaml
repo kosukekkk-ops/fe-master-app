@@ -28,7 +28,7 @@ workflows:
         BUNDLE_ID: "io.github.kosukekkkops.femaster"
         XCODE_PROJECT: "ios/App/App.xcodeproj"
         XCODE_SCHEME: "App"
-        APP_STORE_APPLE_ID: 0000000000   # App Store Connectでアプリ作成後、その数値IDに置き換える
+        APP_STORE_APPLE_ID: 6790236851   # App Store Connect上のアプリの数値ID(自動採番されるビルド番号の照合に使用)
       node: 20
       xcode: latest
       cocoapods: default
