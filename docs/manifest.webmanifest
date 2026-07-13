@@ -1,5 +1,5 @@
 {
-  "name": "基本情報技術者試験 対策アプリ",
+  "name": "受かる基本情報 FE過去問＆単語帳",
   "short_name": "FE対策",
   "description": "問題演習の誤答から苦手単語を自動で蓄積・復習できるFE学習アプリ",
   "start_url": "./index.html",

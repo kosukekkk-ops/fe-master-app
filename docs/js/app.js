@@ -715,7 +715,7 @@
       <section class="panel">
         <div class="panel-head"><div class="itile sm" style="--c:var(--ok)">${ICON.book}</div><h2 class="panel-h">このアプリについて</h2></div>
         <div class="about-rows">
-          <div class="about-row"><span>アプリ名</span><span>基本情報技術者 FE対策</span></div>
+          <div class="about-row"><span>アプリ名</span><span>受かる基本情報 FE過去問＆単語帳</span></div>
           <div class="about-row"><span>バージョン</span><span>1.0.0</span></div>
           <div class="about-row"><span>収録用語</span><span>${Data.words.length} 語</span></div>
           <div class="about-row"><span>収録問題</span><span>${Data.questions.length.toLocaleString()} 問</span></div>
