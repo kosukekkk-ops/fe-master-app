@@ -1,5 +1,12 @@
 node_modules/
 
+# 秘密鍵・証明書は絶対にコミットしない(App Store Connect APIキー等)
+*.p8
+*.p12
+*.mobileprovision
+*.keystore
+*.jks
+
 # Capacitorがdocs/からコピーする生成物(cap syncで再生成される)
 android/app/src/main/assets/public/
 ios/App/App/public/
