@@ -6,8 +6,11 @@
  *
  * 生成する問題タイプ:
  *   def  … 「◯◯の説明として適切なものはどれか」 正解=その用語のmeaning
+ *   desc … defと同じく説明を選ぶが、別の紛らわしいダミー組で出題(重複回避)
  *   term … 「次の説明に該当する用語はどれか(＋meaning提示)」 正解=その用語名
+ *   exq  … 「次の例えが表す用語はどれか」 正解=その用語名(analogyのある語のみ)
  *   analogy … 「◯◯を身近に例えたものとして適切なものはどれか」 正解=その用語のanalogy(analogyのある語のみ)
+ * ※分野の仲間はずれ(cat)問題は試験合格に直結しないため廃止した。
  *
  * ダミー選択肢は「同一分野の別用語」を優先採用し、紛らわしさ(=学習効果)を高める。
  * 実行: node tools/generate_questions.js
@@ -48,7 +51,6 @@ function shuffle(arr) {
 }
 
 const words = WORDS.words;
-const CATS = ['テクノロジ', 'マネジメント', 'ストラテジ'];
 const byCat = {};
 words.forEach(w => { (byCat[w.category] = byCat[w.category] || []).push(w); });
 
@@ -87,17 +89,19 @@ function distractorPool(w) {
   return bySimilarity(same).concat(bySimilarity(others));
 }
 
-// 3つのダミーを、指定フィールドの値が正解と重複しないように選ぶ
-function pickDistractors(w, field, correctValue) {
-  const out = [];
+// 3つのダミーを、指定フィールドの値が正解と重複しないように選ぶ。
+// skip>0 のときは「より紛らわしい上位skip件」を飛ばして次点を採用する。
+// これにより同じ用語でも def と別のダミー組で出題でき、重複問題を防げる。
+function pickDistractors(w, field, correctValue, skip = 0) {
+  const valid = [];
   for (const d of distractorPool(w)) {
     const v = d[field];
     if (!v || v === correctValue) continue;
-    if (out.some(o => o[field] === v)) continue;
-    out.push(d);
-    if (out.length === 3) break;
+    if (valid.some(o => o[field] === v)) continue;
+    valid.push(d);
+    if (valid.length === skip + 3) break;
   }
-  return out;
+  return valid.slice(skip, skip + 3);
 }
 
 // 正解＋ダミー3件から、正解位置をシャッフルした choices/correctIndex を作る
@@ -161,20 +165,21 @@ for (const w of words) {
       });
     }
   }
-  // --- cat: 分野が異なるもの(仲間はずれ) ---
+  // --- desc: 用語 → 説明(defとは別の紛らわしいダミー組で出題) ---
+  // 分野の仲間はずれ問題は試験合格に直結しないため廃止し、
+  // 「用語の説明を選ぶ」問題に置き換え。defが上位3件のダミーを使うのに対し、
+  // こちらは次点(4〜6番目に紛らわしい別用語の説明)を使うので重複しない。
   {
-    const others = CATS.filter(c => c !== w.category && (byCat[c] || []).length >= 3);
-    if (others.length) {
-      const oc = others[Math.floor(rand() * others.length)];
-      const ds = shuffle(byCat[oc]).slice(0, 3);
-      const { choices, correctIndex } = assemble(w.word, ds.map(d => d.word));
+    const ds = pickDistractors(w, 'meaning', w.meaning, 3);
+    if (ds.length === 3) {
+      const { choices, correctIndex } = assemble(w.meaning, ds.map(d => d.meaning));
       questions.push({
-        questionId: `g_cat_${w.wordId}`,
+        questionId: `g_desc_${w.wordId}`,
         category: w.category,
-        text: `次の四つの用語のうち、分類される分野が他の三つと異なるものはどれか。`,
+        text: `「${w.word}」を説明したものとして最も適切なものはどれか。`,
         choices, correctIndex,
-        explanation: `「${w.word}」は${w.category}分野。${detail(w)}\n他の三つ(${ds.map(d => d.word).join('・')})は${oc}分野。`,
-        source: `生成問題(分野判定 / ${w.word})`,
+        explanation: `${w.word}: ${detail(w)}\n${otherWordsNote(ds)}`,
+        source: `生成問題(意味 / ${w.word})`,
         relatedWordIds: [w.wordId]
       });
     }
