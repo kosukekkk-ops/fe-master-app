@@ -372,15 +372,21 @@
   function finishQuiz() {
     $('#view-quiz').classList.remove('qmode');
     const rate = quiz.sessionN ? Math.round((quiz.sessionOk / quiz.sessionN) * 100) : 0;
+    const color = rate >= 60 ? 'var(--ok)' : 'var(--warn)';
+    const emoji = rate >= 80 ? '🎉' : rate >= 60 ? '👍' : '💪';
     $('#view-quiz').innerHTML = `
-      <div class="card center">
-        <h2>お疲れさまでした</h2>
-        <div class="stat" style="margin:10px 0"><div class="num" style="color:${rate>=60?'var(--ok)':'var(--warn)'}">${rate}%</div><div class="lbl">${quiz.sessionOk} / ${quiz.sessionN} 問 正解</div></div>
-        <p class="muted" style="font-size:13px">間違えた問題の重要単語は「苦手単語帳」に登録されました。単語帳タブで復習しましょう。</p>
+      <div class="result-hero">
+        ${ring(rate / 100, color, `<span class="result-emoji">${emoji}</span>`)}
+        <div class="result-rate" style="color:${color}">${rate}<span>%</span></div>
+        <div class="result-sub">${quiz.sessionOk} / ${quiz.sessionN} 問 正解</div>
       </div>
-      <button class="btn" id="again">もう一度(${quiz.cat})</button>
-      <div style="height:10px"></div>
-      <button class="btn secondary" data-go="flash">苦手単語帳へ</button>
+      <p class="panel-note center" style="margin:0 4px 18px">間違えた問題の重要単語は「苦手単語帳」に登録されました。単語帳で復習しましょう。</p>
+      <button class="home-cta primary center" id="again">
+        <span class="cta-ic">${ICON.play}</span><span class="cta-label">もう一度(${esc(quiz.cat)})</span>
+      </button>
+      <button class="home-cta" data-go="flash">
+        <span class="cta-ic sec">${ICON.cards}</span><span class="cta-label">苦手単語帳で復習する</span><span class="cta-chev">${ICON.chevron}</span>
+      </button>
     `;
     $('#again').onclick = () => startQuiz(quiz.subject, quiz.cat);
     $('#view-quiz [data-go]').onclick = () => go('flash');
@@ -502,23 +508,32 @@
     const knownCount = Object.keys(Store.getKnown()).length;
     const v = $('#view-flash');
     v.innerHTML = `
-      <div class="card">
-        <h2>単語帳</h2>
+      <header class="home-head">
+        <div class="greeting"><h1>単語帳 📇</h1><div class="sub">タップでめくって意味と例えを確認</div></div>
+      </header>
+      <section class="panel">
+        <div class="panel-head"><div class="itile sm" style="--c:var(--accent)">${ICON.cards}</div><h2 class="panel-h">出題する単語</h2></div>
         <div class="chips" id="flash-mode">
           <div class="chip ${flash.mode==='weak'?'active':''}" data-mode="weak">苦手単語 (${weakCount})</div>
           <div class="chip ${flash.mode==='all'?'active':''}" data-mode="all">全単語 (${Data.words.length})</div>
         </div>
         <div id="flash-catwrap" class="${flash.mode==='all'?'':'hidden'}" style="${flash.mode==='all'?'':'display:none'}">
-          <div class="chips" id="flash-cats">
+          <div class="chips" id="flash-cats" style="margin-bottom:0">
             ${['全分野', ...CATS].map(c => `<div class="chip ${flash.cat===c?'active':''}" data-cat="${esc(c)}">${esc(c)}</div>`).join('')}
           </div>
         </div>
-        <div class="chips" id="flash-opts">
+      </section>
+      <section class="panel">
+        <div class="panel-head"><div class="itile sm" style="--c:var(--accent-2)">${ICON.edit}</div><h2 class="panel-h">オプション</h2></div>
+        <div class="chips" id="flash-opts" style="margin-bottom:0">
           <div class="chip ${flash.shuffleOn?'active':''}" data-opt="shuffle">🔀 シャッフル</div>
           <div class="chip ${flash.hideKnown?'active':''}" data-opt="hideKnown">🙈 覚えた単語を隠す${knownCount ? `(${knownCount})` : ''}</div>
         </div>
-        <button class="btn" id="flash-start">📇 開始</button>
-      </div>
+      </section>
+      <button class="home-cta primary center" id="flash-start">
+        <span class="cta-ic">${ICON.cards}</span>
+        <span class="cta-label">単語帳を開始</span>
+      </button>
       <div id="flash-area"></div>
     `;
     v.querySelectorAll('#flash-mode .chip').forEach(ch => ch.onclick = () => {
@@ -550,8 +565,15 @@
   function showCard() {
     const area = $('#flash-area');
     if (flash.idx >= flash.deck.length) {
-      area.innerHTML = `<div class="card center"><h2>1周しました 🎉</h2><p class="muted">${flash.deck.length}語を確認しました。</p></div>
-        <button class="btn" id="fl-again">もう一度</button>`;
+      area.innerHTML = `
+        <div class="result-hero">
+          <div class="result-emoji-lg">🎉</div>
+          <div class="result-sub" style="font-size:16px;font-weight:700;color:var(--text)">1周しました</div>
+          <div class="result-sub">${flash.deck.length}語を確認しました</div>
+        </div>
+        <button class="home-cta primary center" id="fl-again">
+          <span class="cta-ic">${ICON.cards}</span><span class="cta-label">もう一度</span>
+        </button>`;
       $('#fl-again').onclick = () => { buildDeck(); showCard(); };
       return;
     }
@@ -618,27 +640,31 @@
       .filter(x => x.w)
       .sort((a, b) => b.c - a.c).slice(0, 10);
 
+    const overallRate = Math.round((s.ok / s.total) * 100);
     v.innerHTML = `
-      <div class="card">
-        <h2>分野別 正答率(レーダー)</h2>
+      <header class="home-head">
+        <div class="greeting"><h1>学習ログ 📊</h1><div class="sub">これまでの解答 ${s.total.toLocaleString()} 問・正答率 ${overallRate}%</div></div>
+      </header>
+      <section class="panel">
+        <div class="panel-head"><div class="itile sm" style="--c:var(--accent)">${ICON.target}</div><h2 class="panel-h">分野別 正答率(レーダー)</h2></div>
         <div class="chart-box">${Charts.radar(axes, 320)}</div>
-      </div>
-      <div class="card">
-        <h2>分野別 正答率(棒グラフ)</h2>
+      </section>
+      <section class="panel">
+        <div class="panel-head"><div class="itile sm" style="--c:var(--ok)">${ICON.bars}</div><h2 class="panel-h">大分類の正答率</h2></div>
         <div class="chart-box">${Charts.bars(barItems)}</div>
-      </div>
-      <div class="card">
-        <h2>正答率の推移(日別)</h2>
+      </section>
+      <section class="panel">
+        <div class="panel-head"><div class="itile sm" style="--c:var(--accent-2)">${ICON.trend}</div><h2 class="panel-h">正答率の推移(日別)</h2></div>
         <div class="chart-box">${Charts.line(linePts)}</div>
-      </div>
-      <div class="card">
-        <h2>間違えた回数 トップ10</h2>
+      </section>
+      <section class="panel">
+        <div class="panel-head"><div class="itile sm" style="--c:var(--ng)"><b>A</b></div><h2 class="panel-h">間違えた回数 トップ10</h2></div>
         ${ranking.length ? ranking.map((r, i) => `
           <div class="rank-item"><span class="no">${i + 1}</span>
             <span class="w">${esc(r.w.word)} <span class="pill ${CAT_CLASS[r.w.category]}" style="font-size:10px">${r.w.category}</span></span>
             <span class="cnt">${r.c}回</span></div>`).join('')
-        : '<p class="muted">まだ苦手単語はありません。</p>'}
-      </div>
+        : '<p class="panel-note">まだ苦手単語はありません。</p>'}
+      </section>
     `;
   }
 
