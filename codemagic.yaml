@@ -44,8 +44,11 @@ workflows:
           xcode-project use-profiles
       - name: Increment build number
         script: |
-          # App Store Connect 上の最新ビルド番号+1を採番(重複アップロード防止)
-          LATEST=$(app-store-connect get-latest-app-store-build-number "$APP_STORE_APPLE_ID" 2>/dev/null || echo "0")
+          # TestFlight上の最新ビルド番号+1を採番(重複アップロード防止)。
+          # get-latest-app-store-build-number は「App Storeで公開済み」の番号しか見ないため、
+          # 未公開のうちは常に0が返り毎回同じ番号になって重複エラー(409)を起こす。
+          LATEST=$(app-store-connect get-latest-testflight-build-number "$APP_STORE_APPLE_ID" 2>/dev/null || echo "0")
+          LATEST=${LATEST:-0}
           cd ios/App
           agvtool new-version -all $(($LATEST + 1))
       - name: Build ipa for distribution
