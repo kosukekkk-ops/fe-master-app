@@ -255,8 +255,9 @@
     v.classList.add('qmode');
     v.innerHTML = `
       <div class="quiz-scroll">
+        <div class="quiz-top"><button class="quiz-quit" id="q-quit" aria-label="演習を中断"><span class="x">✕</span>演習を中断</button></div>
         <div class="progress-bar"><span style="width:${pct}%"></span></div>
-        <div class="q-progress"><span>${idx + 1} / ${quiz.pool.length} 問</span><span class="q-progress-right">${pill}<button class="quiz-quit" id="q-quit" aria-label="演習を中断">✕ 中断</button></span></div>
+        <div class="q-progress"><span>${idx + 1} / ${quiz.pool.length} 問</span>${pill}</div>
         <div class="q-text">${esc(q.text)}</div>
         ${q.bodyHtml ? `<div class="qbody">${q.bodyHtml}</div>` : ''}
         ${q.program ? `<pre class="pseudocode">${esc(q.program)}</pre>` : ''}
