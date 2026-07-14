@@ -403,7 +403,7 @@
   }
 
   // 演習開始画面。科目A(分野別4択)/科目B(アルゴリズム・セキュリティ)を切り替える
-  const qstate = { subject: 'A', aKey: '全分野', bKey: '全部', limit: 0, optsOpen: false };
+  const qstate = { subject: 'A', aKey: '全分野', bKey: '全部', limit: 10, optsOpen: false };
   // 出題範囲タイルのアイコンと色(モックアップに合わせた配色)
   const RANGES_A = [
     { key: '全分野', icon: ICON.list, color: 'var(--accent)' },
