@@ -206,7 +206,8 @@
   /* ================= 問題演習 ================= */
   // built[]=各indexのシャッフル済み問題(前後移動で選択肢がぶれないようキャッシュ)
   // answers[]=各indexの回答状態(null=未回答 / {pos,correct,gaveUp,...})。前の問題へ戻れるようにするための保持。
-  const quiz = { pool: [], idx: 0, cat: '全分野', subject: 'A', built: [], answers: [], sessionOk: 0, sessionN: 0 };
+  // active=演習セッション進行中フラグ。他タブへ移動して戻ってきたとき、開始画面ではなく続きを表示するために使う。
+  const quiz = { pool: [], idx: 0, cat: '全分野', subject: 'A', built: [], answers: [], sessionOk: 0, sessionN: 0, active: false };
 
   function buildQuestion(q) {
     // 選択肢を実行時シャッフルし、正解位置が固定にならないようにする
@@ -227,7 +228,8 @@
     quiz.built = new Array(pool.length).fill(null);
     quiz.answers = new Array(pool.length).fill(null);
     quiz.idx = 0; quiz.sessionOk = 0; quiz.sessionN = 0;
-    if (!quiz.pool.length) { toast('この条件の問題がありません'); return; }
+    if (!quiz.pool.length) { quiz.active = false; toast('この条件の問題がありません'); return; }
+    quiz.active = true;   // 進行中に。以降タブを離れて戻ると続きから再開する
     showQuestion();
   }
 
@@ -254,7 +256,7 @@
     v.innerHTML = `
       <div class="quiz-scroll">
         <div class="progress-bar"><span style="width:${pct}%"></span></div>
-        <div class="q-progress"><span>${idx + 1} / ${quiz.pool.length} 問</span>${pill}</div>
+        <div class="q-progress"><span>${idx + 1} / ${quiz.pool.length} 問</span><span class="q-progress-right">${pill}<button class="quiz-quit" id="q-quit" aria-label="演習を中断">✕ 中断</button></span></div>
         <div class="q-text">${esc(q.text)}</div>
         ${q.bodyHtml ? `<div class="qbody">${q.bodyHtml}</div>` : ''}
         ${q.program ? `<pre class="pseudocode">${esc(q.program)}</pre>` : ''}
@@ -285,6 +287,13 @@
     }
     $('#q-prev').onclick = () => { if (quiz.idx > 0) { quiz.idx--; showQuestion(); window.scrollTo(0, 0); } };
     $('#q-next').onclick = () => { if (last) finishQuiz(); else { quiz.idx++; showQuestion(); window.scrollTo(0, 0); } };
+    // 中断: 進行中フラグを下ろし、開始画面へ戻る(回答済み分はログに残るので統計は保持される)
+    $('#q-quit').onclick = () => {
+      if (!confirm('演習を中断して最初の画面に戻りますか?\n(解答済みの記録は保存されます)')) return;
+      quiz.active = false;
+      renderQuizStart();
+      window.scrollTo(0, 0);
+    };
   }
 
   function answer(pos) {
@@ -370,6 +379,7 @@
   }
 
   function finishQuiz() {
+    quiz.active = false;   // セッション終了。次に演習タブを開くと開始画面に戻る
     $('#view-quiz').classList.remove('qmode');
     const rate = quiz.sessionN ? Math.round((quiz.sessionOk / quiz.sessionN) * 100) : 0;
     const color = rate >= 60 ? 'var(--ok)' : 'var(--warn)';
@@ -759,9 +769,16 @@
   }
 
   /* ================= ルーター ================= */
+  // 演習タブ: 進行中セッションがあれば開始画面ではなく続きの問題を表示する
+  // (他タブを誤タップして戻ってきても続きから再開できる)
+  function renderQuiz() {
+    if (quiz.active) showQuestion();
+    else renderQuizStart();
+  }
+
   const views = {
     home: renderHome,
-    quiz: renderQuizStart,
+    quiz: renderQuiz,
     flash: renderFlashStart,
     stats: renderStats,
     settings: renderSettings
