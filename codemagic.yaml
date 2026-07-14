@@ -92,11 +92,14 @@ workflows:
           import os, json, time, urllib.request, urllib.error, urllib.parse
           import jwt
 
-          KEY = os.environ['APP_STORE_CONNECT_PRIVATE_KEY']
-          KID = os.environ['APP_STORE_CONNECT_KEY_IDENTIFIER']
-          ISS = os.environ['APP_STORE_CONNECT_ISSUER_ID']
-          APP = os.environ['APP_APPLE_ID']
+          # 貼り付け時に紛れ込みがちな前後の空白/改行を除去する(401の典型原因)
+          KEY = os.environ['APP_STORE_CONNECT_PRIVATE_KEY'].strip()
+          KID = os.environ['APP_STORE_CONNECT_KEY_IDENTIFIER'].strip()
+          ISS = os.environ['APP_STORE_CONNECT_ISSUER_ID'].strip()
+          APP = os.environ['APP_APPLE_ID'].strip()
           GNAME = os.environ['GROUP_NAME']
+          # 診断: 値は出さず長さだけ確認(KID=10, ISS=36 が期待値)
+          print('len KID:', len(KID), '/ len ISS:', len(ISS), '/ KEY lines:', KEY.count('\n') + 1, flush=True)
 
           def token():
               now = int(time.time())
