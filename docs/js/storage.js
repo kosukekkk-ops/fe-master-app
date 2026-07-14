@@ -39,6 +39,11 @@ const Store = (() => {
     getTheme() { return read('theme', 'system'); },
     setTheme(t) { write('theme', t); },
 
+    // プレミアム購入フラグ(表示即時化のためのキャッシュ。真実はStoreKitで、
+    // ネイティブ起動時にPremium.sync()が照合し直す。export/resetの対象外)
+    getPremium() { return read('premium', false); },
+    setPremium(v) { write('premium', !!v); },
+
     resetAll() {
       ['log', 'weak', 'known'].forEach(k => localStorage.removeItem(ns(k)));
     },

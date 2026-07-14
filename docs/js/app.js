@@ -8,6 +8,8 @@
   // 分野別正答率レーダー用の細分化サブカテゴリ(9分野)
   const SUBCATS = ['基礎理論', 'アルゴリズム', 'ハードウェア', 'データベース', 'ネットワーク', 'セキュリティ', '開発管理', '経営戦略', '会計法務'];
   const esc = (s) => String(s == null ? '' : s).replace(/[&<>"]/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c]));
+  // 無料版で単語帳(全単語モード)を使える語数。苦手単語帳は無制限。
+  const FREE_WORD_LIMIT = 50;
   const today = () => new Date().toISOString().slice(0, 10);
   const shuffle = (a) => { const r = a.slice(); for (let i = r.length - 1; i > 0; i--) { const j = Math.floor(Math.random() * (i + 1)); [r[i], r[j]] = [r[j], r[i]]; } return r; };
 
@@ -220,6 +222,7 @@
   }
 
   function startQuiz(subject, key) {
+    if (subject === 'B' && !Premium.unlocked()) { openPaywall('科目B(アルゴリズム/セキュリティ)の演習はプレミアム機能です。'); return; }
     quiz.subject = subject;
     quiz.cat = key;
     let pool = shuffle(subject === 'B' ? Data.questionsBySubjectB(key) : Data.questionsByCategory(key));
@@ -452,7 +455,7 @@
         <div class="panel-head"><div class="itile sm" style="--c:var(--accent)">${ICON.list}</div><h2 class="panel-h">問題演習</h2></div>
         <div class="subj-pills">
           <button class="subj-pill ${isA ? 'active' : ''}" data-subject="A">科目A</button>
-          <button class="subj-pill ${!isA ? 'active' : ''}" data-subject="B">科目B(アルゴリズム/セキュリティ)${bCount ? ` (${bCount})` : ''}</button>
+          <button class="subj-pill ${!isA ? 'active' : ''}" data-subject="B">${Premium.unlocked() ? '' : '🔒 '}科目B(アルゴリズム/セキュリティ)${bCount ? ` (${bCount})` : ''}</button>
         </div>
         <p class="panel-note">${isA ? '4択形式。間違えると重要単語が自動で苦手単語帳に貯まります。' : '擬似言語プログラムを読み解く形式(選択肢はア〜コ)。'}</p>
       </section>
@@ -481,7 +484,13 @@
     `;
 
     v.querySelectorAll('[data-go]').forEach(b => b.onclick = () => go(b.dataset.go));
-    v.querySelectorAll('.subj-pill').forEach(b => b.onclick = () => { qstate.subject = b.dataset.subject; renderQuizStart(); });
+    v.querySelectorAll('.subj-pill').forEach(b => b.onclick = () => {
+      if (b.dataset.subject === 'B' && !Premium.unlocked()) {
+        openPaywall('科目B(アルゴリズム/セキュリティ)の演習はプレミアム機能です。');
+        return;
+      }
+      qstate.subject = b.dataset.subject; renderQuizStart();
+    });
     v.querySelectorAll('.range-tile').forEach(b => b.onclick = () => {
       if (isA) qstate.aKey = b.dataset.range; else qstate.bKey = b.dataset.range;
       renderQuizStart();
@@ -508,6 +517,11 @@
       if (!flash.shuffleOn) base.sort((a, b) => (b._weak.wrongCount) - (a._weak.wrongCount));
     } else {
       base = (flash.cat === '全分野' ? Data.words : Data.wordsByCategory(flash.cat)).slice();
+      // 無料版の全単語モードは「全体の先頭50語」まで(分野を変えても合計50語)。苦手単語モードは無制限。
+      if (!Premium.unlocked()) {
+        const allowed = new Set(Data.words.slice(0, FREE_WORD_LIMIT).map(w => w.wordId));
+        base = base.filter(w => allowed.has(w.wordId));
+      }
     }
     if (flash.hideKnown) base = base.filter(w => !known[w.wordId]);
     flash.deck = flash.shuffleOn ? shuffle(base) : base;
@@ -526,8 +540,9 @@
         <div class="panel-head"><div class="itile sm" style="--c:var(--accent)">${ICON.cards}</div><h2 class="panel-h">出題する単語</h2></div>
         <div class="chips" id="flash-mode">
           <div class="chip ${flash.mode==='weak'?'active':''}" data-mode="weak">苦手単語 (${weakCount})</div>
-          <div class="chip ${flash.mode==='all'?'active':''}" data-mode="all">全単語 (${Data.words.length})</div>
+          <div class="chip ${flash.mode==='all'?'active':''}" data-mode="all">全単語 (${Premium.unlocked() ? Data.words.length : `${FREE_WORD_LIMIT}/${Data.words.length}`})</div>
         </div>
+        ${!Premium.unlocked() && flash.mode==='all' ? `<button class="lock-note" id="flash-lock">🔒 無料版は${FREE_WORD_LIMIT}語まで。全${Data.words.length}語を解放する ▶</button>` : ''}
         <div id="flash-catwrap" class="${flash.mode==='all'?'':'hidden'}" style="${flash.mode==='all'?'':'display:none'}">
           <div class="chips" id="flash-cats" style="margin-bottom:0">
             ${['全分野', ...CATS].map(c => `<div class="chip ${flash.cat===c?'active':''}" data-cat="${esc(c)}">${esc(c)}</div>`).join('')}
@@ -550,6 +565,8 @@
     v.querySelectorAll('#flash-mode .chip').forEach(ch => ch.onclick = () => {
       flash.mode = ch.dataset.mode; renderFlashStart();
     });
+    const flashLock = $('#flash-lock');
+    if (flashLock) flashLock.onclick = () => openPaywall(`単語帳の全${Data.words.length}語を学習するにはプレミアムが必要です。`);
     v.querySelectorAll('#flash-cats .chip').forEach(ch => ch.onclick = () => {
       v.querySelectorAll('#flash-cats .chip').forEach(x => x.classList.remove('active'));
       ch.classList.add('active'); flash.cat = ch.dataset.cat;
@@ -652,6 +669,26 @@
       .sort((a, b) => b.c - a.c).slice(0, 10);
 
     const overallRate = Math.round((s.ok / s.total) * 100);
+
+    // 無料版: 基本数値(ヘッダー)は見せて、詳細グラフはロックパネルに置き換える
+    if (!Premium.unlocked()) {
+      v.innerHTML = `
+        <header class="home-head">
+          <div class="greeting"><h1>学習ログ 📊</h1><div class="sub">これまでの解答 ${s.total.toLocaleString()} 問・正答率 ${overallRate}%</div></div>
+        </header>
+        <section class="panel lock-panel">
+          <div class="lock-emoji">🔒</div>
+          <h2 class="panel-h" style="text-align:center">詳細分析はプレミアム機能です</h2>
+          <p class="panel-note center" style="margin-top:8px">9分野レーダー・日別の正答率推移・間違えた回数ランキングで、弱点をピンポイントに把握できます。</p>
+          <button class="home-cta primary center" id="stats-unlock" style="margin-top:14px">
+            <span class="cta-label">プレミアムで解放する</span>
+          </button>
+        </section>
+      `;
+      $('#stats-unlock').onclick = () => openPaywall('学習ログの詳細分析はプレミアム機能です。');
+      return;
+    }
+
     v.innerHTML = `
       <header class="home-head">
         <div class="greeting"><h1>学習ログ 📊</h1><div class="sub">これまでの解答 ${s.total.toLocaleString()} 問・正答率 ${overallRate}%</div></div>
@@ -679,6 +716,53 @@
     `;
   }
 
+  /* ================= プレミアム(ペイウォール) ================= */
+  // ロック中の機能をタップしたときに出す購入モーダル。
+  // reason: どの機能から開いたか(文言の出し分け用)
+  function openPaywall(reason) {
+    const overlay = document.createElement('div');
+    overlay.className = 'legal-overlay';
+    overlay.innerHTML = `
+      <div class="legal-sheet paywall">
+        <div class="legal-head"><button class="legal-close">✕ 閉じる</button></div>
+        <div class="legal-body">
+          <div class="paywall-hero">⭐</div>
+          <h2 class="paywall-title">プレミアムで全機能を解放</h2>
+          ${reason ? `<p class="paywall-reason">${esc(reason)}</p>` : ''}
+          <ul class="paywall-list">
+            <li>📇 単語帳の全${Data.words.length}語(無料版は${FREE_WORD_LIMIT}語まで)</li>
+            <li>🧮 科目B演習(アルゴリズム/セキュリティ)</li>
+            <li>📊 学習ログの詳細分析(レーダー・推移・苦手ランキング)</li>
+          </ul>
+          <p class="paywall-note">1回の購入で永続利用。追加課金・広告はありません。</p>
+          <button class="home-cta primary center" id="pw-buy">
+            <span class="cta-label">購入する<span id="pw-price"></span></span>
+          </button>
+          <button class="btn ghost small" id="pw-restore" style="width:100%;margin-top:10px">購入を復元</button>
+        </div>
+      </div>`;
+    document.body.appendChild(overlay);
+    const close = () => overlay.remove();
+    overlay.querySelector('.legal-close').onclick = close;
+    overlay.onclick = (e) => { if (e.target === overlay) close(); };
+    // 価格をストアから取得して表示(取得できるまで無表示)
+    Premium.price().then(p => { const el = $('#pw-price', overlay); if (el && p) el.textContent = `(${p})`; });
+    $('#pw-buy', overlay).onclick = async () => {
+      try {
+        await Premium.buy();
+        close(); toast('プレミアムを解放しました🎉');
+        go(currentTab);   // ロック表示を更新
+      } catch (e) { toast('購入は完了しませんでした'); }
+    };
+    $('#pw-restore', overlay).onclick = async () => {
+      try {
+        const ok = await Premium.restore();
+        if (ok) { close(); toast('購入を復元しました'); go(currentTab); }
+        else toast('復元できる購入が見つかりませんでした');
+      } catch (e) { toast('復元に失敗しました'); }
+    };
+  }
+
   /* ================= 設定 ================= */
   // 利用規約・プライバシーポリシーをアプリ内の全画面ビューアで表示(オフラインでも読める)
   function openLegal(kind) {
@@ -700,7 +784,22 @@
     const v = $('#view-settings');
     const theme = Store.getTheme();
     const THEMES = [{ k: 'system', l: '🖥 システム' }, { k: 'light', l: '☀️ ライト' }, { k: 'dark', l: '🌙 ダーク' }];
+    // プレミアムセクションはネイティブアプリでのみ表示(WebにはStoreKitが無い)
+    const premiumSection = !Premium.isNative() ? '' : (Premium.unlocked() ? `
+      <section class="panel">
+        <div class="panel-head"><div class="itile sm" style="--c:var(--warn)"><b>⭐</b></div><h2 class="panel-h">プレミアム</h2></div>
+        <p class="panel-note">✅ プレミアム版をご利用中です。全機能が解放されています。</p>
+      </section>` : `
+      <section class="panel">
+        <div class="panel-head"><div class="itile sm" style="--c:var(--warn)"><b>⭐</b></div><h2 class="panel-h">プレミアム</h2></div>
+        <p class="panel-note" style="margin-bottom:12px">単語帳の全${Data.words.length}語・科目B演習・学習ログの詳細分析を、1回の購入で永続解放。</p>
+        <button class="btn" id="set-buy">プレミアムを購入</button>
+        <div style="height:10px"></div>
+        <button class="btn ghost" id="set-restore">購入を復元</button>
+      </section>`);
+
     v.innerHTML = `
+      ${premiumSection}
       <section class="panel">
         <div class="panel-head"><div class="itile sm" style="--c:var(--warn)">${ICON.target}</div><h2 class="panel-h">外観</h2></div>
         <div class="chips" id="set-theme" style="margin-bottom:0">
@@ -740,6 +839,18 @@
       applyTheme(pref);
       v.querySelectorAll('#set-theme .chip').forEach(x => x.classList.toggle('active', x === ch));
     });
+    const buyBtn = $('#set-buy'), restoreBtn = $('#set-restore');
+    if (buyBtn) {
+      Premium.price().then(p => { if (p) buyBtn.textContent = `プレミアムを購入 (${p})`; });
+      buyBtn.onclick = () => openPaywall();
+    }
+    if (restoreBtn) restoreBtn.onclick = async () => {
+      try {
+        const ok = await Premium.restore();
+        toast(ok ? '購入を復元しました' : '復元できる購入が見つかりませんでした');
+        if (ok) renderSettings();
+      } catch (e) { toast('復元に失敗しました'); }
+    };
     v.querySelectorAll('[data-legal]').forEach(b => b.onclick = () => openLegal(b.dataset.legal));
     $('#set-contact').onclick = () => window.open('https://github.com/kosukekkk-ops/fe-master-app', '_blank');
     $('#set-export').onclick = () => {
@@ -785,7 +896,9 @@
     settings: renderSettings
   };
 
+  let currentTab = 'home';   // ペイウォール成立後の再描画先
   function go(name) {
+    currentTab = name;
     document.querySelectorAll('.view').forEach(v => v.classList.remove('active'));
     document.querySelectorAll('nav.tabbar button').forEach(b => b.classList.toggle('active', b.dataset.tab === name));
     const el = document.getElementById('view-' + name);
@@ -822,6 +935,11 @@
     }
     // 外観テーマ(headのインラインスクリプトで先行適用済み。meta theme-color等をここで同期)
     applyTheme(Store.getTheme());
+    // プレミアム状態をStoreKitと照合(返金・別端末購入の反映)。変化があれば画面を更新。
+    if (Premium.isNative()) {
+      const before = Premium.unlocked();
+      Premium.sync().then(after => { if (after !== before) go(currentTab); }).catch(() => {});
+    }
   }
 
   if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', init);
