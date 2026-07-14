@@ -85,6 +85,16 @@ workflows:
         APP_APPLE_ID: "6790236851"
         GROUP_NAME: "公開テスター"
     scripts:
+      - name: Diagnose auth + list CLI capabilities
+        script: |
+          # 公式CLIは同じ環境変数で認証が通るのか(通れば env の値は正しい)
+          app-store-connect apps get "$APP_APPLE_ID" | head -20 || echo "CLI AUTH FAILED"
+          echo "=== actions ==="
+          app-store-connect --help 2>&1 | sed -n '/actions:/,$p' | head -60
+          echo "=== beta-groups help ==="
+          app-store-connect beta-groups --help 2>&1 | head -40 || true
+          echo "=== builds help ==="
+          app-store-connect builds --help 2>&1 | head -40 || true
       - name: Create external group + public link + submit latest build for beta review
         script: |
           pip3 install --quiet PyJWT cryptography
