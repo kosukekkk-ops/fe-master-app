@@ -7,7 +7,9 @@
 #   APP_STORE_CONNECT_ISSUER_ID       … Issuer ID
 #   APP_STORE_CONNECT_KEY_IDENTIFIER  … Key ID
 #   APP_STORE_CONNECT_PRIVATE_KEY     … ダウンロードした .p8 ファイルの中身
-# 署名証明書用の秘密鍵はビルド内で自動生成するため、環境変数への登録は不要。
+#   CERTIFICATE_PRIVATE_KEY           … 署名証明書用の固定RSA秘密鍵(PKCS#1)。
+#                                        ローカルの C:\Users\kosuk\Documents\codemagic_cert_key.pem の中身。
+#                                        毎ビルド生成にすると証明書が増殖しApple上限(2枚)で詰むため固定。
 # これだけで、署名・ビルド・TestFlight配信まで自動で走る(Teams/Integrationsの設定は不要)。
 
 workflows:
@@ -34,11 +36,12 @@ workflows:
       - name: Set up code signing (API keyで証明書・プロファイルを自動発行)
         script: |
           keychain initialize
-          # 証明書用の秘密鍵をビルド内で生成(環境変数への手貼り付けを廃止=貼り付けミス防止)
-          openssl genrsa -traditional -out /tmp/cert_key.pem 2048
+          # 証明書用の秘密鍵は環境変数の固定鍵を使う。
+          # ※ビルド内でその都度生成すると毎回別の証明書が必要になり、
+          #   AppleのDistribution証明書上限(2枚)に達して3回目以降必ず失敗する。
           app-store-connect fetch-signing-files "$BUNDLE_ID" \
             --type IOS_APP_STORE \
-            --certificate-key=@file:/tmp/cert_key.pem \
+            --certificate-key=@env:CERTIFICATE_PRIVATE_KEY \
             --create
           keychain add-certificates
           xcode-project use-profiles
