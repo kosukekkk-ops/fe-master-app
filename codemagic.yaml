@@ -85,37 +85,36 @@ workflows:
         APP_APPLE_ID: "6790236851"
         GROUP_NAME: "公開テスター"
     scripts:
-      - name: Diagnose auth + list CLI capabilities
-        script: |
-          # 公式CLIは同じ環境変数で認証が通るのか(通れば env の値は正しい)
-          app-store-connect apps get "$APP_APPLE_ID" | head -20 || echo "CLI AUTH FAILED"
-          echo "=== actions ==="
-          app-store-connect --help 2>&1 | sed -n '/actions:/,$p' | head -60
-          echo "=== beta-groups help ==="
-          app-store-connect beta-groups --help 2>&1 | head -40 || true
-          echo "=== builds help ==="
-          app-store-connect builds --help 2>&1 | head -40 || true
       - name: Create external group + public link + submit latest build for beta review
         script: |
-          pip3 install --quiet PyJWT cryptography
+          # 自作JWTはなぜか401になるため、公式CLIのPythonライブラリに
+          # トークンを作らせる(CLI自身の認証は同環境で成功済み)。
+          CLI=$(which app-store-connect)
+          VENV_PY=$(sed -n '1s/^#!//p' "$CLI")
+          echo "venv python: $VENV_PY"
+          export VENV_PY
           python3 <<'PY'
-          import os, json, time, urllib.request, urllib.error, urllib.parse
-          import jwt
+          import os, json, time, subprocess, urllib.request, urllib.error, urllib.parse
 
-          # 貼り付け時に紛れ込みがちな前後の空白/改行を除去する(401の典型原因)
-          KEY = os.environ['APP_STORE_CONNECT_PRIVATE_KEY'].strip()
-          KID = os.environ['APP_STORE_CONNECT_KEY_IDENTIFIER'].strip()
-          ISS = os.environ['APP_STORE_CONNECT_ISSUER_ID'].strip()
           APP = os.environ['APP_APPLE_ID'].strip()
           GNAME = os.environ['GROUP_NAME']
-          # 診断: 値は出さず長さだけ確認(KID=10, ISS=36 が期待値)
-          print('len KID:', len(KID), '/ len ISS:', len(ISS), '/ KEY lines:', KEY.count('\n') + 1, flush=True)
+          VENV_PY = os.environ['VENV_PY']
+
+          MINT = (
+              "import os\n"
+              "from codemagic.apple.app_store_connect import AppStoreConnectApiClient, IssuerId, KeyIdentifier\n"
+              "c = AppStoreConnectApiClient(\n"
+              "    KeyIdentifier(os.environ['APP_STORE_CONNECT_KEY_IDENTIFIER'].strip()),\n"
+              "    IssuerId(os.environ['APP_STORE_CONNECT_ISSUER_ID'].strip()),\n"
+              "    os.environ['APP_STORE_CONNECT_PRIVATE_KEY'].strip())\n"
+              "print(c.jwt)\n"
+          )
 
           def token():
-              now = int(time.time())
-              return jwt.encode({'iss': ISS, 'iat': now, 'exp': now + 1200,
-                                 'aud': 'appstore-connect-v1'},
-                                KEY, algorithm='ES256', headers={'kid': KID})
+              return subprocess.check_output([VENV_PY, '-c', MINT], text=True).strip()
+
+          t = token()
+          print('official-client token length:', len(t), flush=True)
 
           def api(method, path, body=None):
               req = urllib.request.Request(
