@@ -68,4 +68,115 @@ workflows:
         key_id: $APP_STORE_CONNECT_KEY_IDENTIFIER
         issuer_id: $APP_STORE_CONNECT_ISSUER_ID
         submit_to_testflight: true     # まずTestFlight(自分の端末で最終確認)へ
+        beta_groups:                   # 承認後、外部グループへ自動配信
+          - 公開テスター
         # submit_to_app_store: true    # 審査に出す準備ができたらこの行を有効化
+
+  # ---- 1回だけ使うセットアップ: 外部テスターグループ作成＋公開リンク＋ベータ審査提出 ----
+  # (App Store Connect Webにログインせず、CIの正規API認証情報で実行するための小ワークフロー)
+  testflight-setup:
+    name: TestFlight external test setup
+    instance_type: linux
+    max_build_duration: 30
+    environment:
+      groups:
+        - appstore
+      vars:
+        APP_APPLE_ID: "6790236851"
+        GROUP_NAME: "公開テスター"
+    scripts:
+      - name: Create external group + public link + submit latest build for beta review
+        script: |
+          pip3 install --quiet PyJWT cryptography
+          python3 <<'PY'
+          import os, json, time, urllib.request, urllib.error, urllib.parse
+          import jwt
+
+          KEY = os.environ['APP_STORE_CONNECT_PRIVATE_KEY']
+          KID = os.environ['APP_STORE_CONNECT_KEY_IDENTIFIER']
+          ISS = os.environ['APP_STORE_CONNECT_ISSUER_ID']
+          APP = os.environ['APP_APPLE_ID']
+          GNAME = os.environ['GROUP_NAME']
+
+          def token():
+              now = int(time.time())
+              return jwt.encode({'iss': ISS, 'iat': now, 'exp': now + 1200,
+                                 'aud': 'appstore-connect-v1'},
+                                KEY, algorithm='ES256', headers={'kid': KID})
+
+          def api(method, path, body=None):
+              req = urllib.request.Request(
+                  'https://api.appstoreconnect.apple.com' + path, method=method,
+                  data=json.dumps(body).encode() if body else None,
+                  headers={'Authorization': 'Bearer ' + token(),
+                           'Content-Type': 'application/json'})
+              try:
+                  with urllib.request.urlopen(req) as r:
+                      d = r.read()
+                      return r.status, json.loads(d) if d else {}
+              except urllib.error.HTTPError as e:
+                  return e.code, json.loads(e.read() or b'{}')
+
+          # 1) 最新ビルドのApple側処理(processingState=VALID)を待つ
+          build = None
+          for _ in range(50):
+              s, d = api('GET', f'/v1/builds?filter[app]={APP}&sort=-uploadedDate&limit=1')
+              assert s == 200, d
+              if d['data']:
+                  b = d['data'][0]
+                  st = b['attributes']['processingState']
+                  print('build', b['attributes']['version'], 'state:', st, flush=True)
+                  if st == 'VALID':
+                      build = b; break
+                  if st in ('FAILED', 'INVALID'):
+                      raise SystemExit('build processing ' + st)
+              time.sleep(30)
+          assert build, 'processed build not found'
+          bid = build['id']
+
+          # 2) 輸出コンプライアンス未申告なら「非該当の暗号なし」で申告
+          if build['attributes'].get('usesNonExemptEncryption') is None:
+              s, d = api('PATCH', f'/v1/builds/{bid}',
+                         {'data': {'type': 'builds', 'id': bid,
+                                   'attributes': {'usesNonExemptEncryption': False}}})
+              print('export compliance set:', s, flush=True)
+              assert s in (200, 204), d
+
+          # 3) 外部グループを作成(既存なら再利用)し、公開リンクを有効化
+          s, d = api('GET', f'/v1/betaGroups?filter[app]={APP}&filter[name]={urllib.parse.quote(GNAME)}')
+          assert s == 200, d
+          if d['data']:
+              gid = d['data'][0]['id']
+              print('group exists:', gid, flush=True)
+              s, d = api('PATCH', f'/v1/betaGroups/{gid}',
+                         {'data': {'type': 'betaGroups', 'id': gid,
+                                   'attributes': {'publicLinkEnabled': True}}})
+              assert s == 200, d
+          else:
+              s, d = api('POST', '/v1/betaGroups',
+                         {'data': {'type': 'betaGroups',
+                                   'attributes': {'name': GNAME, 'publicLinkEnabled': True},
+                                   'relationships': {'app': {'data': {'type': 'apps', 'id': APP}}}}})
+              assert s == 201, d
+              gid = d['data']['id']
+              print('group created:', gid, flush=True)
+
+          # 4) ビルドをグループに追加(承認後に配信される)
+          s, d = api('POST', f'/v1/betaGroups/{gid}/relationships/builds',
+                     {'data': [{'type': 'builds', 'id': bid}]})
+          print('build added to group:', s, flush=True)
+          assert s in (200, 204), d
+
+          # 5) ベータ審査へ提出(既に提出済みエラーは成功扱い)
+          s, d = api('POST', '/v1/betaAppReviewSubmissions',
+                     {'data': {'type': 'betaAppReviewSubmissions',
+                               'relationships': {'build': {'data': {'type': 'builds', 'id': bid}}}}})
+          print('beta review submission:', s, json.dumps(d)[:300], flush=True)
+
+          # 6) 公開リンクを表示
+          s, d = api('GET', f'/v1/betaGroups/{gid}')
+          link = d['data']['attributes'].get('publicLink')
+          print('=== PUBLIC LINK ===')
+          print(link)
+          print('===================')
+          PY
