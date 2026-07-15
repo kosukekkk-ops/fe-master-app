@@ -72,6 +72,133 @@ workflows:
           - 公開テスター
         # submit_to_app_store: true    # 審査に出す準備ができたらこの行を有効化
 
+  # ---- 1回だけ使うセットアップ: IAP商品(プレミアム¥720・非消耗型)の作成 ----
+  # 有料App契約が有効になってから実行する。冪等(既存ならスキップ)。
+  iap-setup:
+    name: IAP product setup (premium)
+    instance_type: mac_mini_m2
+    max_build_duration: 15
+    environment:
+      groups:
+        - appstore
+      vars:
+        APP_APPLE_ID: "6790236851"
+        PRODUCT_ID: "io.github.kosukekkkops.femaster.premium"
+        PRODUCT_NAME: "プレミアム(全機能解放)"
+        PRODUCT_DESC: "全380語の単語帳・科目B演習・学習ログの詳細分析を永続解放します。"
+        PRICE_JPY: "720"
+    scripts:
+      - name: Create non-consumable IAP with JPY base price
+        script: |
+          CLI=$(which app-store-connect)
+          VENV_PY=$(sed -n '1s/^#!//p' "$CLI")
+          export VENV_PY
+          python3 <<'PY'
+          import os, json, subprocess, urllib.request, urllib.error, urllib.parse
+
+          APP = os.environ['APP_APPLE_ID'].strip()
+          PID = os.environ['PRODUCT_ID']
+          PNAME = os.environ['PRODUCT_NAME']
+          PDESC = os.environ['PRODUCT_DESC']
+          PRICE = os.environ['PRICE_JPY']
+          VENV_PY = os.environ['VENV_PY']
+
+          MINT = (
+              "import os\n"
+              "from codemagic.apple.app_store_connect import AppStoreConnectApiClient, IssuerId, KeyIdentifier\n"
+              "c = AppStoreConnectApiClient(\n"
+              "    KeyIdentifier(os.environ['APP_STORE_CONNECT_KEY_IDENTIFIER'].strip()),\n"
+              "    IssuerId(os.environ['APP_STORE_CONNECT_ISSUER_ID'].strip()),\n"
+              "    os.environ['APP_STORE_CONNECT_PRIVATE_KEY'].strip())\n"
+              "print(c.jwt)\n"
+          )
+          def token():
+              return subprocess.check_output([VENV_PY, '-c', MINT], text=True).strip()
+
+          def api(method, path, body=None):
+              req = urllib.request.Request(
+                  'https://api.appstoreconnect.apple.com' + path, method=method,
+                  data=json.dumps(body).encode() if body else None,
+                  headers={'Authorization': 'Bearer ' + token(),
+                           'Content-Type': 'application/json'})
+              try:
+                  with urllib.request.urlopen(req) as r:
+                      d = r.read()
+                      return r.status, json.loads(d) if d else {}
+              except urllib.error.HTTPError as e:
+                  return e.code, json.loads(e.read() or b'{}')
+
+          # 1) 既存確認(冪等)
+          s, d = api('GET', f'/v1/apps/{APP}/inAppPurchasesV2?filter[productId]={urllib.parse.quote(PID)}')
+          assert s == 200, d
+          if d['data']:
+              iap = d['data'][0]
+              print('IAP already exists:', iap['id'], iap['attributes'].get('state'), flush=True)
+          else:
+              s, d = api('POST', '/v2/inAppPurchases', {'data': {
+                  'type': 'inAppPurchases',
+                  'attributes': {'name': PNAME, 'productId': PID,
+                                 'inAppPurchaseType': 'NON_CONSUMABLE'},
+                  'relationships': {'app': {'data': {'type': 'apps', 'id': APP}}}}})
+              assert s == 201, d
+              iap = d['data']
+              print('IAP created:', iap['id'], flush=True)
+          iid = iap['id']
+
+          # 2) 日本語ローカリゼーション(表示名・説明)
+          s, d = api('GET', f'/v2/inAppPurchases/{iid}/inAppPurchaseLocalizations')
+          have_ja = s == 200 and any(l['attributes'].get('locale') == 'ja' for l in d.get('data', []))
+          if not have_ja:
+              s, d = api('POST', '/v1/inAppPurchaseLocalizations', {'data': {
+                  'type': 'inAppPurchaseLocalizations',
+                  'attributes': {'locale': 'ja', 'name': PNAME, 'description': PDESC},
+                  'relationships': {'inAppPurchaseV2': {'data': {'type': 'inAppPurchases', 'id': iid}}}}})
+              print('ja localization:', s, json.dumps(d)[:200], flush=True)
+          else:
+              print('ja localization exists', flush=True)
+
+          # 3) 価格: 日本の価格ポイントから¥720を探して基準価格に設定
+          pts, cursor = [], f'/v2/inAppPurchases/{iid}/pricePoints?filter[territory]=JPN&limit=200'
+          while cursor:
+              s, d = api('GET', cursor)
+              assert s == 200, d
+              pts += d['data']
+              nxt = (d.get('links') or {}).get('next')
+              cursor = nxt.replace('https://api.appstoreconnect.apple.com', '') if nxt else None
+          target = next((p for p in pts if p['attributes'].get('customerPrice') == PRICE), None)
+          assert target, f'price point {PRICE} not found in {len(pts)} points'
+          s, d = api('POST', '/v1/inAppPurchasePriceSchedules', {
+              'data': {'type': 'inAppPurchasePriceSchedules',
+                       'relationships': {
+                           'inAppPurchase': {'data': {'type': 'inAppPurchases', 'id': iid}},
+                           'baseTerritory': {'data': {'type': 'territories', 'id': 'JPN'}},
+                           'manualPrices': {'data': [{'type': 'inAppPurchasePrices', 'id': '${price1}'}]}},
+                       },
+              'included': [{'type': 'inAppPurchasePrices', 'id': '${price1}',
+                            'attributes': {'startDate': None},
+                            'relationships': {
+                                'inAppPurchasePricePoint': {'data': {'type': 'inAppPurchasePricePoints', 'id': target['id']}},
+                                'inAppPurchaseV2': {'data': {'type': 'inAppPurchases', 'id': iid}}}}]})
+          print('price schedule:', s, json.dumps(d)[:200], flush=True)
+
+          # 4) 全地域で販売可能に
+          s, d = api('GET', '/v1/territories?limit=200')
+          assert s == 200, d
+          terrs = [{'type': 'territories', 'id': t['id']} for t in d['data']]
+          s, d = api('POST', '/v1/inAppPurchaseAvailabilities', {
+              'data': {'type': 'inAppPurchaseAvailabilities',
+                       'attributes': {'availableInNewTerritories': True},
+                       'relationships': {
+                           'inAppPurchase': {'data': {'type': 'inAppPurchases', 'id': iid}},
+                           'availableTerritories': {'data': terrs}}}})
+          print('availability:', s, json.dumps(d)[:200], flush=True)
+
+          # 5) 最終状態
+          s, d = api('GET', f'/v2/inAppPurchases/{iid}')
+          print('=== IAP STATE ===')
+          print(json.dumps(d.get('data', {}).get('attributes', {}), ensure_ascii=False))
+          PY
+
   # ---- 1回だけ使うセットアップ: 外部テスターグループ作成＋公開リンク＋ベータ審査提出 ----
   # (App Store Connect Webにログインせず、CIの正規API認証情報で実行するための小ワークフロー)
   testflight-setup:
