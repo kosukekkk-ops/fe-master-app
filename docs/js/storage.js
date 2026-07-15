@@ -44,6 +44,11 @@ const Store = (() => {
     getPremium() { return read('premium', false); },
     setPremium(v) { write('premium', !!v); },
 
+    // レビュー促進のメタ情報 { sessions: 完了した演習回数, askedAt: 最後に表示した日 }
+    // (端末ごとの状態なのでexport/resetの対象外)
+    getReviewMeta() { return read('review', { sessions: 0, askedAt: null }); },
+    setReviewMeta(m) { write('review', m); },
+
     resetAll() {
       ['log', 'weak', 'known'].forEach(k => localStorage.removeItem(ns(k)));
     },

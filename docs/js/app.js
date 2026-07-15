@@ -382,6 +382,21 @@
     return `苦手単語帳に登録: ${names.join('、')}(タップで単語帳へ)`;
   }
 
+  // レビュー促進: 良い体験の直後(演習完了・正答率60%以上)にだけOSのレビュー
+  // ダイアログを要求する。3回目の完了以降・90日に1回まで。実際に表示するかは
+  // iOS側が判断する(Appleの上限は年3回)。Webでは何もしない。
+  function maybeAskReview(rate) {
+    const m = Store.getReviewMeta();
+    m.sessions = (m.sessions || 0) + 1;
+    const plugin = window.Capacitor && window.Capacitor.Plugins && window.Capacitor.Plugins.InAppReview;
+    const askedRecently = m.askedAt && (Date.now() - new Date(m.askedAt).getTime()) < 90 * 24 * 3600 * 1000;
+    if (plugin && m.sessions >= 3 && rate >= 60 && !askedRecently) {
+      m.askedAt = new Date().toISOString();
+      plugin.requestReview().catch(() => {});
+    }
+    Store.setReviewMeta(m);
+  }
+
   function finishQuiz() {
     quiz.active = false;   // セッション終了。次に演習タブを開くと開始画面に戻る
     $('#view-quiz').classList.remove('qmode');
@@ -404,6 +419,7 @@
     `;
     $('#again').onclick = () => startQuiz(quiz.subject, quiz.cat);
     $('#view-quiz [data-go]').onclick = () => go('flash');
+    maybeAskReview(rate);
   }
 
   // 演習開始画面。科目A(分野別4択)/科目B(アルゴリズム・セキュリティ)を切り替える
@@ -818,6 +834,7 @@
       </section>
       <section class="panel">
         <div class="panel-head"><div class="itile sm" style="--c:var(--accent-2)">${ICON.shield}</div><h2 class="panel-h">サポート</h2></div>
+        <button class="setting-row" id="set-feedback"><span>📮 ご意見・不具合報告</span><span class="cta-chev">${ICON.chevron}</span></button>
         <button class="setting-row" data-legal="terms"><span>利用規約</span><span class="cta-chev">${ICON.chevron}</span></button>
         <button class="setting-row" data-legal="privacy"><span>プライバシーポリシー</span><span class="cta-chev">${ICON.chevron}</span></button>
         <button class="setting-row" id="set-contact"><span>お問い合わせ(GitHub)</span><span class="cta-chev">${ICON.chevron}</span></button>
@@ -853,6 +870,11 @@
     };
     v.querySelectorAll('[data-legal]').forEach(b => b.onclick = () => openLegal(b.dataset.legal));
     $('#set-contact').onclick = () => window.open('https://github.com/kosukekkk-ops/fe-master-app', '_blank');
+    $('#set-feedback').onclick = () => {
+      const subject = encodeURIComponent('【受かる基本情報】ご意見・不具合報告');
+      const body = encodeURIComponent('ご意見・不具合の内容:\n\n\n---\nアプリ: 受かる基本情報 FE過去問＆単語帳 v1.0.0\n');
+      window.open(`mailto:kosuke.kkk@icloud.com?subject=${subject}&body=${body}`, '_blank');
+    };
     $('#set-export').onclick = () => {
       const blob = new Blob([JSON.stringify(Store.exportAll(), null, 2)], { type: 'application/json' });
       const a = document.createElement('a');
