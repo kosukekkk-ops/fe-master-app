@@ -199,6 +199,206 @@ workflows:
           print(json.dumps(d.get('data', {}).get('attributes', {}), ensure_ascii=False))
           PY
 
+  # ---- 本審査準備: ストア掲載情報・審査連絡先・IAPスクショをAPIで一括登録 ----
+  release-prep:
+    name: App Store release prep (metadata)
+    instance_type: mac_mini_m2
+    max_build_duration: 15
+    environment:
+      groups:
+        - appstore
+      vars:
+        APP_APPLE_ID: "6790236851"
+        IAP_ID: "6791354550"
+    scripts:
+      - name: Set store metadata + review details + IAP screenshot
+        script: |
+          CLI=$(which app-store-connect)
+          VENV_PY=$(sed -n '1s/^#!//p' "$CLI")
+          export VENV_PY
+          python3 <<'PY'
+          import os, json, hashlib, subprocess, urllib.request, urllib.error
+
+          APP = os.environ['APP_APPLE_ID'].strip()
+          IAP = os.environ['IAP_ID'].strip()
+          VENV_PY = os.environ['VENV_PY']
+
+          MINT = (
+              "import os\n"
+              "from codemagic.apple.app_store_connect import AppStoreConnectApiClient, IssuerId, KeyIdentifier\n"
+              "c = AppStoreConnectApiClient(\n"
+              "    KeyIdentifier(os.environ['APP_STORE_CONNECT_KEY_IDENTIFIER'].strip()),\n"
+              "    IssuerId(os.environ['APP_STORE_CONNECT_ISSUER_ID'].strip()),\n"
+              "    os.environ['APP_STORE_CONNECT_PRIVATE_KEY'].strip())\n"
+              "print(c.jwt)\n"
+          )
+          def token():
+              return subprocess.check_output([VENV_PY, '-c', MINT], text=True).strip()
+
+          def api(method, path, body=None):
+              req = urllib.request.Request(
+                  'https://api.appstoreconnect.apple.com' + path, method=method,
+                  data=json.dumps(body).encode() if body else None,
+                  headers={'Authorization': 'Bearer ' + token(),
+                           'Content-Type': 'application/json'})
+              try:
+                  with urllib.request.urlopen(req) as r:
+                      d = r.read()
+                      return r.status, json.loads(d) if d else {}
+              except urllib.error.HTTPError as e:
+                  return e.code, json.loads(e.read() or b'{}')
+
+          NAME = "受かる基本情報 FE過去問＆単語帳"
+          SUBTITLE = "間違えた問題が自分専用の単語帳に"
+          PRIVACY_URL = "https://kosukekkk-ops.github.io/fe-master-app/privacy.html"
+          SUPPORT_URL = "https://github.com/kosukekkk-ops/fe-master-app"
+          MARKETING_URL = "https://kosukekkk-ops.github.io/fe-master-app/"
+          PROMO = '間違えた問題が、そのまま"自分専用の単語帳"になる。科目A・科目B対応の3,173問×苦手の自動蓄積で、スキマ時間から最短ルートの合格対策を。完全オフライン・広告なし。'
+          KEYWORDS = "基本情報,基本情報技術者,FE,過去問,単語帳,科目B,アルゴリズム,午前,IT,資格,情報処理,一問一答,暗記,IPA,勉強"
+          DESC = """基本情報技術者試験(FE)の合格を目指す人のための、過去問演習×単語帳アプリです。
+
+「問題を解く → 間違えた問題の重要用語が自動で苦手単語帳にたまる → 単語帳で復習する」
+解けば解くほど、あなた専用の弱点対策ノートが育ちます。
+
+■ こんな方におすすめ
+・基本情報技術者試験(FE)の合格を目指している方
+・通勤・通学のスキマ時間で効率よく勉強したい方
+・暗記が苦手で、弱点の整理はアプリに任せたい方
+
+■ 問題演習(科目A・科目B対応/3,173問収録)
+・IPA公式公開問題+シラバス準拠のオリジナル問題
+・全問に丁寧な解説付き。誤答の選択肢が「本当は何の用語か」まで解説
+・計算問題(稼働率・基数変換・損益分岐点など)も豊富に収録
+・科目Bは擬似言語のトレース問題やセキュリティ事例に対応
+・「わからない」ボタンで解説だけ確認することもできます
+・前の問題に戻る/途中中断にも対応
+
+■ 苦手単語帳(このアプリの核)
+・間違えた問題の重要用語が自動で登録されます
+・間違えた回数順に並ぶので、弱いところから復習できる
+・タップでめくるフラッシュカード。身近な例え話つきでスッと頭に入る
+・「試験ではこう出る」の実戦メモつき
+・覚えた単語は非表示にでき、シャッフル出題も可能
+
+■ 学習ログ
+・9分野のレーダーチャートで弱点分野がひと目でわかる
+・日別の正答率推移、間違えた回数ランキング
+
+■ 使いやすさ
+・完全オフライン対応(機内モード・地下鉄でも学習OK)
+・ライト/ダークテーマ切り替え
+・ログイン不要・広告なし
+
+■ 料金
+基本無料でお使いいただけます。
+プレミアム(買い切り・追加課金なし)で全機能を解放できます。
+・無料: 科目Aの演習、苦手単語帳、全単語帳50語まで、基本統計
+・プレミアム: 全380語の単語帳、科目B演習、学習ログの詳細分析
+
+■ ご注意
+本アプリは個人開発の学習教材であり、試験実施団体(IPA)とは関係ありません。「基本情報技術者試験」はIPAの登録商標または名称です。"""
+          REVIEW_NOTES = """ログイン不要で全機能をお試しいただけます。
+App内課金「プレミアム(全機能解放)」(非消耗型・¥720)は、演習開始画面の「科目B」タブ、または設定タブ内「プレミアム」からご確認いただけます。
+購入すると、単語帳の全380語・科目B演習・学習ログの詳細分析が解放されます。
+「購入を復元」は設定タブと購入画面の両方に設置しています。
+本アプリはユーザーデータを一切収集しません(学習履歴は端末内にのみ保存)。"""
+          IAP_NOTE = "非消耗型(¥720)。演習開始画面の「科目B」または設定タブ「プレミアム」から購入画面を表示できます。購入で単語帳全380語・科目B演習・学習ログ詳細分析が解放されます。復元ボタンあり。"
+
+          # 1) アプリ名・サブタイトル・プライバシーポリシーURL (appInfoLocalizations ja)
+          s, d = api('GET', f'/v1/apps/{APP}/appInfos?include=appInfoLocalizations&limit=2')
+          assert s == 200, d
+          loc_id = None
+          for inc in d.get('included', []):
+              if inc['type'] == 'appInfoLocalizations' and inc['attributes'].get('locale') == 'ja':
+                  loc_id = inc['id']
+          assert loc_id, 'ja appInfoLocalization not found'
+          s, d = api('PATCH', f'/v1/appInfoLocalizations/{loc_id}', {'data': {
+              'type': 'appInfoLocalizations', 'id': loc_id,
+              'attributes': {'name': NAME, 'subtitle': SUBTITLE, 'privacyPolicyUrl': PRIVACY_URL}}})
+          print('app name/subtitle/privacyUrl:', s, json.dumps(d)[:200], flush=True)
+
+          # 2) バージョン1.0のローカライズ(説明・キーワード等)
+          s, d = api('GET', f'/v1/apps/{APP}/appStoreVersions?filter[platform]=IOS&limit=1')
+          assert s == 200 and d['data'], d
+          vid = d['data'][0]['id']
+          print('version:', vid, d['data'][0]['attributes'].get('versionString'),
+                d['data'][0]['attributes'].get('appStoreState'), flush=True)
+          s, d = api('GET', f'/v1/appStoreVersions/{vid}/appStoreVersionLocalizations')
+          assert s == 200, d
+          vloc = next((l['id'] for l in d['data'] if l['attributes'].get('locale') == 'ja'), None)
+          assert vloc, 'ja version localization not found'
+          s, d = api('PATCH', f'/v1/appStoreVersionLocalizations/{vloc}', {'data': {
+              'type': 'appStoreVersionLocalizations', 'id': vloc,
+              'attributes': {'description': DESC, 'keywords': KEYWORDS, 'promotionalText': PROMO,
+                             'supportUrl': SUPPORT_URL, 'marketingUrl': MARKETING_URL}}})
+          print('version localization:', s, json.dumps(d)[:200], flush=True)
+
+          # 3) 審査連絡先(App Review情報)
+          s, d = api('GET', f'/v1/appStoreVersions/{vid}/appStoreReviewDetail')
+          detail_id = d.get('data', {}).get('id') if s == 200 and d.get('data') else None
+          attrs = {'contactFirstName': '康介', 'contactLastName': '菊池',
+                   'contactPhone': '+818077174466', 'contactEmail': 'kosuke.kkk@icloud.com',
+                   'demoAccountRequired': False, 'notes': REVIEW_NOTES}
+          if detail_id:
+              s, d = api('PATCH', f'/v1/appStoreReviewDetails/{detail_id}',
+                         {'data': {'type': 'appStoreReviewDetails', 'id': detail_id, 'attributes': attrs}})
+          else:
+              s, d = api('POST', '/v1/appStoreReviewDetails',
+                         {'data': {'type': 'appStoreReviewDetails', 'attributes': attrs,
+                                   'relationships': {'appStoreVersion': {'data': {'type': 'appStoreVersions', 'id': vid}}}}})
+          print('review details:', s, json.dumps(d)[:200], flush=True)
+
+          # 4) IAP: 審査メモ + 審査用スクリーンショット
+          s, d = api('PATCH', f'/v2/inAppPurchases/{IAP}', {'data': {
+              'type': 'inAppPurchases', 'id': IAP, 'attributes': {'reviewNote': IAP_NOTE}}})
+          print('iap review note:', s, flush=True)
+          s, d = api('GET', f'/v2/inAppPurchases/{IAP}/appStoreReviewScreenshot')
+          has_shot = s == 200 and d.get('data')
+          if not has_shot:
+              img = open('store/iap-review-screenshot.png', 'rb').read()
+              md5 = hashlib.md5(img).hexdigest()
+              s, d = api('POST', '/v1/inAppPurchaseAppStoreReviewScreenshots', {'data': {
+                  'type': 'inAppPurchaseAppStoreReviewScreenshots',
+                  'attributes': {'fileName': 'iap-review-screenshot.png', 'fileSize': len(img)},
+                  'relationships': {'inAppPurchaseV2': {'data': {'type': 'inAppPurchases', 'id': IAP}}}}})
+              assert s == 201, d
+              shot = d['data']
+              for op in shot['attributes']['uploadOperations']:
+                  hdrs = {h['name']: h['value'] for h in op.get('requestHeaders', [])}
+                  req = urllib.request.Request(op['url'], method=op['method'],
+                                               data=img[op['offset']:op['offset']+op['length']], headers=hdrs)
+                  with urllib.request.urlopen(req) as r:
+                      print('upload chunk:', r.status, flush=True)
+              s, d = api('PATCH', f"/v1/inAppPurchaseAppStoreReviewScreenshots/{shot['id']}",
+                         {'data': {'type': 'inAppPurchaseAppStoreReviewScreenshots', 'id': shot['id'],
+                                   'attributes': {'uploaded': True, 'sourceFileChecksum': md5}}})
+              print('iap screenshot committed:', s, flush=True)
+          else:
+              print('iap screenshot already exists', flush=True)
+
+          # 5) 年齢制限(全項目「なし」=4+)。API仕様変更で失敗しても続行(その場合はWebで2分)
+          s, d = api('GET', f'/v1/apps/{APP}/appInfos?limit=2')
+          info_id = d['data'][0]['id']
+          s, d = api('GET', f'/v1/appInfos/{info_id}/ageRatingDeclaration')
+          if s == 200 and d.get('data'):
+              ar_id = d['data']['id']
+              NONE_FIELDS = ['alcoholTobaccoOrDrugUseOrReferences', 'contests', 'gamblingSimulated',
+                             'horrorOrFearThemes', 'matureOrSuggestiveThemes', 'medicalOrTreatmentInformation',
+                             'profanityOrCrudeHumor', 'sexualContentGraphicAndNudity', 'sexualContentOrNudity',
+                             'violenceCartoonOrFantasy', 'violenceRealistic',
+                             'violenceRealisticProlongedGraphicOrSadistic']
+              ar_attrs = {f: 'NONE' for f in NONE_FIELDS}
+              ar_attrs.update({'gambling': False, 'unrestrictedWebAccess': False, 'lootBox': False})
+              s, d = api('PATCH', f'/v1/ageRatingDeclarations/{ar_id}',
+                         {'data': {'type': 'ageRatingDeclarations', 'id': ar_id, 'attributes': ar_attrs}})
+              print('age rating:', s, json.dumps(d)[:300], flush=True)
+
+          # 6) 最終状態の表示
+          s, d = api('GET', f'/v2/inAppPurchases/{IAP}')
+          print('IAP state:', d.get('data', {}).get('attributes', {}).get('state'), flush=True)
+          print('=== DONE ===')
+          PY
+
   # ---- 1回だけ使うセットアップ: 外部テスターグループ作成＋公開リンク＋ベータ審査提出 ----
   # (App Store Connect Webにログインせず、CIの正規API認証情報で実行するための小ワークフロー)
   testflight-setup:
