@@ -399,6 +399,104 @@ workflows:
           print('=== DONE ===')
           PY
 
+  # ---- 本審査準備: App Storeスクリーンショット(1290x2796)をAPIでアップロード ----
+  screenshots-upload:
+    name: App Store screenshots upload
+    instance_type: mac_mini_m2
+    max_build_duration: 15
+    environment:
+      groups:
+        - appstore
+      vars:
+        APP_APPLE_ID: "6790236851"
+    scripts:
+      - name: Upload store/screenshots/*.png to the ja 1.0 version
+        script: |
+          CLI=$(which app-store-connect)
+          VENV_PY=$(sed -n '1s/^#!//p' "$CLI")
+          export VENV_PY
+          python3 <<'PY'
+          import os, json, glob, hashlib, subprocess, urllib.request, urllib.error
+
+          APP = os.environ['APP_APPLE_ID'].strip()
+          VENV_PY = os.environ['VENV_PY']
+          MINT = (
+              "import os\n"
+              "from codemagic.apple.app_store_connect import AppStoreConnectApiClient, IssuerId, KeyIdentifier\n"
+              "c = AppStoreConnectApiClient(\n"
+              "    KeyIdentifier(os.environ['APP_STORE_CONNECT_KEY_IDENTIFIER'].strip()),\n"
+              "    IssuerId(os.environ['APP_STORE_CONNECT_ISSUER_ID'].strip()),\n"
+              "    os.environ['APP_STORE_CONNECT_PRIVATE_KEY'].strip())\n"
+              "print(c.jwt)\n"
+          )
+          def token():
+              return subprocess.check_output([VENV_PY, '-c', MINT], text=True).strip()
+
+          def api(method, path, body=None):
+              req = urllib.request.Request(
+                  'https://api.appstoreconnect.apple.com' + path, method=method,
+                  data=json.dumps(body).encode() if body else None,
+                  headers={'Authorization': 'Bearer ' + token(),
+                           'Content-Type': 'application/json'})
+              try:
+                  with urllib.request.urlopen(req) as r:
+                      d = r.read()
+                      return r.status, json.loads(d) if d else {}
+              except urllib.error.HTTPError as e:
+                  return e.code, json.loads(e.read() or b'{}')
+
+          # ja版バージョン1.0のローカリゼーションを特定
+          s, d = api('GET', f'/v1/apps/{APP}/appStoreVersions?filter[platform]=IOS&limit=1')
+          vid = d['data'][0]['id']
+          s, d = api('GET', f'/v1/appStoreVersions/{vid}/appStoreVersionLocalizations')
+          vloc = next(l['id'] for l in d['data'] if l['attributes'].get('locale') == 'ja')
+          print('version localization:', vloc, flush=True)
+
+          # スクリーンショットセット(6.9inch優先、ダメなら6.7inch)を取得or作成
+          s, d = api('GET', f'/v1/appStoreVersionLocalizations/{vloc}/appScreenshotSets')
+          sets = {x['attributes']['screenshotDisplayType']: x['id'] for x in d.get('data', [])}
+          set_id = None
+          for disp in ('APP_IPHONE_69', 'APP_IPHONE_67'):
+              if disp in sets:
+                  set_id = sets[disp]; print('set exists:', disp, set_id, flush=True); break
+              s, d = api('POST', '/v1/appScreenshotSets', {'data': {
+                  'type': 'appScreenshotSets',
+                  'attributes': {'screenshotDisplayType': disp},
+                  'relationships': {'appStoreVersionLocalization': {'data': {'type': 'appStoreVersionLocalizations', 'id': vloc}}}}})
+              if s == 201:
+                  set_id = d['data']['id']; print('set created:', disp, set_id, flush=True); break
+              print('set create failed for', disp, s, json.dumps(d)[:200], flush=True)
+          assert set_id, 'no screenshot set'
+
+          # 既存スクショを削除(再実行時の重複防止)
+          s, d = api('GET', f'/v1/appScreenshotSets/{set_id}/appScreenshots')
+          for shot in d.get('data', []):
+              api('DELETE', f"/v1/appScreenshots/{shot['id']}")
+              print('deleted old:', shot['id'], flush=True)
+
+          # 01.png〜05.pngを順にアップロード
+          for f in sorted(glob.glob('store/screenshots/*.png')):
+              img = open(f, 'rb').read()
+              md5 = hashlib.md5(img).hexdigest()
+              s, d = api('POST', '/v1/appScreenshots', {'data': {
+                  'type': 'appScreenshots',
+                  'attributes': {'fileName': os.path.basename(f), 'fileSize': len(img)},
+                  'relationships': {'appScreenshotSet': {'data': {'type': 'appScreenshotSets', 'id': set_id}}}}})
+              assert s == 201, (f, d)
+              shot = d['data']
+              for op in shot['attributes']['uploadOperations']:
+                  hdrs = {h['name']: h['value'] for h in op.get('requestHeaders', [])}
+                  req = urllib.request.Request(op['url'], method=op['method'],
+                                               data=img[op['offset']:op['offset']+op['length']], headers=hdrs)
+                  with urllib.request.urlopen(req) as r:
+                      pass
+              s, d = api('PATCH', f"/v1/appScreenshots/{shot['id']}",
+                         {'data': {'type': 'appScreenshots', 'id': shot['id'],
+                                   'attributes': {'uploaded': True, 'sourceFileChecksum': md5}}})
+              print('uploaded:', os.path.basename(f), s, flush=True)
+          print('=== DONE ===')
+          PY
+
   # ---- 1回だけ使うセットアップ: 外部テスターグループ作成＋公開リンク＋ベータ審査提出 ----
   # (App Store Connect Webにログインせず、CIの正規API認証情報で実行するための小ワークフロー)
   testflight-setup:
