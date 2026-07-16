@@ -393,7 +393,41 @@ workflows:
                          {'data': {'type': 'ageRatingDeclarations', 'id': ar_id, 'attributes': ar_attrs}})
               print('age rating:', s, json.dumps(d)[:300], flush=True)
 
-          # 6) 最終状態の表示
+          # 6) 著作権表記
+          s, d = api('PATCH', f'/v1/appStoreVersions/{vid}', {'data': {
+              'type': 'appStoreVersions', 'id': vid,
+              'attributes': {'copyright': '© 2026 Kosuke Kikuchi'}}})
+          print('copyright:', s, flush=True)
+
+          # 7) コンテンツ配信権(IPA公式公開問題=サードパーティコンテンツを権利の範囲内で利用)
+          s, d = api('PATCH', f'/v1/apps/{APP}', {'data': {
+              'type': 'apps', 'id': APP,
+              'attributes': {'contentRightsDeclaration': 'USES_THIRD_PARTY_CONTENT'}}})
+          print('content rights:', s, json.dumps(d)[:150], flush=True)
+
+          # 8) アプリ価格=無料(日本基準・価格ポイント0円)
+          pts, cursor = [], f'/v1/apps/{APP}/appPricePoints?filter[territory]=JPN&limit=200'
+          while cursor:
+              s, d = api('GET', cursor)
+              assert s == 200, d
+              pts += d['data']
+              nxt = (d.get('links') or {}).get('next')
+              cursor = nxt.replace('https://api.appstoreconnect.apple.com', '') if nxt else None
+          free = next((p for p in pts if p['attributes'].get('customerPrice') in ('0.0', '0', '0.00')), None)
+          assert free, f'free price point not found in {len(pts)}'
+          s, d = api('POST', '/v1/appPriceSchedules', {
+              'data': {'type': 'appPriceSchedules',
+                       'relationships': {
+                           'app': {'data': {'type': 'apps', 'id': APP}},
+                           'baseTerritory': {'data': {'type': 'territories', 'id': 'JPN'}},
+                           'manualPrices': {'data': [{'type': 'appPrices', 'id': '${p1}'}]}}},
+              'included': [{'type': 'appPrices', 'id': '${p1}',
+                            'attributes': {'startDate': None},
+                            'relationships': {
+                                'appPricePoint': {'data': {'type': 'appPricePoints', 'id': free['id']}}}}]})
+          print('app price schedule(free):', s, json.dumps(d)[:200], flush=True)
+
+          # 9) 最終状態の表示
           s, d = api('GET', f'/v2/inAppPurchases/{IAP}')
           print('IAP state:', d.get('data', {}).get('attributes', {}).get('state'), flush=True)
           print('=== DONE ===')
