@@ -433,6 +433,123 @@ workflows:
           print('=== DONE ===')
           PY
 
+  # ---- 再提出: 最新ビルドをバージョンに紐付け、IAPを審査提出物に含めて提出 ----
+  # (2.1(b)リジェクト対応: IAP未提出だったため、バージョン+IAPを同時に審査へ)
+  resubmit:
+    name: Resubmit for review (version + IAP)
+    instance_type: mac_mini_m2
+    max_build_duration: 30
+    environment:
+      groups:
+        - appstore
+      vars:
+        APP_APPLE_ID: "6790236851"
+        IAP_ID: "6791354550"
+    scripts:
+      - name: Attach latest build, add IAP to submission, submit
+        script: |
+          CLI=$(which app-store-connect)
+          VENV_PY=$(sed -n '1s/^#!//p' "$CLI")
+          export VENV_PY
+          python3 <<'PY'
+          import os, json, time, subprocess, urllib.request, urllib.error
+
+          APP = os.environ['APP_APPLE_ID'].strip()
+          IAP = os.environ['IAP_ID'].strip()
+          VENV_PY = os.environ['VENV_PY']
+          MINT = (
+              "import os\n"
+              "from codemagic.apple.app_store_connect import AppStoreConnectApiClient, IssuerId, KeyIdentifier\n"
+              "c = AppStoreConnectApiClient(\n"
+              "    KeyIdentifier(os.environ['APP_STORE_CONNECT_KEY_IDENTIFIER'].strip()),\n"
+              "    IssuerId(os.environ['APP_STORE_CONNECT_ISSUER_ID'].strip()),\n"
+              "    os.environ['APP_STORE_CONNECT_PRIVATE_KEY'].strip())\n"
+              "print(c.jwt)\n"
+          )
+          def token():
+              return subprocess.check_output([VENV_PY, '-c', MINT], text=True).strip()
+
+          def api(method, path, body=None):
+              req = urllib.request.Request(
+                  'https://api.appstoreconnect.apple.com' + path, method=method,
+                  data=json.dumps(body).encode() if body else None,
+                  headers={'Authorization': 'Bearer ' + token(),
+                           'Content-Type': 'application/json'})
+              try:
+                  with urllib.request.urlopen(req) as r:
+                      d = r.read()
+                      return r.status, json.loads(d) if d else {}
+              except urllib.error.HTTPError as e:
+                  return e.code, json.loads(e.read() or b'{}')
+
+          # 1) 最新ビルドの処理完了を待つ
+          build = None
+          for _ in range(50):
+              s, d = api('GET', f'/v1/builds?filter[app]={APP}&sort=-uploadedDate&limit=1')
+              assert s == 200, d
+              if d['data']:
+                  b = d['data'][0]
+                  st = b['attributes']['processingState']
+                  print('build', b['attributes']['version'], 'state:', st, flush=True)
+                  if st == 'VALID':
+                      build = b; break
+                  if st in ('FAILED', 'INVALID'):
+                      raise SystemExit('build processing ' + st)
+              time.sleep(30)
+          assert build, 'processed build not found'
+          bid = build['id']
+
+          # 2) バージョン1.0の状態確認と最新ビルドの紐付け
+          s, d = api('GET', f'/v1/apps/{APP}/appStoreVersions?filter[platform]=IOS&limit=1')
+          vid = d['data'][0]['id']
+          print('version state before:', d['data'][0]['attributes'].get('appStoreState'), flush=True)
+          s, d = api('PATCH', f'/v1/appStoreVersions/{vid}/relationships/build',
+                     {'data': {'type': 'builds', 'id': bid}})
+          print('attach build:', s, json.dumps(d)[:200], flush=True)
+
+          # 3) 審査提出(reviewSubmission)を取得or作成
+          s, d = api('GET', f'/v1/reviewSubmissions?filter[app]={APP}&filter[platform]=IOS&limit=10')
+          assert s == 200, d
+          sub = None
+          for x in d.get('data', []):
+              st = x['attributes'].get('state')
+              print('existing submission:', x['id'], st, flush=True)
+              if st in ('UNRESOLVED_ISSUES', 'READY_FOR_REVIEW'):
+                  sub = x
+          if not sub:
+              s, d = api('POST', '/v1/reviewSubmissions', {'data': {
+                  'type': 'reviewSubmissions',
+                  'attributes': {'platform': 'IOS'},
+                  'relationships': {'app': {'data': {'type': 'apps', 'id': APP}}}}})
+              print('create submission:', s, json.dumps(d)[:200], flush=True)
+              assert s == 201, d
+              sub = d['data']
+          sid = sub['id']
+
+          # 4) 提出物にバージョンとIAPを追加(既存ならエラーを無視)
+          s, d = api('POST', '/v1/reviewSubmissionItems', {'data': {
+              'type': 'reviewSubmissionItems',
+              'relationships': {
+                  'reviewSubmission': {'data': {'type': 'reviewSubmissions', 'id': sid}},
+                  'appStoreVersion': {'data': {'type': 'appStoreVersions', 'id': vid}}}}})
+          print('add version item:', s, json.dumps(d)[:200], flush=True)
+          s, d = api('POST', '/v1/reviewSubmissionItems', {'data': {
+              'type': 'reviewSubmissionItems',
+              'relationships': {
+                  'reviewSubmission': {'data': {'type': 'reviewSubmissions', 'id': sid}},
+                  'inAppPurchaseV2': {'data': {'type': 'inAppPurchases', 'id': IAP}}}}})
+          print('add IAP item:', s, json.dumps(d)[:300], flush=True)
+
+          # 5) 提出物一覧を確認して提出
+          s, d = api('GET', f'/v1/reviewSubmissions/{sid}/items')
+          print('items:', json.dumps(d.get('data', []))[:400], flush=True)
+          s, d = api('PATCH', f'/v1/reviewSubmissions/{sid}', {'data': {
+              'type': 'reviewSubmissions', 'id': sid,
+              'attributes': {'submitted': True}}})
+          print('SUBMIT:', s, json.dumps(d)[:300], flush=True)
+          print('=== DONE ===')
+          PY
+
   # ---- 本審査準備: App Storeスクリーンショット(1290x2796)をAPIでアップロード ----
   screenshots-upload:
     name: App Store screenshots upload
