@@ -14,7 +14,7 @@
 
 営業職の私がAIと二人三脚で作りました。
 無料で使えます👇
-[App StoreのURL]
+https://apps.apple.com/jp/app/id6790236851
 
 #個人開発 #基本情報技術者試験
 ```
@@ -79,7 +79,7 @@ Macも持っていません。全部Windowsで作りました。
 FE受験予定の方、ぜひ触ってみてください。
 フィードバックもらえたら全部読みます🙏
 
-📱 App Store: [URL]
+📱 App Store: https://apps.apple.com/jp/app/id6790236851
 🌐 Web版もあります: https://kosukekkk-ops.github.io/fe-master-app/
 
 #個人開発 #基本情報技術者試験 #ClaudeCode

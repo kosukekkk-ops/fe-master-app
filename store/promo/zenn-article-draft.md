@@ -77,5 +77,5 @@ Claude Codeがやったこと:
 「個人開発の難所は、開発よりAppleへの提出手続き」というのが率直な感想です。
 そこも含めてAIに任せられる時代になったので、非エンジニアこそ試す価値があると思います。
 
-📱 App Store: [URL]
+📱 App Store: https://apps.apple.com/jp/app/id6790236851
 🌐 Web版: https://kosukekkk-ops.github.io/fe-master-app/
