@@ -497,6 +497,81 @@ workflows:
               print('AVAILABILITY check failed:', s, json.dumps(d)[:200], flush=True)
           PY
 
+  # ---- 修正: アプリの配信地域を全世界に設定(未設定だとどのストアにも載らない) ----
+  fix-availability:
+    name: Fix app availability (all territories)
+    instance_type: mac_mini_m2
+    max_build_duration: 10
+    environment:
+      groups:
+        - appstore
+      vars:
+        APP_APPLE_ID: "6790236851"
+    scripts:
+      - name: Set app availability to all territories
+        script: |
+          CLI=$(which app-store-connect)
+          VENV_PY=$(sed -n '1s/^#!//p' "$CLI")
+          export VENV_PY
+          python3 <<'PY'
+          import os, json, subprocess, urllib.request, urllib.error
+          APP = os.environ['APP_APPLE_ID'].strip()
+          VENV_PY = os.environ['VENV_PY']
+          MINT = (
+              "import os\n"
+              "from codemagic.apple.app_store_connect import AppStoreConnectApiClient, IssuerId, KeyIdentifier\n"
+              "c = AppStoreConnectApiClient(\n"
+              "    KeyIdentifier(os.environ['APP_STORE_CONNECT_KEY_IDENTIFIER'].strip()),\n"
+              "    IssuerId(os.environ['APP_STORE_CONNECT_ISSUER_ID'].strip()),\n"
+              "    os.environ['APP_STORE_CONNECT_PRIVATE_KEY'].strip())\n"
+              "print(c.jwt)\n"
+          )
+          def token():
+              return subprocess.check_output([VENV_PY, '-c', MINT], text=True).strip()
+          def api(method, path, body=None):
+              req = urllib.request.Request('https://api.appstoreconnect.apple.com' + path, method=method,
+                  data=json.dumps(body).encode() if body else None,
+                  headers={'Authorization': 'Bearer ' + token(), 'Content-Type': 'application/json'})
+              try:
+                  with urllib.request.urlopen(req) as r:
+                      d = r.read()
+                      return r.status, json.loads(d) if d else {}
+              except urllib.error.HTTPError as e:
+                  return e.code, json.loads(e.read() or b'{}')
+
+          # 全地域リストを取得
+          s, d = api('GET', '/v1/territories?limit=200')
+          assert s == 200, d
+          terrs = [t['id'] for t in d['data']]
+          print('territories:', len(terrs), flush=True)
+
+          # appAvailabilityV2 を全地域availableで作成
+          refs, included = [], []
+          for i, t in enumerate(terrs):
+              tid = '${t' + str(i) + '}'
+              refs.append({'type': 'territoryAvailabilities', 'id': tid})
+              included.append({'type': 'territoryAvailabilities', 'id': tid,
+                               'attributes': {'available': True},
+                               'relationships': {'territory': {'data': {'type': 'territories', 'id': t}}}})
+          s, d = api('POST', '/v2/appAvailabilities', {
+              'data': {'type': 'appAvailabilities',
+                       'attributes': {'availableInNewTerritories': True},
+                       'relationships': {
+                           'app': {'data': {'type': 'apps', 'id': APP}},
+                           'territoryAvailabilities': {'data': refs}}},
+              'included': included})
+          print('create availability:', s, json.dumps(d)[:400], flush=True)
+
+          # 確認
+          s, d = api('GET', f'/v1/apps/{APP}/appAvailabilityV2?include=territoryAvailabilities&limit[territoryAvailabilities]=50')
+          print('verify:', s, flush=True)
+          if s == 200:
+              terrs2 = [i for i in d.get('included', []) if i['type'] == 'territoryAvailabilities']
+              avail = [t for t in terrs2 if t['attributes'].get('available')]
+              print('now available in (sample):', len(avail), '/', len(terrs2), flush=True)
+          print('=== DONE ===')
+          PY
+
   # ---- 再提出: 最新ビルドをバージョンに紐付け、IAPを審査提出物に含めて提出 ----
   # (2.1(b)リジェクト対応: IAP未提出だったため、バージョン+IAPを同時に審査へ)
   resubmit:
