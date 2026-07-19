@@ -483,6 +483,18 @@ workflows:
           s, d = api(f'/v1/reviewSubmissions?filter[app]={APP}&filter[platform]=IOS&limit=3')
           for x in d.get('data', []):
               print('SUBMISSION', x['id'][:8], '->', x['attributes'].get('state'), flush=True)
+          # アプリの配信可否(地域)を確認
+          s, d = api(f'/v1/apps/{APP}/appAvailabilityV2?include=territoryAvailabilities&limit[territoryAvailabilities]=50')
+          if s == 200:
+              attrs = d.get('data', {}).get('attributes', {})
+              print('AVAILABILITY availableInNewTerritories:', attrs.get('availableInNewTerritories'), flush=True)
+              terrs = [i for i in d.get('included', []) if i['type'] == 'territoryAvailabilities']
+              avail = [t for t in terrs if t['attributes'].get('available')]
+              print('AVAILABILITY territories(available/checked):', len(avail), '/', len(terrs), flush=True)
+              jp = next((t for t in terrs if 'JPN' in json.dumps(t)), None)
+              print('AVAILABILITY JPN:', json.dumps(jp['attributes'] if jp else None)[:200], flush=True)
+          else:
+              print('AVAILABILITY check failed:', s, json.dumps(d)[:200], flush=True)
           PY
 
   # ---- 再提出: 最新ビルドをバージョンに紐付け、IAPを審査提出物に含めて提出 ----
