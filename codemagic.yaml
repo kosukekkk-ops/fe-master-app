@@ -433,6 +433,58 @@ workflows:
           print('=== DONE ===')
           PY
 
+  # ---- 状態確認のみ(読み取り専用): バージョンとIAPの現在ステータスを表示 ----
+  status-check:
+    name: Status check (read-only)
+    instance_type: mac_mini_m2
+    max_build_duration: 10
+    environment:
+      groups:
+        - appstore
+      vars:
+        APP_APPLE_ID: "6790236851"
+        IAP_ID: "6791354550"
+    scripts:
+      - name: Print version and IAP states
+        script: |
+          CLI=$(which app-store-connect)
+          VENV_PY=$(sed -n '1s/^#!//p' "$CLI")
+          export VENV_PY
+          python3 <<'PY'
+          import os, json, subprocess, urllib.request, urllib.error
+          APP = os.environ['APP_APPLE_ID'].strip()
+          IAP = os.environ['IAP_ID'].strip()
+          VENV_PY = os.environ['VENV_PY']
+          MINT = (
+              "import os\n"
+              "from codemagic.apple.app_store_connect import AppStoreConnectApiClient, IssuerId, KeyIdentifier\n"
+              "c = AppStoreConnectApiClient(\n"
+              "    KeyIdentifier(os.environ['APP_STORE_CONNECT_KEY_IDENTIFIER'].strip()),\n"
+              "    IssuerId(os.environ['APP_STORE_CONNECT_ISSUER_ID'].strip()),\n"
+              "    os.environ['APP_STORE_CONNECT_PRIVATE_KEY'].strip())\n"
+              "print(c.jwt)\n"
+          )
+          def token():
+              return subprocess.check_output([VENV_PY, '-c', MINT], text=True).strip()
+          def api(path):
+              req = urllib.request.Request('https://api.appstoreconnect.apple.com' + path,
+                  headers={'Authorization': 'Bearer ' + token()})
+              try:
+                  with urllib.request.urlopen(req) as r:
+                      return r.status, json.loads(r.read())
+              except urllib.error.HTTPError as e:
+                  return e.code, json.loads(e.read() or b'{}')
+          s, d = api(f'/v1/apps/{APP}/appStoreVersions?filter[platform]=IOS&limit=2')
+          for v in d.get('data', []):
+              a = v['attributes']
+              print('VERSION', a.get('versionString'), '->', a.get('appStoreState'), '/', a.get('appVersionState'), flush=True)
+          s, d = api(f'/v2/inAppPurchases/{IAP}')
+          print('IAP ->', d.get('data', {}).get('attributes', {}).get('state'), flush=True)
+          s, d = api(f'/v1/reviewSubmissions?filter[app]={APP}&filter[platform]=IOS&limit=3')
+          for x in d.get('data', []):
+              print('SUBMISSION', x['id'][:8], '->', x['attributes'].get('state'), flush=True)
+          PY
+
   # ---- 再提出: 最新ビルドをバージョンに紐付け、IAPを審査提出物に含めて提出 ----
   # (2.1(b)リジェクト対応: IAP未提出だったため、バージョン+IAPを同時に審査へ)
   resubmit:
