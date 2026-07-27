@@ -149,22 +149,9 @@ for (const w of words) {
       });
     }
   }
-  // --- exq: 例え → 用語(逆引き) ---
-  if (w.analogy) {
-    const ds = pickDistractors(w, 'word', w.word);
-    if (ds.length === 3) {
-      const { choices, correctIndex } = assemble(w.word, ds.map(d => d.word));
-      questions.push({
-        questionId: `g_exq_${w.wordId}`,
-        category: w.category,
-        text: `次の「例え」が表す用語として最も適切なものはどれか。\n「${w.analogy}」`,
-        choices, correctIndex,
-        explanation: `正解は「${w.word}」。${detail(w)}\n${otherMeaningsNote(ds)}\n${examNote(w)}`,
-        source: `生成問題(例えから用語 / ${w.word})`,
-        relatedWordIds: [w.wordId]
-      });
-    }
-  }
+  // ※例え系問題(exq: 例え→用語 / analogy: 用語→例え)は2026-07-20に廃止。
+  //   例え話は覚えるための補助であり、4択にすると選択肢同士が無関係で簡単すぎるため
+  //   演習の平均品質を下げていた。例え話自体は単語帳の裏面で引き続き表示される。
   // --- desc: 用語 → 説明(defとは別の紛らわしいダミー組で出題) ---
   // 分野の仲間はずれ問題は試験合格に直結しないため廃止し、
   // 「用語の説明を選ぶ」問題に置き換え。defが上位3件のダミーを使うのに対し、
@@ -180,24 +167,6 @@ for (const w of words) {
         choices, correctIndex,
         explanation: `${w.word}: ${detail(w)}\n${otherWordsNote(ds)}`,
         source: `生成問題(意味 / ${w.word})`,
-        relatedWordIds: [w.wordId]
-      });
-    }
-  }
-  // --- analogy: 用語 → 例え話(analogyを持つ語のみ) ---
-  if (w.analogy) {
-    const pool = distractorPool(w).filter(d => d.analogy && d.analogy !== w.analogy);
-    const ds = [];
-    for (const d of pool) { if (!ds.some(o => o.analogy === d.analogy)) ds.push(d); if (ds.length === 3) break; }
-    if (ds.length === 3) {
-      const { choices, correctIndex } = assemble(w.analogy, ds.map(d => d.analogy));
-      questions.push({
-        questionId: `g_analogy_${w.wordId}`,
-        category: w.category,
-        text: `${w.word} を身近なものに例えた説明として、最も適切なものはどれか。`,
-        choices, correctIndex,
-        explanation: `${w.word}: ${detail(w)}\n(他の選択肢は「${ds.map(d => d.word).join('」「')}」の例え)\n${examNote(w)}`,
-        source: `生成問題(例え / ${w.word})`,
         relatedWordIds: [w.wordId]
       });
     }
