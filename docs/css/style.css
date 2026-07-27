@@ -239,6 +239,63 @@ button.btn.small { padding: 9px 12px; font-size: 13px; width: auto; }
 .home-cta .cta-chev svg { width: 20px; height: 20px; }
 .home-cta.center { justify-content: center; padding: 16px; }
 .home-cta.center .cta-label { flex: 0 0 auto; text-align: center; font-size: 16px; }
+/* リッチCTA(ラベル+サブ文言の2段) */
+.home-cta.rich { align-items: center; }
+.home-cta .cta-main { flex: 1; min-width: 0; text-align: left; display: flex; flex-direction: column; gap: 2px; }
+.home-cta .cta-main .cta-label { flex: none; }
+.home-cta .cta-sub { font-size: 11.5px; font-weight: 600; opacity: .8; }
+.home-cta.primary .cta-sub { color: rgba(255,255,255,.85); }
+
+/* ---------- home redesign: streak card / goal hero / sparklines / badges ---------- */
+.streak {
+  display: flex; align-items: center; gap: 9px; flex: 0 0 auto;
+  font-family: inherit; color: var(--text); cursor: pointer;
+  background: var(--bg-card); border: 1px solid var(--border);
+  border-radius: 14px; padding: 8px 10px;
+}
+.streak:active { transform: scale(.98); }
+.streak .streak-chev { display: flex; opacity: .5; }
+.streak .streak-chev svg { width: 16px; height: 16px; }
+
+.goal-hero {
+  display: flex; align-items: center; gap: 18px;
+  background: var(--bg-card); border: 1px solid var(--border);
+  border-radius: 18px; padding: 20px 20px; margin-bottom: 16px;
+}
+.goal-hero .goal-ring { flex: 0 0 auto; }
+.goal-hero .ringwrap { width: 116px; height: 116px; }
+.goal-hero .ringwrap svg { width: 116px; height: 116px; }
+.goal-center { display: flex; flex-direction: column; align-items: center; line-height: 1; }
+.goal-center b { font-size: 30px; font-weight: 800; color: var(--text); }
+.goal-center b i { font-size: 15px; font-style: normal; font-weight: 700; color: var(--text-dim); margin-left: 1px; }
+.goal-center em { font-style: normal; font-size: 11px; color: var(--text-dim); margin-top: 3px; }
+.goal-body { flex: 1; min-width: 0; }
+.goal-eyebrow { font-size: 12px; color: var(--text-dim); margin-bottom: 4px; }
+.goal-title { font-size: 21px; font-weight: 700; line-height: 1.3; }
+.goal-title b { font-size: 28px; font-weight: 800; color: var(--accent); margin: 0 2px; }
+.goal-bar { height: 9px; border-radius: 999px; background: var(--bg-elev); overflow: hidden; margin: 12px 0 8px; }
+.goal-bar > span { display: block; height: 100%; border-radius: 999px; background: linear-gradient(90deg, var(--accent-2), var(--accent)); transition: width .4s; }
+.goal-count { font-size: 13px; font-weight: 700; color: var(--text-dim); text-align: right; }
+
+.panel-h-row { display: flex; align-items: center; justify-content: space-between; margin-bottom: 12px; }
+.panel-h-row .panel-h { margin: 0; }
+.see-all { font-family: inherit; font-size: 12px; font-weight: 600; color: var(--text-dim); background: none; border: none; cursor: pointer; display: inline-flex; align-items: center; gap: 2px; }
+.see-all svg { width: 15px; height: 15px; }
+
+.cum { flex-direction: column; align-items: stretch; gap: 12px; }
+.cum-top { display: flex; align-items: center; gap: 12px; }
+.cum .spark { height: 30px; }
+.cum-badge { display: flex; }
+.badge { font-size: 11px; font-weight: 700; border-radius: 999px; padding: 3px 10px; background: var(--bg-elev); color: var(--text-dim); }
+.badge.ng { background: color-mix(in srgb, var(--ng) 16%, transparent); color: var(--ng); }
+.badge.accent2 { background: color-mix(in srgb, var(--accent-2) 18%, transparent); color: var(--accent-2); }
+
+.text-input {
+  width: 100%; box-sizing: border-box; font-family: inherit; font-size: 15px;
+  color: var(--text); background: var(--bg-elev); border: 1px solid var(--border);
+  border-radius: 12px; padding: 12px 14px;
+}
+.text-input:focus { outline: none; border-color: var(--accent); }
 
 /* ---------- quiz start screen ---------- */
 .back-btn {

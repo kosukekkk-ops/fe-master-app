@@ -83,5 +83,31 @@ const Charts = (() => {
     return `<svg viewBox="0 0 ${w} ${h}" xmlns="${NS}">${g}</svg>`;
   }
 
-  return { radar, bars, line };
+  // ミニ折れ線(スパークライン): 数値配列を横幅いっぱいに引き伸ばして描く。軸なし。
+  function sparkline(values, color = 'var(--accent)', h = 30) {
+    if (!values.length) return '';
+    const w = 120, max = Math.max(...values, 1), n = values.length;
+    const xAt = (i) => n === 1 ? w / 2 : (w * i) / (n - 1);
+    const yAt = (v) => (h - 3) - (h - 6) * (v / max);
+    const pts = values.map((v, i) => `${xAt(i).toFixed(1)},${yAt(v).toFixed(1)}`).join(' ');
+    const li = n - 1;
+    return `<svg viewBox="0 0 ${w} ${h}" xmlns="${NS}" preserveAspectRatio="none" style="width:100%;height:${h}px;display:block">`
+      + `<polyline points="${pts}" fill="none" stroke="${color}" stroke-width="2" stroke-linejoin="round" stroke-linecap="round"/>`
+      + `<circle cx="${xAt(li).toFixed(1)}" cy="${yAt(values[li]).toFixed(1)}" r="2.6" fill="${color}"/></svg>`;
+  }
+
+  // ミニ棒グラフ: 数値配列を細い棒で描く。値が大きいほど不透明に。
+  function sparkbars(values, color = 'var(--ok)', h = 30) {
+    if (!values.length) return '';
+    const w = 120, max = Math.max(...values, 1), n = values.length, gap = 2;
+    const bw = (w - (n - 1) * gap) / n;
+    let g = '';
+    values.forEach((v, i) => {
+      const bh = Math.max(2, (h - 2) * (v / max));
+      g += `<rect x="${(i * (bw + gap)).toFixed(1)}" y="${(h - bh).toFixed(1)}" width="${bw.toFixed(1)}" height="${bh.toFixed(1)}" rx="1.5" fill="${color}" opacity="${(0.35 + 0.65 * (v / max)).toFixed(2)}"/>`;
+    });
+    return `<svg viewBox="0 0 ${w} ${h}" xmlns="${NS}" preserveAspectRatio="none" style="width:100%;height:${h}px;display:block">${g}</svg>`;
+  }
+
+  return { radar, bars, line, sparkline, sparkbars };
 })();

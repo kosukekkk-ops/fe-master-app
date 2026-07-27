@@ -39,6 +39,10 @@ const Store = (() => {
     getTheme() { return read('theme', 'system'); },
     setTheme(t) { write('theme', t); },
 
+    // ホームのあいさつに使うニックネーム(任意・端末内のみ。未設定なら名前なしのあいさつ)
+    getNickname() { return read('nickname', ''); },
+    setNickname(v) { write('nickname', String(v || '').slice(0, 12)); },
+
     // プレミアム購入フラグ(表示即時化のためのキャッシュ。真実はStoreKitで、
     // ネイティブ起動時にPremium.sync()が照合し直す。export/resetの対象外)
     getPremium() { return read('premium', false); },

@@ -56,7 +56,7 @@
   }
 
   /* ================= ホーム ================= */
-  const DAILY_GOAL = 20; // 1日の目標問題数(達成度バナーの基準)
+  const DAILY_GOAL = 10; // 1日の目標問題数(今日の目標カード・達成度バナーの基準)
 
   // 時間帯であいさつを出し分ける
   function greeting() {
@@ -81,9 +81,9 @@
     return streak;
   }
 
-  // 円形プログレスリング(SVG)。pct=0..1
-  function ring(pct, color, center) {
-    const size = 56, stroke = 6, r = (size - stroke) / 2, c = 2 * Math.PI * r;
+  // 円形プログレスリング(SVG)。pct=0..1。size/strokeでヒーロー等の大リングにも使える。
+  function ring(pct, color, center, size = 56, stroke = 6) {
+    const r = (size - stroke) / 2, c = 2 * Math.PI * r;
     const off = c * (1 - Math.max(0, Math.min(1, pct)));
     return `<div class="ringwrap">
       <svg width="${size}" height="${size}" viewBox="0 0 ${size} ${size}">
@@ -124,29 +124,59 @@
     const streak = studyStreak(s.byDay);
     const g = greeting();
 
-    // 達成度バナー: 今日の学習量が1日の目標に対しどれだけ進んだか
+    // 今日の目標: 今日の学習量が1日の目標(DAILY_GOAL)に対しどれだけ進んだか
     const goalPct = Math.min(100, Math.round(td.n / DAILY_GOAL * 100));
+    const remain = Math.max(0, DAILY_GOAL - td.n);
+    const goalDone = remain === 0 && td.n > 0;
+    const goalTitle = goalDone
+      ? '今日の目標を達成！🎉'
+      : `あと<b>${remain}</b>問で達成！`;
+    // 下部バナーの応援メッセージ
     let bTitle, bSub;
-    if (td.n === 0) { bTitle = '今日の学習を始めよう！'; bSub = '少しずつでも続けるのが合格への近道です。'; }
-    else if (goalPct < 50) { bTitle = 'いいスタートです！'; bSub = 'この調子で今日の目標を達成しましょう！'; }
-    else if (goalPct < 100) { bTitle = '素晴らしいペースです！'; bSub = 'ゴールはもうすぐそこです！'; }
-    else { bTitle = '今日の目標を達成！🎉'; bSub = '素晴らしい継続力です。'; }
+    if (td.n === 0) { bTitle = '今日の学習を始めよう'; bSub = '少しずつでも続けるのが合格への近道です。'; }
+    else if (!goalDone && goalPct < 60) { bTitle = 'いいスタートです！'; bSub = 'この調子で今日の目標を達成しましょう！'; }
+    else if (!goalDone) { bTitle = '素晴らしいペースです！'; bSub = 'ゴールはもうすぐそこです！'; }
+    else { bTitle = '今日もおつかれさま！'; bSub = '継続はいちばんの武器です。'; }
+
+    // あいさつ(ニックネームがあれば「◯◯さん」を添える)
+    const nick = Store.getNickname();
+    const hello = nick ? `${g.text}、${esc(nick)}さん` : `${g.text}！`;
+
+    // スパークライン用の日別データ(直近12日)
+    const days = Object.keys(s.byDay).sort();
+    let run = 0;
+    const cumTotal = days.map(d => (run += s.byDay[d].n));
+    const totalSpark = cumTotal.slice(-12);
+    const accSpark = days.slice(-12).map(d => s.byDay[d].n ? Math.round(s.byDay[d].ok / s.byDay[d].n * 100) : 0);
 
     const v = $('#view-home');
     v.innerHTML = `
       <header class="home-head">
         <div class="greeting">
-          <h1>${g.text}！<span class="wave">${g.emoji}</span></h1>
-          <div class="sub">今日も一緒に頑張りましょう！</div>
+          <h1>${hello}<span class="wave">${g.emoji}</span></h1>
+          <div class="sub">今日も一緒に、着実に積み重ねていきましょう。</div>
         </div>
-        <div class="streak">
+        <button class="streak" data-go="stats">
           <div class="flame">🔥</div>
           <div class="streak-txt"><div class="streak-lbl">連続学習日数</div><div class="streak-n">${streak}<span>日</span></div></div>
-        </div>
+          <span class="streak-chev">${ICON.chevron}</span>
+        </button>
       </header>
 
+      <section class="goal-hero">
+        <div class="goal-ring">
+          ${ring(goalPct / 100, 'var(--accent)', `<span class="goal-center"><b>${goalPct}<i>%</i></b><em>達成率</em></span>`, 116, 9)}
+        </div>
+        <div class="goal-body">
+          <div class="goal-eyebrow">今日の目標</div>
+          <div class="goal-title">${goalTitle}</div>
+          <div class="goal-bar"><span style="width:${goalPct}%"></span></div>
+          <div class="goal-count">${td.n} / ${DAILY_GOAL} 問</div>
+        </div>
+      </section>
+
       <section class="panel">
-        <h2 class="panel-h">今日の学習</h2>
+        <div class="panel-h-row"><h2 class="panel-h">今日の学習</h2><button class="see-all" data-go="stats">すべて見る${ICON.chevron}</button></div>
         <div class="today-grid">
           <div class="mini">
             ${ring(Math.min(1, td.n / DAILY_GOAL), 'var(--accent)', ICON.check)}
@@ -163,20 +193,24 @@
         <h2 class="panel-h">累計データ</h2>
         <div class="cum-grid">
           <div class="cum">
-            <div class="itile" style="--c:var(--accent)">${ICON.list}</div>
-            <div class="mini-txt"><div class="mini-n">${s.total}<span>問</span></div><div class="mini-lbl">総解答数</div></div>
+            <div class="cum-top"><div class="itile" style="--c:var(--accent)">${ICON.list}</div>
+              <div class="mini-txt"><div class="mini-n">${s.total}<span>問</span></div><div class="mini-lbl">総解答数</div></div></div>
+            <div class="spark">${Charts.sparkline(totalSpark, 'var(--accent)')}</div>
           </div>
           <div class="cum">
-            <div class="itile" style="--c:var(--ok)">${ICON.trend}</div>
-            <div class="mini-txt"><div class="mini-n" style="color:var(--ok)">${rate}<span>%</span></div><div class="mini-lbl">累計正答率</div></div>
+            <div class="cum-top"><div class="itile" style="--c:var(--ok)">${ICON.trend}</div>
+              <div class="mini-txt"><div class="mini-n" style="color:var(--ok)">${rate}<span>%</span></div><div class="mini-lbl">累計正答率</div></div></div>
+            <div class="spark">${Charts.sparkbars(accSpark, 'var(--ok)')}</div>
           </div>
           <div class="cum">
-            <div class="itile" style="--c:var(--ng)"><b>A</b></div>
-            <div class="mini-txt"><div class="mini-n" style="color:var(--ng)">${weakCount}<span>語</span></div><div class="mini-lbl">苦手単語</div></div>
+            <div class="cum-top"><div class="itile" style="--c:var(--ng)"><b>A</b></div>
+              <div class="mini-txt"><div class="mini-n" style="color:var(--ng)">${weakCount}<span>語</span></div><div class="mini-lbl">苦手単語</div></div></div>
+            <div class="cum-badge">${weakCount ? '<span class="badge ng">復習推奨</span>' : '<span class="badge">なし</span>'}</div>
           </div>
           <div class="cum">
-            <div class="itile" style="--c:var(--accent-2)">${ICON.book}</div>
-            <div class="mini-txt"><div class="mini-n">${Data.words.length}<span>語</span></div><div class="mini-lbl">収録用語</div></div>
+            <div class="cum-top"><div class="itile" style="--c:var(--accent-2)">${ICON.book}</div>
+              <div class="mini-txt"><div class="mini-n">${Data.words.length}<span>語</span></div><div class="mini-lbl">収録用語</div></div></div>
+            <div class="cum-badge"><span class="badge accent2">学習中</span></div>
           </div>
         </div>
       </section>
@@ -187,13 +221,12 @@
           <div class="banner-sub">${bSub}</div>
           <div class="banner-bar"><span style="width:${goalPct}%"></span></div>
         </div>
-        <div class="banner-goal">${goalPct}%</div>
         <div class="banner-trophy">🏆</div>
       </div>
 
-      <button class="home-cta primary" data-go="quiz">
+      <button class="home-cta primary rich" data-go="quiz">
         <span class="cta-ic">${ICON.play}</span>
-        <span class="cta-label">問題演習をはじめる</span>
+        <span class="cta-main"><span class="cta-label">問題演習をはじめる</span><span class="cta-sub">${quiz.active ? '前回の続きから学習できます' : '科目A・科目Bから選んで学習'}</span></span>
         <span class="cta-chev">${ICON.chevron}</span>
       </button>
       <button class="home-cta" data-go="flash">
@@ -898,6 +931,11 @@
     v.innerHTML = `
       ${premiumSection}
       <section class="panel">
+        <div class="panel-head"><div class="itile sm" style="--c:var(--accent)">${ICON.edit}</div><h2 class="panel-h">プロフィール</h2></div>
+        <p class="panel-note" style="margin-bottom:10px">ホームのあいさつに表示する名前です(任意・端末内にのみ保存)。</p>
+        <input type="text" id="set-nickname" class="text-input" maxlength="12" placeholder="ニックネーム(未入力でもOK)" value="${esc(Store.getNickname())}">
+      </section>
+      <section class="panel">
         <div class="panel-head"><div class="itile sm" style="--c:var(--warn)">${ICON.target}</div><h2 class="panel-h">外観</h2></div>
         <div class="chips" id="set-theme" style="margin-bottom:0">
           ${THEMES.map(t => `<div class="chip ${theme === t.k ? 'active' : ''}" data-theme-opt="${t.k}">${t.l}</div>`).join('')}
@@ -931,6 +969,8 @@
         <p class="panel-note" style="margin-top:12px">主要機能はオフラインで動作します。本アプリは個人開発の学習教材であり、試験実施団体(IPA)とは関係ありません。「基本情報技術者試験」はIPAの登録商標または名称です。</p>
       </section>
     `;
+    const nickEl = $('#set-nickname');
+    if (nickEl) nickEl.onchange = () => Store.setNickname(nickEl.value.trim());
     v.querySelectorAll('#set-theme .chip').forEach(ch => ch.onclick = () => {
       const pref = ch.dataset.themeOpt;
       Store.setTheme(pref);
