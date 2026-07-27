@@ -221,12 +221,93 @@
     };
   }
 
+  /* ---- セッション構成 ----
+   * 完全ランダム抽選だと、同じ計算系統(稼働率だけで80問など)や同じ言い回しの
+   * 用語問題が1セッションに固まりやすく単調に感じる。そこで:
+   *  1. 未出題を優先(次に「最近解いていない」問題、最後に直近で解いた問題)
+   *  2. 同じ系統は出しすぎない(同じ用語=1問まで / 同じ計算系統・擬似言語テンプレ=1問まで。
+   *     プールが足りなければ上限を緩めて埋める)
+   *  3. 同じ形式(説明選択/用語選択/計算/擬似言語/過去問)が3連続しないよう織り交ぜる
+   */
+  function seriesOf(q) {
+    const id = q.questionId;
+    let m;
+    if ((m = id.match(/^g_(?:def|term|desc)_(.+)$/))) return 'w:' + m[1]; // 同じ用語
+    if ((m = id.match(/^gc_([a-z0-9]+)_/))) return 'c:' + m[1];          // 同じ計算系統
+    if ((m = id.match(/^gb_([a-z0-9]+)_/))) return 'b:' + m[1];          // 同じ擬似言語テンプレ
+    return 'q:' + id;                                                     // 公式・手書きは個別
+  }
+  function formatOf(q) {
+    const id = q.questionId;
+    if (/^g_(?:def|desc)_/.test(id)) return 'meaning'; // 説明文を選ぶ
+    if (/^g_term_/.test(id)) return 'term';            // 用語名を選ぶ
+    if (/^gc_/.test(id)) return 'calc';
+    if (/^gb_|^qb_/.test(id)) return 'pseudo';
+    return 'exam';
+  }
+  function buildSession(base, limit) {
+    const n = limit > 0 ? Math.min(limit, base.length) : base.length;
+    // 1) 未出題 → 既出(直近以外) → 直近に解いた の順に並べる(同ランク内はランダム)
+    const log = Store.getLog();
+    const seen = new Set(log.map(e => e.q));
+    const recent = new Set(log.slice(-200).map(e => e.q));
+    const rank = (q) => recent.has(q.questionId) ? 2 : (seen.has(q.questionId) ? 1 : 0);
+    const ordered = shuffle(base)
+      .map((q, i) => ({ q, i }))
+      .sort((a, b) => (rank(a.q) - rank(b.q)) || (a.i - b.i))
+      .map(o => o.q);
+    // 2) 系統上限つきで選ぶ。足りなければ上限を緩めて埋める。
+    //    形式にも上限(3連続回避が数学的に可能な範囲 = (2n+2)/3)を設け、
+    //    「10問中8問が計算」のような並べ替え不能な構成を選抜段階で防ぐ。
+    const chosen = [];
+    const chosenIds = new Set();
+    const used = new Map();
+    const fmtUsed = new Map();
+    const fmtCap = Math.max(2, Math.floor((2 * n + 2) / 3));
+    // 段階的に制約を緩める: 系統1+形式上限 → 系統1 → 系統2 → 無制限
+    // (科目Bのように単一形式しかないプールでも、系統の規律を保ったまま埋められる)
+    for (const [sCap, fCap] of [[1, fmtCap], [1, Infinity], [2, Infinity], [Infinity, Infinity]]) {
+      for (const q of ordered) {
+        if (chosen.length >= n) break;
+        if (chosenIds.has(q.questionId)) continue;
+        const s = seriesOf(q);
+        if ((used.get(s) || 0) >= sCap) continue;
+        const f = formatOf(q);
+        if ((fmtUsed.get(f) || 0) >= fCap) continue;
+        used.set(s, (used.get(s) || 0) + 1);
+        fmtUsed.set(f, (fmtUsed.get(f) || 0) + 1);
+        chosenIds.add(q.questionId);
+        chosen.push(q);
+      }
+      if (chosen.length >= n) break;
+    }
+    // 3) 同じ形式が3連続しないよう並べ替え。
+    //    「残数が最も多い形式」から置いていく(直前2つと同形式は避ける)ことで、
+    //    終盤に同一形式だけが余って連続する事態を防ぐ(可能な配置が存在すれば必ず達成できる)。
+    const byFmt = new Map();
+    for (const q of chosen) {
+      const f = formatOf(q);
+      if (!byFmt.has(f)) byFmt.set(f, []);
+      byFmt.get(f).push(q);   // 各形式内はランク/シャッフル順を維持
+    }
+    const out = [];
+    while (out.length < chosen.length) {
+      const lastF = out.length ? formatOf(out[out.length - 1]) : null;
+      const isRun2 = out.length >= 2 && formatOf(out[out.length - 2]) === lastF;
+      const cands = [...byFmt.entries()].filter(([, arr]) => arr.length > 0)
+        .sort((a, b) => b[1].length - a[1].length);
+      const pick = cands.find(([f]) => !(isRun2 && f === lastF)) || cands[0];
+      out.push(pick[1].shift());
+    }
+    return out;
+  }
+
   function startQuiz(subject, key) {
     if (subject === 'B' && !Premium.unlocked()) { openPaywall('科目B(アルゴリズム/セキュリティ)の演習はプレミアム機能です。'); return; }
     quiz.subject = subject;
     quiz.cat = key;
-    let pool = shuffle(subject === 'B' ? Data.questionsBySubjectB(key) : Data.questionsByCategory(key));
-    if (qstate.limit > 0) pool = pool.slice(0, qstate.limit); // 出題数の上限(0=すべて)
+    const base = subject === 'B' ? Data.questionsBySubjectB(key) : Data.questionsByCategory(key);
+    const pool = buildSession(base, qstate.limit);   // 出題数の上限(0=すべて)も内部で処理
     quiz.pool = pool;
     quiz.built = new Array(pool.length).fill(null);
     quiz.answers = new Array(pool.length).fill(null);
