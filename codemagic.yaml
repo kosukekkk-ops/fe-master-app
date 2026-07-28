@@ -433,6 +433,127 @@ workflows:
           print('=== DONE ===')
           PY
 
+  # ---- v1.1リリース: バージョン作成→メタデータ更新→最新ビルド紐付け→審査提出 ----
+  release-v11:
+    name: Release v1.1 (create version + submit)
+    instance_type: mac_mini_m2
+    max_build_duration: 30
+    environment:
+      groups:
+        - appstore
+      vars:
+        APP_APPLE_ID: "6790236851"
+        NEW_VERSION: "1.1"
+    scripts:
+      - name: Create 1.1, update metadata, attach build, submit for review
+        script: |
+          CLI=$(which app-store-connect)
+          VENV_PY=$(sed -n '1s/^#!//p' "$CLI")
+          export VENV_PY
+          python3 <<'PY'
+          import os, json, time, subprocess, urllib.request, urllib.error
+
+          APP = os.environ['APP_APPLE_ID'].strip()
+          VER = os.environ['NEW_VERSION'].strip()
+          VENV_PY = os.environ['VENV_PY']
+          MINT = (
+              "import os\n"
+              "from codemagic.apple.app_store_connect import AppStoreConnectApiClient, IssuerId, KeyIdentifier\n"
+              "c = AppStoreConnectApiClient(\n"
+              "    KeyIdentifier(os.environ['APP_STORE_CONNECT_KEY_IDENTIFIER'].strip()),\n"
+              "    IssuerId(os.environ['APP_STORE_CONNECT_ISSUER_ID'].strip()),\n"
+              "    os.environ['APP_STORE_CONNECT_PRIVATE_KEY'].strip())\n"
+              "print(c.jwt)\n"
+          )
+          def token():
+              return subprocess.check_output([VENV_PY, '-c', MINT], text=True).strip()
+          def api(method, path, body=None):
+              req = urllib.request.Request('https://api.appstoreconnect.apple.com' + path, method=method,
+                  data=json.dumps(body).encode() if body else None,
+                  headers={'Authorization': 'Bearer ' + token(), 'Content-Type': 'application/json'})
+              try:
+                  with urllib.request.urlopen(req) as r:
+                      d = r.read()
+                      return r.status, json.loads(d) if d else {}
+              except urllib.error.HTTPError as e:
+                  return e.code, json.loads(e.read() or b'{}')
+
+          PROMO = '間違えた問題が、そのまま"自分専用の単語帳"になる。科目A・科目B対応の2,400問以上×苦手の自動蓄積で、スキマ時間から最短ルートの合格対策を。完全オフライン・広告なし。'
+          WHATS_NEW = """・アプリ起動時の画面を新しくしました
+          ・出題の仕組みを改善し、同じ系統の問題が連続しにくくなりました
+          ・問題バンクを見直し、演習の品質を高めました
+          ・そのほか細かな改善"""
+          WHATS_NEW = '\n'.join(l.strip() for l in WHATS_NEW.split('\n'))
+
+          # 1) バージョン1.1を作成(既存なら再利用)
+          s, d = api('GET', f'/v1/apps/{APP}/appStoreVersions?filter[versionString]={VER}&filter[platform]=IOS')
+          if s == 200 and d.get('data'):
+              vid = d['data'][0]['id']
+              print('version exists:', vid, d['data'][0]['attributes'].get('appStoreState'), flush=True)
+          else:
+              s, d = api('POST', '/v1/appStoreVersions', {'data': {
+                  'type': 'appStoreVersions',
+                  'attributes': {'platform': 'IOS', 'versionString': VER, 'releaseType': 'AFTER_APPROVAL'},
+                  'relationships': {'app': {'data': {'type': 'apps', 'id': APP}}}}})
+              print('create version:', s, json.dumps(d)[:200], flush=True)
+              assert s == 201, d
+              vid = d['data']['id']
+
+          # 2) ローカリゼーション(説明の問題数更新・プロモ文・新機能)
+          s, d = api('GET', f'/v1/appStoreVersions/{vid}/appStoreVersionLocalizations')
+          vloc = next(l['id'] for l in d['data'] if l['attributes'].get('locale') == 'ja')
+          cur_desc = next(l['attributes'].get('description') or '' for l in d['data'] if l['attributes'].get('locale') == 'ja')
+          new_desc = cur_desc.replace('3,173問収録', '2,400問以上を収録').replace('科目A・科目B対応の3,173問', '科目A・科目B対応の2,400問以上')
+          attrs = {'promotionalText': PROMO, 'whatsNew': WHATS_NEW}
+          if new_desc and new_desc != cur_desc:
+              attrs['description'] = new_desc
+          s, d = api('PATCH', f'/v1/appStoreVersionLocalizations/{vloc}', {'data': {
+              'type': 'appStoreVersionLocalizations', 'id': vloc, 'attributes': attrs}})
+          print('localization:', s, json.dumps(d)[:200], flush=True)
+
+          # 3) 最新ビルド(1.1)の処理完了を待って紐付け
+          build = None
+          for _ in range(50):
+              s, d = api('GET', f'/v1/builds?filter[app]={APP}&filter[preReleaseVersion.version]={VER}&sort=-uploadedDate&limit=1')
+              if s == 200 and d.get('data'):
+                  b = d['data'][0]
+                  st = b['attributes']['processingState']
+                  print('build', b['attributes']['version'], 'state:', st, flush=True)
+                  if st == 'VALID':
+                      build = b; break
+                  if st in ('FAILED', 'INVALID'):
+                      raise SystemExit('build processing ' + st)
+              else:
+                  print('waiting for 1.1 build to appear...', flush=True)
+              time.sleep(30)
+          assert build, 'processed 1.1 build not found'
+          s, d = api('PATCH', f'/v1/appStoreVersions/{vid}/relationships/build',
+                     {'data': {'type': 'builds', 'id': build['id']}})
+          print('attach build:', s, flush=True)
+
+          # 4) 審査提出(新規reviewSubmission→バージョン追加→submit)
+          s, d = api('GET', f'/v1/reviewSubmissions?filter[app]={APP}&filter[platform]=IOS&limit=5')
+          sub = next((x for x in d.get('data', []) if x['attributes'].get('state') in ('READY_FOR_REVIEW',)), None)
+          if not sub:
+              s, d = api('POST', '/v1/reviewSubmissions', {'data': {
+                  'type': 'reviewSubmissions', 'attributes': {'platform': 'IOS'},
+                  'relationships': {'app': {'data': {'type': 'apps', 'id': APP}}}}})
+              print('create submission:', s, json.dumps(d)[:200], flush=True)
+              assert s == 201, d
+              sub = d['data']
+          sid = sub['id']
+          s, d = api('POST', '/v1/reviewSubmissionItems', {'data': {
+              'type': 'reviewSubmissionItems',
+              'relationships': {
+                  'reviewSubmission': {'data': {'type': 'reviewSubmissions', 'id': sid}},
+                  'appStoreVersion': {'data': {'type': 'appStoreVersions', 'id': vid}}}}})
+          print('add version item:', s, json.dumps(d)[:300], flush=True)
+          s, d = api('PATCH', f'/v1/reviewSubmissions/{sid}', {'data': {
+              'type': 'reviewSubmissions', 'id': sid, 'attributes': {'submitted': True}}})
+          print('SUBMIT:', s, json.dumps(d)[:300], flush=True)
+          print('=== DONE ===')
+          PY
+
   # ---- 状態確認のみ(読み取り専用): バージョンとIAPの現在ステータスを表示 ----
   status-check:
     name: Status check (read-only)
