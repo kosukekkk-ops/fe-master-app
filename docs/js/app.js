@@ -1055,15 +1055,26 @@
     window.scrollTo(0, 0);
   }
 
+  // 起動スプラッシュ(ネイティブ)をフェードアウトで閉じる。launchAutoHide:false のため
+  // アプリ側で必ず呼ぶ。JSエラー等で呼び損ねても固まらないよう、initの冒頭で保険もかける。
+  function hideSplash() {
+    const sp = window.Capacitor && window.Capacitor.Plugins && window.Capacitor.Plugins.SplashScreen;
+    if (sp && sp.hide) { try { sp.hide({ fadeOutDuration: 300 }); } catch (e) {} }
+  }
+
   async function init() {
+    setTimeout(hideSplash, 5000);   // 保険: 何があっても5秒後には閉じる
     try {
       await Data.load();
     } catch (e) {
       $('#app').innerHTML = `<div class="empty" style="padding-top:80px"><div class="big">⚠️</div>データの読み込みに失敗しました。<br><span class="muted" style="font-size:13px">${esc(e.message)}<br>このアプリはWebサーバ経由(またはPWA)で開いてください。</span></div>`;
+      hideSplash();
       return;
     }
     document.querySelectorAll('nav.tabbar button').forEach(b => b.onclick = () => go(b.dataset.tab));
     go('home');
+    // 初回描画が済んでからスプラッシュを閉じる(ロゴが一拍見えてからフェードアウト)
+    setTimeout(hideSplash, 350);
     // Service Worker(オフライン対応)。新しいSWが有効化されたら自動でリロードして
     // ホーム画面のアイコンを削除・再追加しなくても常に最新版が表示されるようにする。
     // Capacitorネイティブアプリではアセットが端末内にあるためSW不要(iOSのWKWebViewでは動作もしない)。

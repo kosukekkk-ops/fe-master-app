@@ -1,5 +1,14 @@
 {
   "appId": "io.github.kosukekkkops.femaster",
   "appName": "FE対策",
-  "webDir": "docs"
+  "webDir": "docs",
+  "plugins": {
+    "SplashScreen": {
+      "launchAutoHide": false,
+      "backgroundColor": "#0f1420",
+      "showSpinner": false,
+      "splashFullScreen": true,
+      "splashImmersive": true
+    }
+  }
 }
