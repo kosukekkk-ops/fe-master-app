@@ -49,6 +49,10 @@ const Store = (() => {
     getReviewMeta() { return read('review', { sessions: 0, askedAt: null }); },
     setReviewMeta(m) { write('review', m); },
 
+    // アプリ内アップデート案内 { lastCheck, latest, dismissed } (export/resetの対象外)
+    getUpdateMeta() { return read('update', {}); },
+    setUpdateMeta(m) { write('update', m); },
+
     resetAll() {
       ['log', 'weak', 'known'].forEach(k => localStorage.removeItem(ns(k)));
     },

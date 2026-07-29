@@ -10,6 +10,9 @@
   const esc = (s) => String(s == null ? '' : s).replace(/[&<>"]/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c]));
   // 無料版で単語帳(全単語モード)を使える語数。苦手単語帳は無制限。
   const FREE_WORD_LIMIT = 50;
+  // アプリのバージョン表記(リリース時にiosのMARKETING_VERSIONと合わせて更新すること)
+  const APP_VERSION = '1.2';
+  const STORE_URL = 'https://apps.apple.com/jp/app/id6790236851';
   const today = () => new Date().toISOString().slice(0, 10);
   const shuffle = (a) => { const r = a.slice(); for (let i = r.length - 1; i > 0; i--) { const j = Math.floor(Math.random() * (i + 1)); [r[i], r[j]] = [r[j], r[i]]; } return r; };
 
@@ -20,6 +23,32 @@
     t.textContent = msg; t.classList.add('show');
     clearTimeout(toastTimer);
     toastTimer = setTimeout(() => t.classList.remove('show'), 2200);
+  }
+
+  /* ---------- アプリ内アップデート案内(ネイティブのみ) ----------
+   * ストアの公開情報(iTunes lookup API)を1日1回だけ照会し、新しいバージョンが
+   * あればホームに控えめなバナーを出す。個人情報は送らない(公開APIへの照会のみ)。
+   * Web版はService Workerで自動更新されるため対象外。オフライン時は何もしない。 */
+  const verNewer = (a, b) => {   // a が b より新しいか
+    const pa = String(a).split('.').map(Number), pb = String(b).split('.').map(Number);
+    for (let i = 0; i < Math.max(pa.length, pb.length); i++) {
+      const x = pa[i] || 0, y = pb[i] || 0;
+      if (x !== y) return x > y;
+    }
+    return false;
+  };
+  async function checkForUpdate() {
+    if (!Premium.isNative()) return;
+    const m = Store.getUpdateMeta();
+    if (m.lastCheck && Date.now() - new Date(m.lastCheck).getTime() < 20 * 3600 * 1000) return;
+    try {
+      const res = await fetch('https://itunes.apple.com/lookup?id=6790236851&country=jp&t=' + Date.now());
+      const j = await res.json();
+      const latest = j.resultCount ? j.results[0].version : null;
+      Store.setUpdateMeta({ ...m, lastCheck: new Date().toISOString(), latest });
+      // 新版が見つかってホーム表示中なら、すぐバナーを出す
+      if (latest && verNewer(latest, APP_VERSION) && currentTab === 'home') renderHome();
+    } catch (e) { /* オフライン・一時的なエラーは沈黙 */ }
   }
 
   /* ---------- 外観テーマ(system | light | dark) ---------- */
@@ -132,8 +161,18 @@
     else if (goalPct < 100) { bTitle = '素晴らしいペースです！'; bSub = 'ゴールはもうすぐそこです！'; }
     else { bTitle = '今日の目標を達成！🎉'; bSub = '素晴らしい継続力です。'; }
 
+    // アップデート案内(新版があり、その版の案内をまだ閉じていないとき)
+    const um = Store.getUpdateMeta();
+    const updAvail = um.latest && verNewer(um.latest, APP_VERSION) && um.dismissed !== um.latest;
+
     const v = $('#view-home');
     v.innerHTML = `
+      ${updAvail ? `
+      <div class="update-note">
+        <span class="upd-txt">🚀 新しいバージョン(v${esc(um.latest)})が利用できます</span>
+        <button class="upd-go" id="upd-go">アップデート</button>
+        <button class="upd-close" id="upd-close" aria-label="この案内を閉じる">✕</button>
+      </div>` : ''}
       <header class="home-head">
         <div class="greeting">
           <h1>${g.text}！<span class="wave">${g.emoji}</span></h1>
@@ -203,6 +242,12 @@
       </button>
     `;
     v.querySelectorAll('[data-go]').forEach(b => b.onclick = () => go(b.dataset.go));
+    const updGo = $('#upd-go'), updClose = $('#upd-close');
+    if (updGo) updGo.onclick = () => window.open(STORE_URL, '_blank');
+    if (updClose) updClose.onclick = () => {
+      Store.setUpdateMeta({ ...Store.getUpdateMeta(), dismissed: um.latest });
+      renderHome();
+    };
   }
 
   /* ================= 問題演習 ================= */
@@ -924,7 +969,7 @@
         <div class="panel-head"><div class="itile sm" style="--c:var(--ok)">${ICON.book}</div><h2 class="panel-h">このアプリについて</h2></div>
         <div class="about-rows">
           <div class="about-row"><span>アプリ名</span><span>受かる基本情報 FE過去問＆単語帳</span></div>
-          <div class="about-row"><span>バージョン</span><span>1.0.0</span></div>
+          <div class="about-row"><span>バージョン</span><span>${APP_VERSION}</span></div>
           <div class="about-row"><span>収録用語</span><span>${Data.words.length} 語</span></div>
           <div class="about-row"><span>収録問題</span><span>${Data.questions.length.toLocaleString()} 問</span></div>
         </div>
@@ -1043,6 +1088,8 @@
       const before = Premium.unlocked();
       Premium.sync().then(after => { if (after !== before) go(currentTab); }).catch(() => {});
     }
+    // アップデート案内の照会(ネイティブのみ・1日1回・失敗は沈黙)
+    checkForUpdate();
   }
 
   if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', init);

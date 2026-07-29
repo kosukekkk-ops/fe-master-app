@@ -240,6 +240,23 @@ button.btn.small { padding: 9px 12px; font-size: 13px; width: auto; }
 .home-cta.center { justify-content: center; padding: 16px; }
 .home-cta.center .cta-label { flex: 0 0 auto; text-align: center; font-size: 16px; }
 
+/* アプリ内アップデート案内バナー */
+.update-note {
+  display: flex; align-items: center; gap: 10px;
+  background: color-mix(in srgb, var(--accent) 14%, var(--bg-card));
+  border: 1px solid color-mix(in srgb, var(--accent) 45%, transparent);
+  border-radius: 14px; padding: 10px 12px; margin-bottom: 14px;
+}
+.update-note .upd-txt { flex: 1; font-size: 12.5px; font-weight: 700; }
+.update-note .upd-go {
+  font-family: inherit; font-size: 12px; font-weight: 700; color: #fff;
+  background: var(--accent); border: none; border-radius: 999px; padding: 7px 14px; cursor: pointer;
+}
+.update-note .upd-close {
+  font-family: inherit; font-size: 13px; color: var(--text-dim);
+  background: none; border: none; cursor: pointer; padding: 4px 6px;
+}
+
 /* ---------- quiz start screen ---------- */
 .back-btn {
   width: 40px; height: 40px; border-radius: 50%; margin: 2px 0 12px;
