@@ -24,10 +24,9 @@ const DETAILS = require('../docs/js/word_details.js');
 
 // 演習の解説専用の詳しい説明文(未収録ならmeaningにフォールバック)
 function detail(w) { return DETAILS[w.wordId] || w.meaning; }
-// 誤答の選択肢が実際は何の用語かを添えて、1問で複数の用語を学べるようにする
-function otherWordsNote(ds) { return `(他の選択肢は「${ds.map(d => d.word).join('」「')}」の説明)`; }
-// 選択肢が用語名そのものの問題タイプ用: 他の選択肢(=別の用語)が何を指すかを添える
-function otherMeaningsNote(ds) { return `(他の選択肢: ${ds.map(d => `「${d.word}」=${d.meaning}`).join(' / ')})`; }
+// ※誤答選択肢の正体は解説文に焼き込まず、choiceInfo(選択肢と同じ並びの配列)として持つ。
+//   アプリは表示のたびに選択肢をシャッフルするため、固定文で順番に言及すると必ずズレる。
+//   表示時にapp.jsがア〜エの実際の並びに合わせて描画する。
 // 例え話は学習用の補助であり、実際の試験では技術的な定義で問われることを明示する
 function examNote(w) { return `※実際の試験では、この例え話ではなく「${w.meaning}」のような技術的な定義の文章で問われる。`; }
 
@@ -104,13 +103,16 @@ function pickDistractors(w, field, correctValue, skip = 0) {
   return valid.slice(skip, skip + 3);
 }
 
-// 正解＋ダミー3件から、正解位置をシャッフルした choices/correctIndex を作る
-function assemble(correctText, distractorTexts) {
-  const items = [{ t: correctText, ok: true }, ...distractorTexts.map(t => ({ t, ok: false }))];
+// 正解＋ダミー3件から、正解位置をシャッフルした choices/correctIndex/choiceInfo を作る。
+// distractors は {t: 選択肢文, note: その選択肢の正体(表示用)} の配列。
+// choiceInfo は choices と同じ並びで、正解位置は null。
+function assemble(correctText, distractors) {
+  const items = [{ t: correctText, note: null, ok: true }, ...distractors.map(d => ({ t: d.t, note: d.note, ok: false }))];
   const shuffled = shuffle(items);
   return {
     choices: shuffled.map(x => x.t),
-    correctIndex: shuffled.findIndex(x => x.ok)
+    correctIndex: shuffled.findIndex(x => x.ok),
+    choiceInfo: shuffled.map(x => x.note)
   };
 }
 
@@ -121,13 +123,14 @@ for (const w of words) {
   {
     const ds = pickDistractors(w, 'meaning', w.meaning);
     if (ds.length === 3) {
-      const { choices, correctIndex } = assemble(w.meaning, ds.map(d => d.meaning));
+      const { choices, correctIndex, choiceInfo } = assemble(w.meaning,
+        ds.map(d => ({ t: d.meaning, note: `「${d.word}」の説明` })));
       questions.push({
         questionId: `g_def_${w.wordId}`,
         category: w.category,
         text: `${w.word} の説明として最も適切なものはどれか。`,
-        choices, correctIndex,
-        explanation: `${w.word}: ${detail(w)}\n${otherWordsNote(ds)}`,
+        choices, correctIndex, choiceInfo,
+        explanation: `${w.word}: ${detail(w)}`,
         source: `生成問題(定義 / ${w.word})`,
         relatedWordIds: [w.wordId]
       });
@@ -137,13 +140,14 @@ for (const w of words) {
   {
     const ds = pickDistractors(w, 'word', w.word);
     if (ds.length === 3) {
-      const { choices, correctIndex } = assemble(w.word, ds.map(d => d.word));
+      const { choices, correctIndex, choiceInfo } = assemble(w.word,
+        ds.map(d => ({ t: d.word, note: `「${d.word}」＝${d.meaning}` })));
       questions.push({
         questionId: `g_term_${w.wordId}`,
         category: w.category,
         text: `次の説明に最もよく当てはまる用語はどれか。\n「${w.meaning}」`,
-        choices, correctIndex,
-        explanation: `正解は「${w.word}」。${detail(w)}\n${otherMeaningsNote(ds)}`,
+        choices, correctIndex, choiceInfo,
+        explanation: `正解は「${w.word}」。${detail(w)}`,
         source: `生成問題(用語選択 / ${w.word})`,
         relatedWordIds: [w.wordId]
       });
@@ -159,13 +163,14 @@ for (const w of words) {
   {
     const ds = pickDistractors(w, 'meaning', w.meaning, 3);
     if (ds.length === 3) {
-      const { choices, correctIndex } = assemble(w.meaning, ds.map(d => d.meaning));
+      const { choices, correctIndex, choiceInfo } = assemble(w.meaning,
+        ds.map(d => ({ t: d.meaning, note: `「${d.word}」の説明` })));
       questions.push({
         questionId: `g_desc_${w.wordId}`,
         category: w.category,
         text: `「${w.word}」を説明したものとして最も適切なものはどれか。`,
-        choices, correctIndex,
-        explanation: `${w.word}: ${detail(w)}\n${otherWordsNote(ds)}`,
+        choices, correctIndex, choiceInfo,
+        explanation: `${w.word}: ${detail(w)}`,
         source: `生成問題(意味 / ${w.word})`,
         relatedWordIds: [w.wordId]
       });

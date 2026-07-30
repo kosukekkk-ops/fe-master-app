@@ -261,6 +261,7 @@
     const order = shuffle(q.choices.map((_, i) => i));
     return {
       q,
+      order,   // 表示位置i → 元データのindex。choiceInfo(誤答の正体)を表示順で引くのに使う
       choices: order.map(i => q.choices[i]),
       correctPos: order.indexOf(q.correctIndex)
     };
@@ -466,11 +467,24 @@
   // 回答済み問題のフィードバック(解説・出典・苦手登録)を #quiz-foot に描画。
   // 「次の問題」への進行は下部ナビが担うため、ここには進行ボタンを置かない。
   function renderQuizFeedback(ans) {
-    const { q } = builtAt(quiz.idx);
+    const { q, order, correctPos } = builtAt(quiz.idx);
+    // 誤答選択肢の正体を「画面上の並び(ア〜エ)」に合わせて表示する。
+    // choiceInfoは元データ順なので、表示順(order)を通して引き直す。正解位置はnull。
+    let choiceNotes = '';
+    if (Array.isArray(q.choiceInfo)) {
+      const lines = order
+        .map((orig, i) => ({ mark: MARKS[i], note: q.choiceInfo[orig], i }))
+        .filter(x => x.note && x.i !== correctPos);
+      if (lines.length) {
+        choiceNotes = `<div class="exp-choices"><div class="exp-choices-h">誤答の選択肢の正体</div>${
+          lines.map(l => `<div class="exp-choice-line"><b>${l.mark}</b> ${esc(l.note)}</div>`).join('')}</div>`;
+      }
+    }
     $('#quiz-foot').innerHTML = `
       <div class="feedback ${ans.cls}">
         <div class="verdict">${ans.verdictText}</div>
         <div class="exp">${esc(q.explanation || '')}</div>
+        ${choiceNotes}
         ${q.source ? `<div class="muted" style="font-size:12px;margin-top:8px">出典: ${esc(q.source)}</div>` : ''}
         ${ans.addedNote ? `<div class="added" id="added-note">📝 ${ans.addedNote}</div>` : ''}
         ${ans.offerManualRegister ? `<button class="btn ghost small" id="manual-register" style="margin-top:10px">📝 念のため苦手単語帳に登録</button>` : ''}
