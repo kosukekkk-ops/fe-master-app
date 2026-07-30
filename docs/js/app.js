@@ -15,7 +15,7 @@
   const STORE_URL = 'https://apps.apple.com/jp/app/id6790236851';
   // アプリ内フィードバックフォームの送信先(Web3Formsのアクセスキー)。
   // 空の間はメールアプリ起動にフォールバックする。キーは公開クライアントに埋める前提の値。
-  const FEEDBACK_KEY = '';
+  const FEEDBACK_KEY = '19d29d81-4e83-4090-8a34-38268fbf9eff';
   const today = () => new Date().toISOString().slice(0, 10);
   const shuffle = (a) => { const r = a.slice(); for (let i = r.length - 1; i > 0; i--) { const j = Math.floor(Math.random() * (i + 1)); [r[i], r[j]] = [r[j], r[i]]; } return r; };
 
