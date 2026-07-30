@@ -937,27 +937,39 @@
     const overlay = document.createElement('div');
     overlay.className = 'legal-overlay';
     overlay.innerHTML = `
-      <div class="legal-sheet paywall">
+      <div class="legal-sheet fb-sheet">
         <div class="legal-head"><button class="legal-close">✕ 閉じる</button></div>
-        <div class="legal-body">
-          <h2 class="paywall-title">ご意見・不具合報告</h2>
-          <p class="panel-note" style="margin:6px 0 12px">入力内容とアプリのバージョンのみが開発者に届きます。学習データや個人情報は送信されません。</p>
-          <textarea id="fb-msg" class="text-input" rows="6" maxlength="2000" placeholder="ご意見・不具合の内容(必須)"></textarea>
-          <div style="height:10px"></div>
-          <input type="email" id="fb-mail" class="text-input" placeholder="返信用メールアドレス(任意)">
-          <div style="height:14px"></div>
-          <button class="btn" id="fb-send">送信する</button>
-          <button class="btn ghost small" id="fb-mailto" style="width:100%;margin-top:10px">メールアプリで送る</button>
+        <div class="legal-body fb-body">
+          <h2 class="fb-title">ご意見・不具合報告</h2>
+          <p class="fb-lead">気づいたこと・使いにくい点・ほしい機能など、なんでもお寄せください。いただいた内容はすべて開発者本人が読みます。</p>
+
+          <label class="fb-label" for="fb-msg">内容<span class="fb-req">必須</span></label>
+          <textarea id="fb-msg" class="fb-input fb-textarea" rows="7" maxlength="2000"
+            placeholder="例) 単語帳で〇〇の解説が分かりにくいです / 〇〇の画面で戻れなくなりました"></textarea>
+          <div class="fb-count"><span id="fb-len">0</span> / 2000</div>
+
+          <label class="fb-label" for="fb-mail">返信用メールアドレス<span class="fb-opt">任意</span></label>
+          <input type="email" id="fb-mail" class="fb-input" inputmode="email" autocapitalize="off"
+            autocomplete="email" placeholder="返信が必要な場合はご記入ください">
+
+          <p class="fb-privacy">🔒 送信されるのは上の入力内容とアプリのバージョンのみです。学習データや端末の情報は送信されません。</p>
+
+          <button class="btn fb-send" id="fb-send">送信する</button>
+          <button class="fb-alt" id="fb-mailto">メールアプリで送る</button>
         </div>
       </div>`;
     document.body.appendChild(overlay);
     const close = () => overlay.remove();
     overlay.querySelector('.legal-close').onclick = close;
     overlay.onclick = (e) => { if (e.target === overlay) close(); };
+    // 文字数カウンタ
+    const msgEl = $('#fb-msg', overlay), lenEl = $('#fb-len', overlay);
+    msgEl.oninput = () => { lenEl.textContent = msgEl.value.length; };
+    setTimeout(() => msgEl.focus(), 60);
     $('#fb-mailto', overlay).onclick = () => { close(); openMailApp(); };
     $('#fb-send', overlay).onclick = async () => {
       const msg = $('#fb-msg', overlay).value.trim();
-      if (!msg) { toast('内容を入力してください'); return; }
+      if (!msg) { toast('内容を入力してください'); msgEl.focus(); return; }
       const btn = $('#fb-send', overlay);
       btn.disabled = true; btn.textContent = '送信中…';
       try {
