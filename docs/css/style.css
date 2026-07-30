@@ -273,7 +273,9 @@ button.btn.small { padding: 9px 12px; font-size: 13px; width: auto; }
 .fb-req, .fb-opt {
   font-size: 10.5px; font-weight: 700; border-radius: 999px; padding: 2px 8px;
 }
-.fb-req { background: color-mix(in srgb, var(--ng) 16%, transparent); color: var(--ng); }
+/* color-mix()は古いiOS(15〜16.1)で未対応。先にrgbaを書いて背景が消えないようにする */
+.fb-req { background: rgba(248,113,113,.16); color: var(--ng); }
+.fb-req { background: color-mix(in srgb, var(--ng) 16%, transparent); }
 .fb-opt { background: var(--bg-elev); color: var(--text-dim); }
 
 .fb-input {
@@ -287,6 +289,7 @@ button.btn.small { padding: 9px 12px; font-size: 13px; width: auto; }
 .fb-input:focus {
   outline: none; border-color: var(--accent);
   background: var(--bg-card);
+  box-shadow: 0 0 0 3px rgba(79,157,255,.22);   /* 古いiOS向けフォールバック */
   box-shadow: 0 0 0 3px color-mix(in srgb, var(--accent) 18%, transparent);
 }
 .fb-textarea { min-height: 150px; resize: vertical; }
