@@ -13,6 +13,9 @@
   // アプリのバージョン表記(リリース時にiosのMARKETING_VERSIONと合わせて更新すること)
   const APP_VERSION = '1.2';
   const STORE_URL = 'https://apps.apple.com/jp/app/id6790236851';
+  // アプリ内フィードバックフォームの送信先(Web3Formsのアクセスキー)。
+  // 空の間はメールアプリ起動にフォールバックする。キーは公開クライアントに埋める前提の値。
+  const FEEDBACK_KEY = '';
   const today = () => new Date().toISOString().slice(0, 10);
   const shuffle = (a) => { const r = a.slice(); for (let i = r.length - 1; i > 0; i--) { const j = Math.floor(Math.random() * (i + 1)); [r[i], r[j]] = [r[j], r[i]]; } return r; };
 
@@ -919,6 +922,67 @@
     };
   }
 
+  /* ================= フィードバック(アプリ内フォーム) ================= */
+  // メールアプリを開く(フォーム未設定時・フォームが使えない環境のフォールバック)
+  function openMailApp() {
+    const subject = encodeURIComponent('【受かる基本情報】ご意見・不具合報告');
+    const body = encodeURIComponent(`ご意見・不具合の内容:\n\n\n---\nアプリ: 受かる基本情報 FE過去問＆単語帳 v${APP_VERSION}\n`);
+    window.open(`mailto:kosuke.kkk@icloud.com?subject=${subject}&body=${body}`, '_blank');
+  }
+
+  // アプリ内の問い合わせフォーム。入力内容をWeb3Forms経由で開発者のメールへ転送する。
+  // 送るのは入力文・任意の返信先・アプリのバージョンのみ(学習データ等は送らない)。
+  function openFeedbackForm() {
+    if (!FEEDBACK_KEY) { openMailApp(); return; }
+    const overlay = document.createElement('div');
+    overlay.className = 'legal-overlay';
+    overlay.innerHTML = `
+      <div class="legal-sheet paywall">
+        <div class="legal-head"><button class="legal-close">✕ 閉じる</button></div>
+        <div class="legal-body">
+          <h2 class="paywall-title">ご意見・不具合報告</h2>
+          <p class="panel-note" style="margin:6px 0 12px">入力内容とアプリのバージョンのみが開発者に届きます。学習データや個人情報は送信されません。</p>
+          <textarea id="fb-msg" class="text-input" rows="6" maxlength="2000" placeholder="ご意見・不具合の内容(必須)"></textarea>
+          <div style="height:10px"></div>
+          <input type="email" id="fb-mail" class="text-input" placeholder="返信用メールアドレス(任意)">
+          <div style="height:14px"></div>
+          <button class="btn" id="fb-send">送信する</button>
+          <button class="btn ghost small" id="fb-mailto" style="width:100%;margin-top:10px">メールアプリで送る</button>
+        </div>
+      </div>`;
+    document.body.appendChild(overlay);
+    const close = () => overlay.remove();
+    overlay.querySelector('.legal-close').onclick = close;
+    overlay.onclick = (e) => { if (e.target === overlay) close(); };
+    $('#fb-mailto', overlay).onclick = () => { close(); openMailApp(); };
+    $('#fb-send', overlay).onclick = async () => {
+      const msg = $('#fb-msg', overlay).value.trim();
+      if (!msg) { toast('内容を入力してください'); return; }
+      const btn = $('#fb-send', overlay);
+      btn.disabled = true; btn.textContent = '送信中…';
+      try {
+        const res = await fetch('https://api.web3forms.com/submit', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json', 'Accept': 'application/json' },
+          body: JSON.stringify({
+            access_key: FEEDBACK_KEY,
+            subject: '【受かる基本情報】アプリ内フィードバック',
+            from_name: '受かる基本情報 アプリ内フォーム',
+            email: $('#fb-mail', overlay).value.trim() || undefined,
+            message: `${msg}\n\n---\napp v${APP_VERSION} / ${Premium.isNative() ? 'iOS' : 'Web'}`
+          })
+        });
+        const j = await res.json();
+        if (!j.success) throw new Error(j.message || 'send failed');
+        close();
+        toast('送信しました。ありがとうございます！');
+      } catch (e) {
+        btn.disabled = false; btn.textContent = '送信する';
+        toast('送信できませんでした。通信環境をご確認ください');
+      }
+    };
+  }
+
   /* ================= 設定 ================= */
   // 利用規約・プライバシーポリシーをアプリ内の全画面ビューアで表示(オフラインでも読める)
   function openLegal(kind) {
@@ -1010,11 +1074,7 @@
     };
     v.querySelectorAll('[data-legal]').forEach(b => b.onclick = () => openLegal(b.dataset.legal));
     $('#set-contact').onclick = () => window.open('https://github.com/kosukekkk-ops/fe-master-app', '_blank');
-    $('#set-feedback').onclick = () => {
-      const subject = encodeURIComponent('【受かる基本情報】ご意見・不具合報告');
-      const body = encodeURIComponent('ご意見・不具合の内容:\n\n\n---\nアプリ: 受かる基本情報 FE過去問＆単語帳 v1.0.0\n');
-      window.open(`mailto:kosuke.kkk@icloud.com?subject=${subject}&body=${body}`, '_blank');
-    };
+    $('#set-feedback').onclick = openFeedbackForm;
     $('#set-export').onclick = () => {
       const blob = new Blob([JSON.stringify(Store.exportAll(), null, 2)], { type: 'application/json' });
       const a = document.createElement('a');
