@@ -434,8 +434,8 @@ workflows:
           PY
 
   # ---- v1.1リリース: バージョン作成→メタデータ更新→最新ビルド紐付け→審査提出 ----
-  release-v11:
-    name: Release v1.1 (create version + submit)
+  release-next:
+    name: Release next version (create version + submit)
     instance_type: mac_mini_m2
     max_build_duration: 30
     environment:
@@ -443,9 +443,9 @@ workflows:
         - appstore
       vars:
         APP_APPLE_ID: "6790236851"
-        NEW_VERSION: "1.1"
+        NEW_VERSION: "1.2"
     scripts:
-      - name: Create 1.1, update metadata, attach build, submit for review
+      - name: Create version, update metadata, attach build, submit for review
         script: |
           CLI=$(which app-store-connect)
           VENV_PY=$(sed -n '1s/^#!//p' "$CLI")
@@ -479,13 +479,15 @@ workflows:
                   return e.code, json.loads(e.read() or b'{}')
 
           PROMO = '間違えた問題が、そのまま"自分専用の単語帳"になる。科目A・科目B対応の2,400問以上×苦手の自動蓄積で、スキマ時間から最短ルートの合格対策を。完全オフライン・広告なし。'
-          WHATS_NEW = """・アプリ起動時の画面を新しくしました
-          ・出題の仕組みを改善し、同じ系統の問題が連続しにくくなりました
-          ・問題バンクを見直し、演習の品質を高めました
-          ・そのほか細かな改善"""
+          WHATS_NEW = """・デザインを一新しました。落ち着いた配色で、長時間でも目が疲れにくくなりました
+          ・ライト/ダークのテーマ切り替えを設定から選べます
+          ・アプリ起動時にロゴが表示されるようになりました
+          ・設定画面から、アプリ内で直接ご意見・不具合を送れるようになりました
+          ・解説の「他の選択肢」が選択肢の並びと一致しない不具合を修正しました
+          ・新しいバージョンが出たときにアプリ内でお知らせするようにしました"""
           WHATS_NEW = '\n'.join(l.strip() for l in WHATS_NEW.split('\n'))
 
-          # 1) バージョン1.1を作成(既存なら再利用)
+          # 1) 新バージョンを作成(既存なら再利用)
           s, d = api('GET', f'/v1/apps/{APP}/appStoreVersions?filter[versionString]={VER}&filter[platform]=IOS')
           if s == 200 and d.get('data'):
               vid = d['data'][0]['id']
