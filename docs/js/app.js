@@ -4,7 +4,7 @@
   const $ = (sel, el = document) => el.querySelector(sel);
   const CATS = ['テクノロジ', 'マネジメント', 'ストラテジ'];
   const CAT_CLASS = { 'テクノロジ': 'tech', 'マネジメント': 'mgmt', 'ストラテジ': 'strat' };
-  const CAT_COLOR = { 'テクノロジ': 'var(--tech)', 'マネジメント': 'var(--mgmt)', 'ストラテジ': 'var(--strat)' };
+  const CAT_COLOR = { 'テクノロジ': 'var(--accent)', 'マネジメント': 'var(--accent)', 'ストラテジ': 'var(--accent)' };
   // 分野別正答率レーダー用の細分化サブカテゴリ(9分野)
   const SUBCATS = ['基礎理論', 'アルゴリズム', 'ハードウェア', 'データベース', 'ネットワーク', 'セキュリティ', '開発管理', '経営戦略', '会計法務'];
   const esc = (s) => String(s == null ? '' : s).replace(/[&<>"]/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c]));
@@ -55,17 +55,18 @@
   }
 
   /* ---------- 外観テーマ(system | light | dark) ---------- */
-  const lightMedia = window.matchMedia ? matchMedia('(prefers-color-scheme: light)') : null;
+  const darkMedia = window.matchMedia ? matchMedia('(prefers-color-scheme: dark)') : null;
+  // 既定はライト(デザイン仕様2a)。暗くするときだけ data-theme="dark" を付ける。
   function applyTheme(pref) {
-    const light = pref === 'light' || (pref === 'system' && lightMedia && lightMedia.matches);
-    if (light) document.documentElement.setAttribute('data-theme', 'light');
+    const dark = pref === 'dark' || (pref === 'system' && darkMedia && darkMedia.matches);
+    if (dark) document.documentElement.setAttribute('data-theme', 'dark');
     else document.documentElement.removeAttribute('data-theme');
     // ステータスバー等の色をテーマに追随させる
     const meta = document.querySelector('meta[name="theme-color"]');
-    if (meta) meta.content = light ? '#eef1f6' : '#0f1420';
+    if (meta) meta.content = dark ? '#131211' : '#FAF8F5';
   }
-  if (lightMedia && lightMedia.addEventListener) {
-    lightMedia.addEventListener('change', () => { if (Store.getTheme() === 'system') applyTheme('system'); });
+  if (darkMedia && darkMedia.addEventListener) {
+    darkMedia.addEventListener('change', () => { if (Store.getTheme() === 'system') applyTheme('system'); });
   }
 
   /* ---------- 統計の導出(解答ログが唯一の真実) ---------- */
@@ -1015,7 +1016,7 @@
   function renderSettings() {
     const v = $('#view-settings');
     const theme = Store.getTheme();
-    const THEMES = [{ k: 'system', l: '🖥 システム' }, { k: 'light', l: '☀️ ライト' }, { k: 'dark', l: '🌙 ダーク' }];
+    const THEMES = [{ k: 'light', l: 'ライト' }, { k: 'dark', l: 'ダーク' }, { k: 'system', l: '端末に合わせる' }];
     // プレミアムセクションはネイティブアプリでのみ表示(WebにはStoreKitが無い)
     const premiumSection = !Premium.isNative() ? '' : (Premium.unlocked() ? `
       <section class="panel">
@@ -1034,8 +1035,8 @@
       ${premiumSection}
       <section class="panel">
         <div class="panel-head"><div class="itile sm" style="--c:var(--warn)">${ICON.target}</div><h2 class="panel-h">外観</h2></div>
-        <div class="chips" id="set-theme" style="margin-bottom:0">
-          ${THEMES.map(t => `<div class="chip ${theme === t.k ? 'active' : ''}" data-theme-opt="${t.k}">${t.l}</div>`).join('')}
+        <div class="seg" id="set-theme">
+          ${THEMES.map(t => `<button class="${theme === t.k ? 'active' : ''}" data-theme-opt="${t.k}">${t.l}</button>`).join('')}
         </div>
       </section>
       <section class="panel">
@@ -1066,11 +1067,11 @@
         <p class="panel-note" style="margin-top:12px">主要機能はオフラインで動作します。本アプリは個人開発の学習教材であり、試験実施団体(IPA)とは関係ありません。「基本情報技術者試験」はIPAの登録商標または名称です。</p>
       </section>
     `;
-    v.querySelectorAll('#set-theme .chip').forEach(ch => ch.onclick = () => {
-      const pref = ch.dataset.themeOpt;
+    v.querySelectorAll('#set-theme button').forEach(btn => btn.onclick = () => {
+      const pref = btn.dataset.themeOpt;
       Store.setTheme(pref);
       applyTheme(pref);
-      v.querySelectorAll('#set-theme .chip').forEach(x => x.classList.toggle('active', x === ch));
+      v.querySelectorAll('#set-theme button').forEach(x => x.classList.toggle('active', x === btn));
     });
     const buyBtn = $('#set-buy'), restoreBtn = $('#set-restore');
     if (buyBtn) {

@@ -32,7 +32,7 @@ const Charts = (() => {
     });
     // data polygon
     const dpts = axes.map((a, i) => pt(i, r * Math.max(0.02, a.value)).map(v => v.toFixed(1)).join(',')).join(' ');
-    g += `<polygon points="${dpts}" fill="rgba(79,157,255,.25)" stroke="var(--accent)" stroke-width="2"/>`;
+    g += `<polygon points="${dpts}" fill="var(--accent-soft)" stroke="var(--accent)" stroke-width="2"/>`;
     axes.forEach((a, i) => {
       const [x, y] = pt(i, r * Math.max(0.02, a.value));
       g += `<circle cx="${x.toFixed(1)}" cy="${y.toFixed(1)}" r="3" fill="var(--accent)"/>`;

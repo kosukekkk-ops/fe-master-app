@@ -3,19 +3,20 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover, maximum-scale=1">
-  <meta name="theme-color" content="#0f1420">
+  <meta name="theme-color" content="#FAF8F5">
   <script>
     // 描画前にテーマを適用(ちらつき防止)。設定値: system | light | dark
+    // 既定はライト。暗くするときだけ data-theme="dark" を付ける。
     (function () {
       try {
         var pref = JSON.parse(localStorage.getItem('feapp:FE:theme') || '"system"');
-        var light = pref === 'light' || (pref === 'system' && matchMedia('(prefers-color-scheme: light)').matches);
-        if (light) document.documentElement.setAttribute('data-theme', 'light');
-      } catch (e) { /* 既定のダークのまま */ }
+        var dark = pref === 'dark' || (pref === 'system' && matchMedia('(prefers-color-scheme: dark)').matches);
+        if (dark) document.documentElement.setAttribute('data-theme', 'dark');
+      } catch (e) { /* 既定のライトのまま */ }
     })();
   </script>
   <meta name="apple-mobile-web-app-capable" content="yes">
-  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+  <meta name="apple-mobile-web-app-status-bar-style" content="default">
   <meta name="apple-mobile-web-app-title" content="FE対策">
   <link rel="manifest" href="manifest.webmanifest">
   <link rel="apple-touch-icon" href="icons/icon-180.png">
@@ -31,12 +32,13 @@
     <section id="view-settings" class="view"></section>
   </div>
 
+  <!-- タブは単色アイコン(絵文字は色数が増える主因のため廃止)。20x20・線幅2 -->
   <nav class="tabbar">
-    <button data-tab="home" class="active"><span class="ico">🏠</span>ホーム</button>
-    <button data-tab="quiz"><span class="ico">📝</span>演習</button>
-    <button data-tab="flash"><span class="ico">📇</span>単語帳</button>
-    <button data-tab="stats"><span class="ico">📊</span>ログ</button>
-    <button data-tab="settings"><span class="ico">⚙️</span>設定</button>
+    <button data-tab="home" class="active"><span class="ico"><svg viewBox="0 0 24 24" stroke-linecap="round" stroke-linejoin="round"><path d="M4 10.5 12 4l8 6.5V19a1 1 0 0 1-1 1h-4v-6H9v6H5a1 1 0 0 1-1-1z"/></svg></span>ホーム</button>
+    <button data-tab="quiz"><span class="ico"><svg viewBox="0 0 24 24" stroke-linecap="round" stroke-linejoin="round"><rect x="4" y="3" width="16" height="18" rx="2"/><path d="M8 8h8M8 12h8M8 16h5"/></svg></span>演習</button>
+    <button data-tab="flash"><span class="ico"><svg viewBox="0 0 24 24" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="6" width="14" height="12" rx="2"/><path d="M7 6V5a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v11a2 2 0 0 1-2 2h-1"/></svg></span>単語帳</button>
+    <button data-tab="stats"><span class="ico"><svg viewBox="0 0 24 24" stroke-linecap="round"><path d="M6 20v-7M12 20V5M18 20v-4"/></svg></span>ログ</button>
+    <button data-tab="settings"><span class="ico"><svg viewBox="0 0 24 24" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="3"/><path d="M12 3v2.2M12 18.8V21M3 12h2.2M18.8 12H21M5.6 5.6l1.6 1.6M16.8 16.8l1.6 1.6M18.4 5.6l-1.6 1.6M7.2 16.8l-1.6 1.6"/></svg></span>設定</button>
   </nav>
 
   <script src="js/storage.js"></script>
