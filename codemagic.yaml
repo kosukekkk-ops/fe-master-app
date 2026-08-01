@@ -451,7 +451,7 @@ workflows:
           VENV_PY=$(sed -n '1s/^#!//p' "$CLI")
           export VENV_PY
           python3 <<'PY'
-          import os, json, time, subprocess, urllib.request, urllib.error
+          import os, json, time, glob, hashlib, subprocess, urllib.request, urllib.error
 
           APP = os.environ['APP_APPLE_ID'].strip()
           VER = os.environ['NEW_VERSION'].strip()
@@ -513,6 +513,48 @@ workflows:
               'type': 'appStoreVersionLocalizations', 'id': vloc, 'attributes': attrs}})
           print('localization:', s, json.dumps(d)[:200], flush=True)
 
+          # 2-2) スクリーンショット差し替え(このバージョンのjaローカリゼーションに対して)
+          #      審査提出より前・バージョン作成より後でないと、公開済みバージョンを触ってしまう
+          s, d = api('GET', f'/v1/appStoreVersionLocalizations/{vloc}/appScreenshotSets')
+          sets = {x['attributes']['screenshotDisplayType']: x['id'] for x in d.get('data', [])}
+          set_id = None
+          for disp in ('APP_IPHONE_69', 'APP_IPHONE_67'):
+              if disp in sets:
+                  set_id = sets[disp]; print('screenshot set exists:', disp, set_id, flush=True); break
+              s, d = api('POST', '/v1/appScreenshotSets', {'data': {
+                  'type': 'appScreenshotSets',
+                  'attributes': {'screenshotDisplayType': disp},
+                  'relationships': {'appStoreVersionLocalization': {'data': {'type': 'appStoreVersionLocalizations', 'id': vloc}}}}})
+              if s == 201:
+                  set_id = d['data']['id']; print('screenshot set created:', disp, set_id, flush=True); break
+              print('set create failed for', disp, s, json.dumps(d)[:200], flush=True)
+          assert set_id, 'no screenshot set'
+
+          # 既存分を消してから入れ直す(再実行しても重複しないように)
+          s, d = api('GET', f'/v1/appScreenshotSets/{set_id}/appScreenshots')
+          for old in d.get('data', []):
+              api('DELETE', f"/v1/appScreenshots/{old['id']}")
+              print('deleted old screenshot:', old['id'], flush=True)
+
+          for f in sorted(glob.glob('store/screenshots/*.png')):
+              img = open(f, 'rb').read()
+              md5 = hashlib.md5(img).hexdigest()
+              s, d = api('POST', '/v1/appScreenshots', {'data': {
+                  'type': 'appScreenshots',
+                  'attributes': {'fileName': os.path.basename(f), 'fileSize': len(img)},
+                  'relationships': {'appScreenshotSet': {'data': {'type': 'appScreenshotSets', 'id': set_id}}}}})
+              assert s == 201, (f, d)
+              shot = d['data']
+              for op in shot['attributes']['uploadOperations']:
+                  hdrs = {h['name']: h['value'] for h in op.get('requestHeaders', [])}
+                  req = urllib.request.Request(op['url'], method=op['method'],
+                                               data=img[op['offset']:op['offset'] + op['length']], headers=hdrs)
+                  with urllib.request.urlopen(req) as r:
+                      pass
+              s, d = api('PATCH', f"/v1/appScreenshots/{shot['id']}",
+                         {'data': {'type': 'appScreenshots', 'id': shot['id'],
+                                   'attributes': {'uploaded': True, 'sourceFileChecksum': md5}}})
+              print('uploaded screenshot:', os.path.basename(f), s, flush=True)
           # 3) 最新ビルド(1.1)の処理完了を待って紐付け
           build = None
           for _ in range(50):
@@ -822,8 +864,9 @@ workflows:
         - appstore
       vars:
         APP_APPLE_ID: "6790236851"
+        TARGET_VERSION: "1.2"
     scripts:
-      - name: Upload store/screenshots/*.png to the ja 1.0 version
+      - name: Upload store/screenshots/*.png to the target version (ja)
         script: |
           CLI=$(which app-store-connect)
           VENV_PY=$(sed -n '1s/^#!//p' "$CLI")
@@ -858,9 +901,14 @@ workflows:
               except urllib.error.HTTPError as e:
                   return e.code, json.loads(e.read() or b'{}')
 
-          # ja版バージョン1.0のローカリゼーションを特定
-          s, d = api('GET', f'/v1/apps/{APP}/appStoreVersions?filter[platform]=IOS&limit=1')
+          # 対象バージョンのjaローカリゼーションを特定。
+          # "最新1件"にすると公開済みバージョンを掴んで編集できず落ちるので、versionStringで引く。
+          VER = os.environ.get('TARGET_VERSION', '').strip()
+          q = f'/v1/apps/{APP}/appStoreVersions?filter[platform]=IOS' + (f'&filter[versionString]={VER}' if VER else '&limit=1')
+          s, d = api('GET', q)
+          assert d.get('data'), ('version not found', VER, d)
           vid = d['data'][0]['id']
+          print('target version:', d['data'][0]['attributes'].get('versionString'), d['data'][0]['attributes'].get('appStoreState'), flush=True)
           s, d = api('GET', f'/v1/appStoreVersions/{vid}/appStoreVersionLocalizations')
           vloc = next(l['id'] for l in d['data'] if l['attributes'].get('locale') == 'ja')
           print('version localization:', vloc, flush=True)
