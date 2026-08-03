@@ -1164,7 +1164,7 @@
     document.querySelectorAll('nav.tabbar button').forEach(b => b.onclick = () => go(b.dataset.tab));
     go('home');
     // 初回描画が済んでからスプラッシュを閉じる(ロゴが一拍見えてからフェードアウト)
-    setTimeout(hideSplash, 350);
+    setTimeout(hideSplash, 900);   // ロゴを一拍見せてから閉じる(+フェード0.3秒で体感約1.2秒)
     // Service Worker(オフライン対応)。新しいSWが有効化されたら自動でリロードして
     // ホーム画面のアイコンを削除・再追加しなくても常に最新版が表示されるようにする。
     // Capacitorネイティブアプリではアセットが端末内にあるためSW不要(iOSのWKWebViewでは動作もしない)。
