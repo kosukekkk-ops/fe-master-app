@@ -1147,6 +1147,9 @@
   function hideSplash() {
     const sp = window.Capacitor && window.Capacitor.Plugins && window.Capacitor.Plugins.SplashScreen;
     if (sp && sp.hide) { try { sp.hide({ fadeOutDuration: 300 }); } catch (e) {} }
+    // HTML側の起動スプラッシュ(PWA用。ネイティブではストーリーボードの直後に見える)もフェードアウト
+    const bs = document.getElementById('boot-splash');
+    if (bs) { bs.classList.add('hide'); setTimeout(() => bs.remove(), 400); }
   }
 
   async function init() {
