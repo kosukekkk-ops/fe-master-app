@@ -50,8 +50,18 @@ function shuffle(arr) {
 }
 
 const words = WORDS.words;
+
+// ---- 名前漏れ対策(2026-08-02のMBO問題の教訓) ----
+// 意味文が自分の用語名を名指しする語(「KPIとKGI」のような対比型)は、
+// 四択に流用すると知識ゼロでも消去法で解けてしまう。
+// そのため出題対象からも誤答プールからも外す(単語帳のカードとしては残る)。
+const partsOf = (name) => String(name).split(/[と・/()\s]+/).filter(p => p.length >= 2);
+const selfNaming = (w) => partsOf(w.word).some(p => (w.meaning || '').includes(p));
+const banned = new Set(words.filter(selfNaming).map(w => w.wordId));
+const quizWords = words.filter(w => !banned.has(w.wordId));
+
 const byCat = {};
-words.forEach(w => { (byCat[w.category] = byCat[w.category] || []).push(w); });
+quizWords.forEach(w => { (byCat[w.category] = byCat[w.category] || []).push(w); });
 
 // 文字bigramのJaccard類似度。分野(3分類)だけでは話題が近い保証がないため、
 // meaning本文の類似度で「紛らわしい(=学習効果の高い)」ダミーを選ぶために使う。
@@ -84,24 +94,33 @@ function distractorPool(w) {
     .sort((a, b) => b.sim - a.sim)
     .map(o => o.x);
   const same = (byCat[w.category] || []).filter(x => x.wordId !== w.wordId);
-  const others = words.filter(x => x.wordId !== w.wordId && x.category !== w.category);
+  const others = quizWords.filter(x => x.wordId !== w.wordId && x.category !== w.category);
   return bySimilarity(same).concat(bySimilarity(others));
 }
 
 // 3つのダミーを、指定フィールドの値が正解と重複しないように選ぶ。
 // skip>0 のときは「より紛らわしい上位skip件」を飛ばして次点を採用する。
 // これにより同じ用語でも def と別のダミー組で出題でき、重複問題を防げる。
-function pickDistractors(w, field, correctValue, skip = 0) {
+// ok を渡すと、それを満たさない候補を飛ばす(名前漏れの除外に使う)。
+function pickDistractors(w, field, correctValue, skip = 0, ok = null) {
   const valid = [];
   for (const d of distractorPool(w)) {
     const v = d[field];
     if (!v || v === correctValue) continue;
     if (valid.some(o => o[field] === v)) continue;
+    if (ok && !ok(d)) continue;
     valid.push(d);
     if (valid.length === skip + 3) break;
   }
   return valid.slice(skip, skip + 3);
 }
+
+// def/desc用: ダミーの説明文が出題対象の用語名を含むと
+// 「これは◯◯自身の説明ではない」と読み取れてしまうため除外する。
+const okMeaningFor = (w) => (d) => !partsOf(w.word).some(p => (d.meaning || '').includes(p));
+// term用: 提示する説明文の中に名前が出てくる用語をダミーにすると
+// その場で消去できてしまうため除外する。
+const okTermFor = (w) => (d) => !partsOf(d.word).some(p => (w.meaning || '').includes(p));
 
 // 正解＋ダミー3件から、正解位置をシャッフルした choices/correctIndex/choiceInfo を作る。
 // distractors は {t: 選択肢文, note: その選択肢の正体(表示用)} の配列。
@@ -118,10 +137,10 @@ function assemble(correctText, distractors) {
 
 const questions = [];
 
-for (const w of words) {
+for (const w of quizWords) {
   // --- def: 用語 → 説明 ---
   {
-    const ds = pickDistractors(w, 'meaning', w.meaning);
+    const ds = pickDistractors(w, 'meaning', w.meaning, 0, okMeaningFor(w));
     if (ds.length === 3) {
       const { choices, correctIndex, choiceInfo } = assemble(w.meaning,
         ds.map(d => ({ t: d.meaning, note: `「${d.word}」の説明` })));
@@ -138,7 +157,7 @@ for (const w of words) {
   }
   // --- term: 説明 → 用語 ---
   {
-    const ds = pickDistractors(w, 'word', w.word);
+    const ds = pickDistractors(w, 'word', w.word, 0, okTermFor(w));
     if (ds.length === 3) {
       const { choices, correctIndex, choiceInfo } = assemble(w.word,
         ds.map(d => ({ t: d.word, note: `「${d.word}」＝${d.meaning}` })));
@@ -161,7 +180,7 @@ for (const w of words) {
   // 「用語の説明を選ぶ」問題に置き換え。defが上位3件のダミーを使うのに対し、
   // こちらは次点(4〜6番目に紛らわしい別用語の説明)を使うので重複しない。
   {
-    const ds = pickDistractors(w, 'meaning', w.meaning, 3);
+    const ds = pickDistractors(w, 'meaning', w.meaning, 3, okMeaningFor(w));
     if (ds.length === 3) {
       const { choices, correctIndex, choiceInfo } = assemble(w.meaning,
         ds.map(d => ({ t: d.meaning, note: `「${d.word}」の説明` })));
@@ -177,6 +196,38 @@ for (const w of words) {
     }
   }
 }
+
+// ---- 再発防止リンター ----
+// 「知識がなくても消去法で解ける選択肢」を全問検証し、1件でもあれば生成を失敗させる。
+//  1) def/desc: 選択肢の説明文が、その説明の主(用語)を名指ししていないか
+//  2) def/desc: ダミーの説明文が、出題対象の用語名を含んでいないか
+//  3) term: 提示する説明文が、正解またはダミーの用語名を含んでいないか
+const meaningOwner = new Map(words.map(w => [w.meaning, w]));
+const lintErrors = [];
+for (const q of questions) {
+  const kind = q.questionId.split('_')[1];
+  const subject = words.find(w => w.wordId === q.relatedWordIds[0]);
+  if (kind === 'def' || kind === 'desc') {
+    q.choices.forEach((c, i) => {
+      const owner = meaningOwner.get(c);
+      if (owner && partsOf(owner.word).some(p => c.includes(p)))
+        lintErrors.push(`${q.questionId}: 選択肢${i}が自分(「${owner.word}」)を名指し`);
+      if (i !== q.correctIndex && partsOf(subject.word).some(p => c.includes(p)))
+        lintErrors.push(`${q.questionId}: ダミー${i}が出題対象「${subject.word}」を名指し`);
+    });
+  } else if (kind === 'term') {
+    q.choices.forEach((c, i) => {
+      if (partsOf(c).some(p => q.text.includes(p)))
+        lintErrors.push(`${q.questionId}: 提示文が選択肢${i}「${c}」を名指し`);
+    });
+  }
+}
+if (lintErrors.length) {
+  console.error(`LINT NG (${lintErrors.length}件):`);
+  lintErrors.slice(0, 30).forEach(e => console.error(' ', e));
+  process.exit(1);
+}
+console.log('lint OK: 名前漏れなし(全' + questions.length + '問)');
 
 const out = {
   qualification: 'FE',
