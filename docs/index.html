@@ -8,6 +8,7 @@
     // 描画前にテーマを適用(ちらつき防止)。設定値: system | light | dark
     // 既定はライト。暗くするときだけ data-theme="dark" を付ける。
     (function () {
+      window.__bootShownAt = Date.now();  // 起動ロゴの表示開始時刻(最低表示時間の基準)
       try {
         var pref = JSON.parse(localStorage.getItem('feapp:FE:theme') || '"system"');
         var dark = pref === 'dark' || (pref === 'system' && matchMedia('(prefers-color-scheme: dark)').matches);

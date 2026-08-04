@@ -1144,12 +1144,19 @@
 
   // 起動スプラッシュ(ネイティブ)をフェードアウトで閉じる。launchAutoHide:false のため
   // アプリ側で必ず呼ぶ。JSエラー等で呼び損ねても固まらないよう、initの冒頭で保険もかける。
+  // 起動ロゴの最低表示時間(描画開始からの絶対時間)。
+  // 「ホーム描画後○ms」の相対時間だと端末の読み込み速度で体感が変わるため、
+  // __bootShownAt(index.htmlで記録)を基準に不足分だけ待ってから閉じる。
+  const MIN_SPLASH_MS = 1400;
   function hideSplash() {
     const sp = window.Capacitor && window.Capacitor.Plugins && window.Capacitor.Plugins.SplashScreen;
     if (sp && sp.hide) { try { sp.hide({ fadeOutDuration: 300 }); } catch (e) {} }
     // HTML側の起動スプラッシュ(PWA用。ネイティブではストーリーボードの直後に見える)もフェードアウト
     const bs = document.getElementById('boot-splash');
-    if (bs) { bs.classList.add('hide'); setTimeout(() => bs.remove(), 400); }
+    if (!bs || bs.dataset.hiding) return;
+    bs.dataset.hiding = '1';
+    const wait = Math.max(0, MIN_SPLASH_MS - (Date.now() - (window.__bootShownAt || 0)));
+    setTimeout(() => { bs.classList.add('hide'); setTimeout(() => bs.remove(), 400); }, wait);
   }
 
   async function init() {
@@ -1164,7 +1171,7 @@
     document.querySelectorAll('nav.tabbar button').forEach(b => b.onclick = () => go(b.dataset.tab));
     go('home');
     // 初回描画が済んでからスプラッシュを閉じる(ロゴが一拍見えてからフェードアウト)
-    setTimeout(hideSplash, 900);   // ロゴを一拍見せてから閉じる(+フェード0.3秒で体感約1.2秒)
+    setTimeout(hideSplash, 250);   // 表示時間はhideSplash内のMIN_SPLASH_MSが絶対時間で保証する
     // Service Worker(オフライン対応)。新しいSWが有効化されたら自動でリロードして
     // ホーム画面のアイコンを削除・再追加しなくても常に最新版が表示されるようにする。
     // Capacitorネイティブアプリではアセットが端末内にあるためSW不要(iOSのWKWebViewでは動作もしない)。
