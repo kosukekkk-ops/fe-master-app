@@ -1147,7 +1147,7 @@
   // 起動ロゴの最低表示時間(描画開始からの絶対時間)。
   // 「ホーム描画後○ms」の相対時間だと端末の読み込み速度で体感が変わるため、
   // __bootShownAt(index.htmlで記録)を基準に不足分だけ待ってから閉じる。
-  const MIN_SPLASH_MS = 1400;
+  const MIN_SPLASH_MS = 2000;
   function hideSplash() {
     const sp = window.Capacitor && window.Capacitor.Plugins && window.Capacitor.Plugins.SplashScreen;
     if (sp && sp.hide) { try { sp.hide({ fadeOutDuration: 300 }); } catch (e) {} }
