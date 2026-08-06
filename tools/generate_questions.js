@@ -89,13 +89,16 @@ function gramsOf(w) {
 // 分野が同じでも話題が全く違う(=簡単すぎる)誤答になるのを防ぐ。同分野で足りなければ全体から補う。
 function distractorPool(w) {
   const wGrams = gramsOf(w);
-  const bySimilarity = (list) => shuffle(list)
-    .map(x => ({ x, sim: jaccard(wGrams, gramsOf(x)) }))
-    .sort((a, b) => b.sim - a.sim)
+  const wFam = familyOf(w);
+  // 同ファミリー優先(本試験の「全選択肢が同じ問いへの別解」の並びに寄せる)、
+  // 同ファミリー内では意味文の類似度が高い順。
+  const rank = (list) => shuffle(list)
+    .map(x => ({ x, fam: familyOf(x) === wFam ? 1 : 0, sim: jaccard(wGrams, gramsOf(x)) }))
+    .sort((a, b) => (b.fam - a.fam) || (b.sim - a.sim))
     .map(o => o.x);
   const same = (byCat[w.category] || []).filter(x => x.wordId !== w.wordId);
   const others = quizWords.filter(x => x.wordId !== w.wordId && x.category !== w.category);
-  return bySimilarity(same).concat(bySimilarity(others));
+  return rank(same).concat(rank(others));
 }
 
 // 3つのダミーを、指定フィールドの値が正解と重複しないように選ぶ。
@@ -122,6 +125,62 @@ const okMeaningFor = (w) => (d) => !partsOf(w.word).some(p => (d.meaning || '').
 // その場で消去できてしまうため除外する。
 const okTermFor = (w) => (d) => !partsOf(d.word).some(p => (w.meaning || '').includes(p));
 
+// ---- キーワード分散(2026-08-06、過去問道場100問の実走から) ----
+// 本試験は「WAFの目的はどれか」なら4択全部がWebサーバの文、という作りで、
+// 問題語のキーワードが全選択肢に分散している。逆に正解だけがキーワードを
+// 共有すると(例: DNSキャッシュポイズニング問題で正解だけがDNSを含む)、
+// 表面一致だけで解けてしまう。
+// 対策: 問題語と正解文の共有トークンを検出し、同じトークンを含む誤答を
+// 必ず混ぜる。混ぜられない場合はその問題を生成しない。
+
+// 2つの文字列の最長共通部分文字列(カナ/漢字/英数を含むもののみ意味があるとみなす)
+function salientLcs(a, b) {
+  a = String(a).toLowerCase(); b = String(b).toLowerCase();
+  let best = '';
+  for (let i = 0; i < a.length; i++) {
+    for (let j = i + Math.max(2, best.length); j <= a.length; j++) {
+      const sub = a.slice(i, j);
+      if (b.includes(sub)) { if (sub.length > best.length) best = sub; }
+      else break;
+    }
+  }
+  if (!/[ァ-ヶーa-z0-9一-龠]/.test(best)) return { len: 0, str: '' };
+  return { len: best.length, str: best };
+}
+// 問題語と自分の意味文が共有するトークン(3文字以上)。あれば分散が必要。
+function keywordTokenOf(w) {
+  const t = salientLcs(w.word, w.meaning || '');
+  return t.len >= 3 ? t : null;
+}
+
+// ---- ファミリータグ(誤答を「同じ問いへの別の実在解」で揃えるための粗い分類) ----
+// 本試験の誤答は同ファミリー(全部が誤り検査方式、全部が価格決定法…)で並ぶ。
+// 類似度に加えて同ファミリーを優先することで、この並びに近づける。
+const FAMILY_RULES = [
+  ['攻撃手法', /攻撃|インジェクション|フィッシング|ポイズニング|トラバーサル|スプーフィング|ハイジャック|総当たり|辞書攻撃|標的型|ランサム|マルウェア|ウイルス|ワーム|ボット|バックドア|ソーシャルエンジニアリング/],
+  ['セキュリティ技術', /暗号|署名|証明書|ハッシュ|認証|鍵|PKI|WAF|ファイアウォール|IDS|IPS|検疫|アクセス制御|リスク|脆弱性|インシデント|CSIRT/],
+  ['ネットワーク', /プロトコル|TCP|UDP|HTTP|SMTP|POP|IMAP|DNS|DHCP|FTP|SSL|TLS|IP(アドレス)?|ポート|ルータ|スイッチ|LAN|WAN|サブネット|パケット|通信|無線|イーサネット/],
+  ['テスト', /テスト|網羅|レビュー|スタブ|ドライバ|デバッグ|検証|品質保証|品質管理|バグ/],
+  ['記憶装置', /RAID|ミラーリング|ストライピング|ディスク|メモリ|キャッシュ|記憶|ROM|RAM|フラッシュ/],
+  ['OS', /OS|スケジューリング|プロセス|スレッド|割込み|仮想記憶|ページ|タスク|排他制御|デッドロック|セマフォ/],
+  ['データベース', /SQL|データベース|正規化|主キー|外部キー|トランザクション|ロック|コミット|ロールバック|インデックス|結合|射影/],
+  ['開発手法', /開発|設計|要件|アジャイル|スクラム|ウォーターフォール|オブジェクト指向|クラス|継承|カプセル|UML|モジュール|リファクタリング|DevOps/],
+  ['プロマネ', /プロジェクト|工程|クリティカルパス|WBS|見積|ファンクションポイント|クラッシング|ファストトラッキング|PERT|ガント|マイルストーン|スコープ/],
+  ['サービス運用', /サービス|SLA|インシデント管理|ITIL|運用|保守|バックアップ|可用性|稼働率|監視/],
+  ['監査', /監査|内部統制|ガバナンス|コンプライアンス/],
+  ['経営戦略', /戦略|マーケティング|価格|市場|SWOT|PPM|3C|4P|イノベーション|シェア|プロダクト|顧客|ブランド|KGI|KPI|CSF|バランススコアカード/],
+  ['会計法務', /費用|原価|利益|会計|償却|損益|財務|法|権利?$|著作|特許|契約|派遣|請負|個人情報|ライセンス/],
+];
+const familyCache = new Map();
+function familyOf(w) {
+  let f = familyCache.get(w.wordId);
+  if (f) return f;
+  const probe = w.word + ' ' + (w.meaning || '');
+  f = (FAMILY_RULES.find(([, re]) => re.test(probe)) || [w.subcat || w.category])[0];
+  familyCache.set(w.wordId, f);
+  return f;
+}
+
 // 正解＋ダミー3件から、正解位置をシャッフルした choices/correctIndex/choiceInfo を作る。
 // distractors は {t: 選択肢文, note: その選択肢の正体(表示用)} の配列。
 // choiceInfo は choices と同じ並びで、正解位置は null。
@@ -138,9 +197,37 @@ function assemble(correctText, distractors) {
 const questions = [];
 
 for (const w of quizWords) {
+  // 問題語と正解文の共有トークン。あれば「同トークン入りの誤答」を必ず混ぜる。
+  const tok = keywordTokenOf(w);
+  // 重複意味文を除いた誤答候補(名前漏れ除外済み・類似度/ファミリー順)
+  const uniqPool = (() => {
+    const seen = new Set([w.meaning]);
+    const out = [];
+    for (const d of distractorPool(w)) {
+      if (!d.meaning || seen.has(d.meaning)) continue;
+      if (!okMeaningFor(w)(d)) continue;
+      seen.add(d.meaning); out.push(d);
+    }
+    return out;
+  })();
+  const kwPool = tok ? uniqPool.filter(d => d.meaning.toLowerCase().includes(tok.str)) : [];
+  const restPool = tok ? uniqPool.filter(d => !d.meaning.toLowerCase().includes(tok.str)) : uniqPool;
+
+  // トークンあり: def=[同キーワード1+その他2] / desc=[同キーワード1+その他2](別組)。
+  //             同キーワード誤答が無ければその形式は生成しない(表面一致で解けるため)。
+  // トークンなし: 従来どおり def=上位3 / desc=次点3。
+  let dsDef = null, dsDesc = null;
+  if (tok) {
+    if (kwPool.length >= 1 && restPool.length >= 2) dsDef = [kwPool[0], restPool[0], restPool[1]];
+    if (kwPool.length >= 2 && restPool.length >= 4) dsDesc = [kwPool[1], restPool[2], restPool[3]];
+  } else {
+    if (uniqPool.length >= 3) dsDef = uniqPool.slice(0, 3);
+    if (uniqPool.length >= 6) dsDesc = uniqPool.slice(3, 6);
+  }
+
   // --- def: 用語 → 説明 ---
   {
-    const ds = pickDistractors(w, 'meaning', w.meaning, 0, okMeaningFor(w));
+    const ds = dsDef || [];
     if (ds.length === 3) {
       const { choices, correctIndex, choiceInfo } = assemble(w.meaning,
         ds.map(d => ({ t: d.meaning, note: `「${d.word}」の説明` })));
@@ -156,7 +243,9 @@ for (const w of quizWords) {
     }
   }
   // --- term: 説明 → 用語 ---
-  {
+  // 提示する説明文が答えの用語名の一部を含む(トークンあり)場合、
+  // 名前の一致だけで選べてしまうため term 形式は生成しない。
+  if (!tok) {
     const ds = pickDistractors(w, 'word', w.word, 0, okTermFor(w));
     if (ds.length === 3) {
       const { choices, correctIndex, choiceInfo } = assemble(w.word,
@@ -180,7 +269,7 @@ for (const w of quizWords) {
   // 「用語の説明を選ぶ」問題に置き換え。defが上位3件のダミーを使うのに対し、
   // こちらは次点(4〜6番目に紛らわしい別用語の説明)を使うので重複しない。
   {
-    const ds = pickDistractors(w, 'meaning', w.meaning, 3, okMeaningFor(w));
+    const ds = dsDesc || [];
     if (ds.length === 3) {
       const { choices, correctIndex, choiceInfo } = assemble(w.meaning,
         ds.map(d => ({ t: d.meaning, note: `「${d.word}」の説明` })));
@@ -220,6 +309,20 @@ for (const q of questions) {
       if (partsOf(c).some(p => q.text.includes(p)))
         lintErrors.push(`${q.questionId}: 提示文が選択肢${i}「${c}」を名指し`);
     });
+  }
+  // キーワード分散: 正解だけが問題語とトークン(3文字以上)を共有していたら違反。
+  // 誤答の少なくとも1つが同じトークンを含んでいなければならない。
+  if (kind === 'def' || kind === 'desc') {
+    const t = salientLcs(subject.word, q.choices[q.correctIndex]);
+    if (t.len >= 3) {
+      const spread = q.choices.some((c, i) => i !== q.correctIndex && c.toLowerCase().includes(t.str));
+      if (!spread) lintErrors.push(`${q.questionId}: 正解だけがトークン「${t.str}」を含む(分散なし)`);
+    }
+  }
+  if (kind === 'term') {
+    const t = salientLcs(q.choices[q.correctIndex], q.text.replace(/^次の説明に最もよく当てはまる用語はどれか。\n/, ''));
+    if (t.len >= 3)
+      lintErrors.push(`${q.questionId}: 提示文が正解名のトークン「${t.str}」を含む`);
   }
 }
 if (lintErrors.length) {

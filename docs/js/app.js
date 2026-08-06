@@ -11,7 +11,7 @@
   // 無料版で単語帳(全単語モード)を使える語数。苦手単語帳は無制限。
   const FREE_WORD_LIMIT = 50;
   // アプリのバージョン表記(リリース時にiosのMARKETING_VERSIONと合わせて更新すること)
-  const APP_VERSION = '1.3';
+  const APP_VERSION = '1.4';
   const STORE_URL = 'https://apps.apple.com/jp/app/id6790236851';
   // アプリ内フィードバックフォームの送信先(Web3Formsのアクセスキー)。
   // 空の間はメールアプリ起動にフォールバックする。キーは公開クライアントに埋める前提の値。
