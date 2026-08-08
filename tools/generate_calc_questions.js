@@ -37,6 +37,90 @@ const shuffle = (arr) => { const a = arr.slice(); for (let i = a.length - 1; i >
 const round4 = (n) => Math.round(n * 10000) / 10000;
 const numStr = (n) => String(round4(n));
 
+// ---- 系統別の解説ガイド(2026-08-08、「解説が式だけで乏しい」というユーザー指摘を受けて全系統に整備) ----
+// idea: なぜその式になるのかを平易に説明する「考え方」 / note: 定番のつまずきポイント
+const CALC_GUIDE = {
+  avail: {
+    idea: '稼働率は「全時間のうち動いていた時間の割合」。装置は平均してMTBF(故障までの平均稼働時間)だけ動いてはMTTR(平均修理時間)だけ止まる、を繰り返す。1周期(MTBF+MTTR)のうち動いているのはMTBFなので、稼働率 = MTBF ÷ (MTBF + MTTR) になる。',
+    note: 'MTBFは「動いている時間」、MTTRは「直している時間」。分母を両方の合計(全体の時間)にするのがポイント。' },
+  sysavail: {
+    idea: '直列は「全部が動いてはじめて動く」ので、稼働率は掛け算になり必ず1台のときより低くなる。並列は「1台でも動けばよい」ので、先に「全台が同時に止まる確率」= 故障率(1−稼働率)の掛け算を求め、それを1から引く。',
+    note: '並列を稼働率の足し算にしない(1を超えたら計算ミス)。「1から引く」を2回使うのが並列のコツ。' },
+  radix: {
+    idea: 'n進数は「各桁がnの累乗の重みを持つ」数の表し方。整数部の重みは右から1, n, n², …、小数部の重みは左から1/n, 1/n², …。各桁の値×重みを合計すれば10進数になる。',
+    note: '16進数の小数第1位は「16分の1の位」(10分の1ではない)。2進数は1が立っている桁の重みだけを足せばよい。' },
+  transfer: {
+    idea: '伝送時間は「送るデータ量 ÷ 実際に出る速度」。回線は理論値どおりの速度が出ないため、実効速度 = 回線速度 × 伝送効率で先に補正する。また、データ量はバイト、回線速度はビット/秒で単位が違うので、バイトを8倍してビットに揃えてから割り算する。',
+    note: 'バイト→ビットの「×8」と、伝送効率の掛け忘れが2大ミス。単位を式に書きながら計算すると防げる。' },
+  breakeven: {
+    idea: '商品を1個売ると、売価から変動費(1個増えるごとにかかる費用)を引いた「限界利益」だけ手元に残る。この限界利益の積み重ねで固定費(売れなくてもかかる費用)を回収しきる点が損益分岐点。目標利益がある場合は「固定費+目標利益」を1個当たりの限界利益で割れば必要販売数が出る。',
+    note: '固定費を売価で割らないこと。割るのは「売価−変動費」の限界利益。' },
+  cache: {
+    idea: 'メモリアクセスは「キャッシュに当たる(速い)」か「外れて主記憶まで行く(遅い)」かの2通りしかない。それぞれの所要時間を、起きる確率(ヒット率とミス率)で重み付けして平均したものが実効アクセス時間。',
+    note: 'ミス率は 1−ヒット率。「ヒット率×主記憶の時間」と組み合わせを取り違えない。' },
+  imgsize: {
+    idea: '画像は小さな点(画素)の集まりで、1画素の色を何ビットで表すかが決まっている。だから容量 = 横×縦の総画素数 × 1画素のビット数。バイトで答えるので最後に8で割る。',
+    note: 'ビット→バイトの「÷8」を忘れると、ちょうど8倍の誤答(選択肢に必ずある)に引っかかる。' },
+  compl2: {
+    idea: '2の補数表現では先頭ビットが1なら負の数。その値は「符号なし整数として読んだ値 − 2^ビット数」で求められる(全ビットを反転して1を足すと絶対値が出る、でも同じ)。',
+    note: '「反転して+1」は絶対値を出す手順。正負の判断はあくまで先頭ビットで行う。' },
+  mips: {
+    idea: 'MIPSは「1秒間に実行できる命令数」を百万(10^6)単位で表した指標。1秒間のクロック数(=クロック周波数)を1命令に必要な平均クロック数(CPI)で割れば、1秒間に実行できる命令数が出る。',
+    note: '最後に10^6で割ってMIPS単位に直すこと。クロック周波数のG(10^9)との換算も丁寧に。' },
+  addr: {
+    idea: 'アドレス線が1ビット増えるごとに指定できる番地は2倍になる。nビットなら2^n番地。1番地に1バイト格納する方式なら、容量もそのまま2^nバイト。',
+    note: '2^10=1K、2^20=1M、2^30=1G。この対応を覚えておくと大きな累乗も即答できる。' },
+  queue: {
+    idea: 'M/M/1の待ち行列では、窓口の混み具合(利用率ρ)が高いほど行列が急激に伸びる。平均待ち時間は ρ/(1−ρ) × 平均サービス時間。空いている度合い(1−ρ)で割るため、ρが1に近づくと待ち時間は爆発的に増える。',
+    note: '聞かれているのが「待ち時間」か「応答時間(待ち+処理)」かを必ず確認。応答時間なら平均サービス時間を足す。' },
+  pcm: {
+    idea: 'PCMは音の波の高さを1秒間にサンプリング周波数の回数だけ測り、1回の測定値を量子化ビット数のビットで記録する方式。だから1秒・1チャネル当たりのデータ量 = サンプリング周波数 × (量子化ビット数÷8)バイト。これにチャネル数(ステレオなら2)と録音秒数を掛ける。',
+    note: 'kHzの「×1000」、ビット→バイトの「÷8」、ステレオの「×2」。この3つの掛け忘れが定番ミス。' },
+  depreciation: {
+    idea: '減価償却は、高価な資産の購入額を「使う年数に分けて」毎年の費用にする会計処理。定額法は毎年同じ額ずつ費用化する方法で、年間償却費 = (取得原価 − 残存価額) ÷ 耐用年数。',
+    note: '残存価額(使い終わっても残る価値)を先に引いてから年数で割る。' },
+  rotwait: {
+    idea: '磁気ディスクは円盤が回って目的のデータが磁気ヘッドの下に来るのを待つ。狙った位置は円盤上のどこにあるか分からないので、平均すると半回転分待つと考える。1回転の時間 = 60秒 ÷ 毎分回転数、平均回転待ちはその半分。',
+    note: '回転数は「毎分」なので60秒を基準に計算し、ミリ秒への換算を忘れない。' },
+  pert: {
+    idea: '三点見積り(PERT)は「楽観値・最可能値・悲観値」の3つから現実的な所要日数を見積もる方法。最も起こりやすい最可能値に4倍の重みを付けて、(楽観 + 4×最可能 + 悲観) ÷ 6 で加重平均する。',
+    note: '割るのは3ではなく6(重み1+4+1の合計)。' },
+  colors: {
+    idea: 'nビットあれば0と1の並びは2^n通り作れるので、2^n色を区別できる。逆に「◯色を表すには何ビット必要か」と問われたら、2^n ≧ 色数 を満たす最小のnを探す。',
+    note: '「2倍ずつ増える」感覚を持つと速い。8ビット=256色、16ビット=65,536色。' },
+  subnet: {
+    idea: 'IPアドレスのホスト部がnビットなら、アドレスの組合せは2^n通り。ただし先頭の1つ(ネットワークアドレス)と末尾の1つ(ブロードキャストアドレス)は機器に割り当てられないため、実際に使えるのは 2^n − 2 台。',
+    note: '「−2」を忘れると、選択肢に必ず用意されている2^nそのまま(256など)に引っかかる。' },
+  expval: {
+    idea: '期待値は「起こりうる各ケースの金額 × その確率」を全部足し合わせた、平均的に見込める値。どちらか一方が起きる場合も、確率で重み付けして足せば「ならしたときの結果」が出る。',
+    note: '使った確率の合計が1になっているかを先に確認すると、ケースの数え漏れを防げる。' },
+  payback: {
+    idea: '回収期間法は「投資したお金が何年で戻ってくるか」で投資案を評価する簡便な方法。回収期間 = 初期投資額 ÷ 年間の回収額。短いほど早く元が取れる投資といえる。',
+    note: '利息(時間価値)や回収後の利益は考えない、という簡便法ならではの限界もセットで問われる。' },
+  raid5: {
+    idea: 'RAID5は誤り回復用のパリティ情報を全ディスクに分散して持ち、どの1台が壊れても残りから復元できる。パリティが全体で「1台分」の容量を占めるため、使える容量 = (台数 − 1) × 1台の容量。',
+    note: 'パリティ専用のディスクが1台あるのではなく、分散して合計1台分。耐えられる故障は1台までという点も頻出。' },
+  seriesn: {
+    idea: '同じ稼働率の装置をn台つなぐ場合、直列は全台が動く必要があるので「稼働率のn乗」。並列は1台でも動けばよいので、全滅する確率「故障率のn乗」を1から引く。',
+    note: '並列は「1から引く」を2回使う(稼働率→故障率に直す、全滅確率→稼働率に戻す)のがコツ。' },
+  queueW: {
+    idea: '応答時間は「行列で待つ時間 + 自分が処理される時間」の合計。M/M/1ではこの合計が 平均サービス時間 ÷ (1 − 利用率) というシンプルな式になる。空き具合(1−ρ)で割るので、混むほど急激に悪化する。',
+    note: '「待ち時間だけ」なら ρ/(1−ρ)×サービス時間。応答時間との違いを問題文で確認する。' },
+  cputime: {
+    idea: 'CPUはクロックという一定の刻みに合わせて動く。1クロックの時間はクロック周波数の逆数(1÷周波数)。1命令に平均CPIクロックかかるなら、1命令の実行時間 = CPI × 1クロックの時間。',
+    note: 'GHz(10^9Hz)の逆数はナノ秒(10^-9秒)。単位の対応を押さえると桁を間違えない。' },
+  hamming: {
+    idea: 'ハミング符号は、データmビット+検査ビットrビットの全体(m+r)ビットの「どこで誤ったか」と「誤りなし」の合計(m+r+1)通りを、rビットの検査結果で区別する仕組み。だから 2^r ≧ m + r + 1 を満たす最小のrが必要な検査ビット数になる。',
+    note: '不等式の右辺にr自身も入る(検査ビット自体の誤りも区別するため)。' },
+  diskcap: {
+    idea: '磁気ディスクの容量は入れ物の階層の掛け算で求まる。1トラックの容量 × 1シリンダ当たりのトラック数 × シリンダ数 = 総容量。',
+    note: '最後のKバイト→Mバイトなどの単位換算を忘れずに。' },
+  raid01: {
+    idea: 'RAID0(ストライピング)はデータを分散して書き込むだけなので全台の容量をそのまま使える(そのかわり冗長性はない)。RAID1(ミラーリング)は同じデータを2台に書くので、使える容量は合計の半分になる。',
+    note: '容量と引き換えに何を得ているか(RAID0=速度、RAID1=安全)をセットで覚える。' },
+};
+
+
 /* 正解値 + ダミー候補値 から choices/correctIndex を組み立てる。
  * ダミーは 正解と重複せず、互いに重複せず、正のものだけを採用。
  * 足りなければ ±10%/±25% の摂動で補う。 unit は各選択肢末尾に付ける文字列。 */
@@ -127,7 +211,7 @@ const GEN = {
         idKey: `radix16_${d}`, category: 'テクノロジ', relatedWordIds: [],
         text: `16進小数 0.${hexDigits[d]} を10進小数に変換したものはどれか。`,
         choices, correctIndex,
-        explanation: `16進数の小数第1位は「16分の1の位」を表す。0.${hexDigits[d]}(16) = ${d} ÷ 16 = ${numStr(ans)}。`,
+        explanation: `0.${hexDigits[d]}(16) = ${d} ÷ 16 = ${numStr(ans)}。`,
         source: '生成問題(計算 / 基数変換)'
       };
     } else {
@@ -143,7 +227,7 @@ const GEN = {
         idKey: `radix2_${bits}`, category: 'テクノロジ', relatedWordIds: [],
         text: `2進数 ${bits} を10進数で表したものはどれか。`,
         choices, correctIndex,
-        explanation: `2進数は各桁が2の累乗(…4,2,1)を表す。1が立っている桁の値を足し合わせればよい。${bits}(2) = ${bits.split('').map((b, i) => b === '1' ? Math.pow(2, len - 1 - i) : 0).filter(x => x).join(' + ')} = ${ans}。`,
+        explanation: `${bits}(2) = ${bits.split('').map((b, i) => b === '1' ? Math.pow(2, len - 1 - i) : 0).filter(x => x).join(' + ')} = ${ans}。`,
         source: '生成問題(計算 / 基数変換)'
       };
     }
@@ -217,7 +301,7 @@ const GEN = {
       idKey: `img_${res[0]}x${res[1]}_${bpp}`, category: 'テクノロジ', relatedWordIds: [],
       text: `解像度${res[0]}×${res[1]}ドット、1画素当たり${bpp}ビットで表現する画像1枚の記憶容量はおよそ何Mバイトか。ここで1Mバイト=10^6バイトとする。`,
       choices, correctIndex,
-      explanation: `画像の記憶容量は「総画素数×1画素あたりのビット数」で求まり、それをバイト単位に直すには8で割る。容量 = ${res[0]}×${res[1]}×${bpp} ÷ 8 = ${bytes.toLocaleString()}バイト ≒ ${numStr(ansMB)}Mバイト。`,
+      explanation: `容量 = ${res[0]}×${res[1]}×${bpp} ÷ 8 = ${bytes.toLocaleString()}バイト ≒ ${numStr(ansMB)}Mバイト。`,
       source: '生成問題(計算 / 記憶容量)'
     };
   },
@@ -247,7 +331,7 @@ const GEN = {
       idKey: `mips_${f}_${cpi}`, category: 'テクノロジ', relatedWordIds: [],
       text: `クロック周波数${f}GHz、1命令の実行に平均${cpi}クロックを要するCPUがある。このCPUの処理性能はおよそ何MIPSか。`,
       choices, correctIndex,
-      explanation: `MIPSは1秒間に実行できる命令数(百万単位)を表す指標。クロックが速いほど、また1命令に要するクロック数(CPI)が少ないほど大きくなる。MIPS = クロック周波数 ÷ (CPI × 10^6) = ${f}×10^9 ÷ (${cpi}×10^6) = ${f * 1000} ÷ ${cpi} = ${numStr(ans)}MIPS。`,
+      explanation: `MIPS = クロック周波数 ÷ (CPI × 10^6) = ${f}×10^9 ÷ (${cpi}×10^6) = ${f * 1000} ÷ ${cpi} = ${numStr(ans)}MIPS。`,
       source: '生成問題(計算 / 処理性能)'
     };
   },
@@ -262,7 +346,7 @@ const GEN = {
       idKey: `addr_${n}_${letter}`, category: 'テクノロジ', relatedWordIds: [],
       text: `${n}ビットのアドレスで、1番地に1バイトを割り当てて指定できる記憶容量は何${letter}バイトか。ここで1Kバイト=1024バイトとする。`,
       choices, correctIndex,
-      explanation: `アドレスがnビットあれば、0から2^n−1までの2^n通りの番地を指定できる。1番地=1バイトなので、記憶容量も2^n バイト。${n}ビットで 2^${n} = ${Math.pow(2, n).toLocaleString()}バイト。${letter}バイト単位では ${numStr(val)}${letter}バイト。`,
+      explanation: `${n}ビットで 2^${n} = ${Math.pow(2, n).toLocaleString()}バイト。${letter}バイト単位では ${numStr(val)}${letter}バイト。`,
       source: '生成問題(計算 / アドレス空間)'
     };
   },
@@ -326,7 +410,7 @@ const GEN = {
       idKey: `rot_${rpm}`, category: 'テクノロジ', relatedWordIds: [],
       text: `回転速度${rpm.toLocaleString()}回転/分の磁気ディスクの、平均回転待ち時間はおよそ何ミリ秒か。`,
       choices, correctIndex,
-      explanation: `読み書きしたい位置は円盤上のどこに来るか分からないため、平均すると半回転分だけ待つと考える。1回転 = 60秒 ÷ ${rpm.toLocaleString()} = ${numStr(60000 / rpm)}ミリ秒。平均回転待ちはその半分で ${numStr(ans)}ミリ秒。`,
+      explanation: `1回転 = 60秒 ÷ ${rpm.toLocaleString()} = ${numStr(60000 / rpm)}ミリ秒。平均回転待ちはその半分で ${numStr(ans)}ミリ秒。`,
       source: '生成問題(計算 / 回転待ち)'
     };
   },
@@ -357,7 +441,7 @@ const GEN = {
       idKey: `colors_${n}`, category: 'テクノロジ', relatedWordIds: [],
       text: `1画素を${n}ビットで表現するとき、表現できる色数は何色か。`,
       choices, correctIndex,
-      explanation: `nビットあれば、0と1の組み合わせで2^n通りの色を区別して表現できる。${n}ビットで 2^${n} = ${ans.toLocaleString()}色を表現できる。`,
+      explanation: `${n}ビットで 2^${n} = ${ans.toLocaleString()}色を表現できる。`,
       source: '生成問題(計算 / 色数)'
     };
   },
@@ -429,6 +513,7 @@ const GEN = {
     const n = pick([2, 3, 4]);
     const series = rng() < 0.5;
     const ans = series ? Math.pow(a, n) : 1 - Math.pow(1 - a, n);
+    if (round4(ans) >= 1) return null;   // 稼働率が丸めて1になる組合せは誤解を招くため出題しない
     const other = series ? 1 - Math.pow(1 - a, n) : Math.pow(a, n);
     const dist = [other, a, Math.pow(a, n - 1), 1 - Math.pow(1 - a, n - 1)];
     const { choices, correctIndex } = buildNumeric(ans, dist, '');
@@ -470,7 +555,7 @@ const GEN = {
       idKey: `cputime_${cpi}_${f}`, category: 'テクノロジ', relatedWordIds: [],
       text: `クロック周波数${f}GHz、1命令の実行に平均${cpi}クロックを要するCPUで、1命令の平均実行時間はおよそ何ナノ秒か。`,
       choices, correctIndex,
-      explanation: `クロック周波数の逆数が1クロックにかかる時間。それに1命令あたりのクロック数(CPI)を掛ければ実行時間になる。1クロックの時間 = 1 ÷ ${f}GHz = ${numStr(1 / f)}ナノ秒。1命令 = ${cpi}クロック × ${numStr(1 / f)} = ${numStr(ans)}ナノ秒。`,
+      explanation: `1クロックの時間 = 1 ÷ ${f}GHz = ${numStr(1 / f)}ナノ秒。1命令 = ${cpi}クロック × ${numStr(1 / f)} = ${numStr(ans)}ナノ秒。`,
       source: '生成問題(計算 / 命令実行時間)'
     };
   },
@@ -500,7 +585,7 @@ const GEN = {
       idKey: `diskcap_${trackKB}_${tracks}_${cyls}`, category: 'テクノロジ', relatedWordIds: [],
       text: `1トラックの記憶容量が${trackKB}Kバイト、1シリンダ当たり${tracks}トラック、シリンダ数が${cyls.toLocaleString()}の磁気ディスクの記憶容量は何Mバイトか。ここで1Mバイト=1,000Kバイトとする。`,
       choices, correctIndex,
-      explanation: `磁気ディスクの総容量は「1トラックの容量×1シリンダ当たりのトラック数×シリンダ数」の掛け算で求まる。容量 = 1トラック容量 × トラック数 × シリンダ数 = ${trackKB} × ${tracks} × ${cyls.toLocaleString()} = ${(trackKB * tracks * cyls).toLocaleString()}Kバイト = ${numStr(ansMB)}Mバイト。`,
+      explanation: `容量 = 1トラック容量 × トラック数 × シリンダ数 = ${trackKB} × ${tracks} × ${cyls.toLocaleString()} = ${(trackKB * tracks * cyls).toLocaleString()}Kバイト = ${numStr(ansMB)}Mバイト。`,
       source: '生成問題(計算 / ディスク容量)'
     };
   },
@@ -547,8 +632,8 @@ for (const [type, want] of Object.entries(TARGET)) {
     attempts++;
     const q = GEN[type]();
     if (!q) continue;
-    // 関連語彙のdetail(丁寧な解説)があれば、計算手順の前置きとして添える
-    const concept = q.relatedWordIds && q.relatedWordIds.length ? DETAILS[q.relatedWordIds[0]] : null;
+    // 系統別ガイド(考え方・注意)で解説を3部構成にする
+    const guide = CALC_GUIDE[type] || {};
     const question = {
       questionId: `gc_${q.idKey}`,
       category: q.category,
@@ -556,7 +641,11 @@ for (const [type, want] of Object.entries(TARGET)) {
       text: q.text,
       choices: q.choices,
       correctIndex: q.correctIndex,
-      explanation: concept ? `${concept}\n${q.explanation}` : q.explanation,
+      explanation: [
+        guide.idea ? `【考え方】${guide.idea}` : null,
+        `【計算】${q.explanation}`,
+        guide.note ? `【注意】${guide.note}` : null,
+      ].filter(Boolean).join('\n'),
       source: q.source,
       relatedWordIds: q.relatedWordIds
     };
